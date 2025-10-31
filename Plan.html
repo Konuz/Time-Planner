@@ -142,19 +142,6 @@
             align-items: center;
         }
 
-        .tables-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .table-column {
-            background-color: var(--bg-light);
-            padding: 15px;
-            border-radius: var(--border-radius);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -246,19 +233,9 @@
             background-color: #5a6268;
         }
 
-        @media (max-width: 1200px) {
-            .tables-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
-            }
-
-            .tables-grid {
-                grid-template-columns: 1fr;
             }
 
             .task-table {
@@ -307,8 +284,24 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="client">Klient:</label>
-                    <input type="text" id="client" name="client" required placeholder="Np. TKV">
+                    <label for="client">Projekt:</label>
+                    <select id="client" name="client" required>
+                        <option value="">-- Wybierz projekt --</option>
+                        <option value="TKV">TKV</option>
+                        <option value="HIT BAU INC">HIT BAU INC</option>
+                        <option value="HIT BAU MAINT">HIT BAU MAINT</option>
+                        <option value="HIT BAU PLANNED PATCH">HIT BAU PLANNED PATCH</option>
+                        <option value="HIT BAU EXTRA PATCH">HIT BAU EXTRA PATCH</option>
+                        <option value="HIT BILLABLE">HIT BILLABLE</option>
+                        <option value="HIT OTHER">HIT OTHER</option>
+                        <option value="HIT POT CHARGABLE">HIT POT CHARGABLE</option>
+                        <option value="INFRA 0020 DC CAP">INFRA 0020 DC CAP</option>
+                        <option value="INFRA 0020 H&M">INFRA 0020 H&M</option>
+                        <option value="INFRA 0020 REITAN">INFRA 0020 REITAN</option>
+                        <option value="INFRA 0020 STOCKHOLM">INFRA 0020 STOCKHOLM</option>
+                        <option value="INFRA 9065 MEETING">INFRA 9065 MEETING</option>
+                        <option value="INFRA 9065 TRAINING">INFRA 9065 TRAINING</option>
+                    </select>
                     <div class="invalid-feedback" id="client-feedback"></div>
                 </div>
 
@@ -346,81 +339,50 @@
                         Pokaż tylko wpisy z bieżącego tygodnia
                     </label>
                 </div>
-            </div>
-
-            <div class="tables-grid">
-                <div class="table-column">
-                    <h3>CTASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-ctask">
-                            <!-- CTASK entries -->
-                        </tbody>
-                    </table>
+                <div class="filter-option">
+                    <label style="font-weight: 600; margin-top: 10px; display: block;">Rodzaj zadania:</label>
                 </div>
-
-                <div class="table-column">
-                    <h3>TASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-task">
-                            <!-- TASK entries -->
-                        </tbody>
-                    </table>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-ctask" checked>
+                        CTASK
+                    </label>
                 </div>
-
-                <div class="table-column">
-                    <h3>INC</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-inc">
-                            <!-- INC entries -->
-                        </tbody>
-                    </table>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-task" checked>
+                        TASK
+                    </label>
                 </div>
-
-                <div class="table-column">
-                    <h3>SCTASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-sctask">
-                            <!-- SCTASK entries -->
-                        </tbody>
-                    </table>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-inc" checked>
+                        INC
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-sctask" checked>
+                        SCTASK
+                    </label>
                 </div>
             </div>
+
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Rodzaj zadania</th>
+                        <th>Projekt</th>
+                        <th>Godziny</th>
+                        <th>Numer</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="entries-body">
+                    <!-- All entries -->
+                </tbody>
+            </table>
         </section>
         
         <section class="summary">
@@ -523,68 +485,58 @@
         function renderEntries() {
             const filterCurrentMonth = document.getElementById('filter-current-month').checked;
             const filterCurrentWeek = document.getElementById('filter-current-week').checked;
+            const filterCtask = document.getElementById('filter-ctask').checked;
+            const filterTask = document.getElementById('filter-task').checked;
+            const filterInc = document.getElementById('filter-inc').checked;
+            const filterSctask = document.getElementById('filter-sctask').checked;
             const currentDate = new Date();
 
-            // Pobierz wszystkie body tables
-            const taskTypes = ['ctask', 'task', 'inc', 'sctask'];
-            const entriesBodies = {};
-            taskTypes.forEach(type => {
-                entriesBodies[type] = document.getElementById(`entries-body-${type}`);
-                entriesBodies[type].innerHTML = '';
-            });
+            const entriesBody = document.getElementById('entries-body');
+            entriesBody.innerHTML = '';
 
             let filteredEntries = [...entries];
 
+            // Filtrowanie według daty
             if (filterCurrentWeek) {
                 filteredEntries = filteredEntries.filter(entry => isSameWeek(entry.date, currentDate));
             } else if (filterCurrentMonth) {
                 filteredEntries = filteredEntries.filter(entry => isSameMonth(entry.date, currentDate));
             }
 
+            // Filtrowanie według rodzaju zadania
+            filteredEntries = filteredEntries.filter(entry => {
+                if (entry.taskType === 'CTASK' && filterCtask) return true;
+                if (entry.taskType === 'TASK' && filterTask) return true;
+                if (entry.taskType === 'INC' && filterInc) return true;
+                if (entry.taskType === 'SCTASK' && filterSctask) return true;
+                return false;
+            });
+
             filteredEntries.sort((a, b) => b.date - a.date);
 
-            // Grupowanie wpisów według typu zadania
-            const entriesByType = {
-                CTASK: [],
-                TASK: [],
-                INC: [],
-                SCTASK: []
-            };
-
-            filteredEntries.forEach(entry => {
-                if (entriesByType[entry.taskType]) {
-                    entriesByType[entry.taskType].push(entry);
-                }
-            });
-
-            // Renderowanie wpisów dla każdego typu
-            Object.keys(entriesByType).forEach(taskType => {
-                const typeKey = taskType.toLowerCase();
-                const tbody = entriesBodies[typeKey];
-
-                if (entriesByType[taskType].length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; font-size: 12px;">Brak wpisów</td>
-                        </tr>
+            if (filteredEntries.length === 0) {
+                entriesBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">Brak wpisów spełniających kryteria filtrowania</td>
+                    </tr>
+                `;
+            } else {
+                filteredEntries.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(entry.date)}</td>
+                        <td>${entry.taskType}</td>
+                        <td>${entry.client || '-'}</td>
+                        <td>${entry.hours}</td>
+                        <td>${entry.taskNumber}</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
+                            <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
+                        </td>
                     `;
-                } else {
-                    entriesByType[taskType].forEach(entry => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${formatDate(entry.date)}</td>
-                            <td>${entry.client || '-'}</td>
-                            <td>${entry.hours}</td>
-                            <td>${entry.taskNumber}</td>
-                            <td>
-                                <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
-                                <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                }
-            });
+                    entriesBody.appendChild(row);
+                });
+            }
 
             // Dodanie obsługi zdarzeń dla przycisków
             document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -666,7 +618,7 @@
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
             
             // Utworzenie zawartości CSV
-            let csvContent = 'Data,Rodzaj zadania,Klient,Liczba godzin,Numer zadania\n';
+            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
@@ -703,11 +655,11 @@
                 taskTypeFeedback.textContent = '';
             }
 
-            // Walidacja klienta
+            // Walidacja projektu
             const clientInput = document.getElementById('client');
             const clientFeedback = document.getElementById('client-feedback');
             if (!clientInput.value) {
-                clientFeedback.textContent = 'Podaj nazwę klienta';
+                clientFeedback.textContent = 'Wybierz projekt';
                 isValid = false;
             } else {
                 clientFeedback.textContent = '';
@@ -742,19 +694,6 @@
             }
             
             return isValid;
-        }
-
-        // Obsługa zmiany filtrów
-        function handleFilterChange() {
-            const filterCurrentMonth = document.getElementById('filter-current-month');
-            const filterCurrentWeek = document.getElementById('filter-current-week');
-            
-            // Zapewnienie że tylko jeden filtr może być aktywny jednocześnie
-            if (filterCurrentWeek.checked) {
-                filterCurrentMonth.checked = false;
-            }
-            
-            renderEntries();
         }
 
         // Inicjalizacja aplikacji
@@ -807,13 +746,19 @@
                 }
                 renderEntries();
             });
-            
+
             document.getElementById('filter-current-week').addEventListener('change', function() {
                 if (this.checked) {
                     document.getElementById('filter-current-month').checked = false;
                 }
                 renderEntries();
             });
+
+            // Obsługa filtrów dla rodzajów zadań
+            document.getElementById('filter-ctask').addEventListener('change', renderEntries);
+            document.getElementById('filter-task').addEventListener('change', renderEntries);
+            document.getElementById('filter-inc').addEventListener('change', renderEntries);
+            document.getElementById('filter-sctask').addEventListener('change', renderEntries);
             
             // Obsługa przycisku eksportu
             document.getElementById('export-button').addEventListener('click', exportData);
