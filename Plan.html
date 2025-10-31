@@ -314,8 +314,32 @@
         <header>
             <h1>GODZINY PRACY</h1>
         </header>
-        
-        <section class="entry-form">
+
+        <section class="section-toggles" style="margin-bottom: 30px;">
+            <div style="background-color: var(--bg-light); padding: 15px; border-radius: var(--border-radius);">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px;">Widoczność sekcji:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-entry-form" checked>
+                        <span style="margin-left: 8px;">Dodaj nowy wpis</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-entries-list" checked>
+                        <span style="margin-left: 8px;">Lista wpisów</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-project-management" checked>
+                        <span style="margin-left: 8px;">Zarządzanie projektami</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-summary" checked>
+                        <span style="margin-left: 8px;">Podsumowanie</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section class="entry-form" id="section-entry-form">
             <h2>Dodaj nowy wpis</h2>
             <form id="timesheet-form">
                 <div class="form-group">
@@ -332,6 +356,8 @@
                         <option value="TASK">TASK</option>
                         <option value="INC">INC</option>
                         <option value="SCTASK">SCTASK</option>
+                        <option value="CHG">CHG</option>
+                        <option value="PTASK">PTASK</option>
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback"></div>
                 </div>
@@ -362,8 +388,8 @@
                 </div>
             </form>
         </section>
-        
-        <section class="entries">
+
+        <section class="entries" id="section-entries-list">
             <h2>Lista wpisów</h2>
             <div class="filters">
                 <div class="filter-option">
@@ -411,6 +437,18 @@
                         SCTASK
                     </label>
                 </div>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-chg" checked>
+                        CHG
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-ptask" checked>
+                        PTASK
+                    </label>
+                </div>
             </div>
 
             <table class="task-table">
@@ -433,7 +471,7 @@
             </div>
         </section>
 
-        <section class="project-management" style="margin-top: 40px;">
+        <section class="project-management" id="section-project-management" style="margin-top: 40px;">
             <h2>Zarządzanie projektami</h2>
             <div class="entry-form">
                 <div class="form-group">
@@ -453,7 +491,7 @@
             </div>
         </section>
 
-        <section class="summary" style="margin-top: 40px;">
+        <section class="summary" id="section-summary" style="margin-top: 40px;">
             <h2>Podsumowanie</h2>
             <div class="summary-info">
                 <p>Aktualny miesiąc: <span id="current-month">Maj 2025</span></p>
@@ -472,6 +510,7 @@
         let projects = [];
         const PROJECTS_STORAGE_KEY = 'timesheet-projects';
         let editingProjectIndex = -1;
+        const SECTION_VISIBILITY_KEY = 'section-visibility';
 
         // Domyślne projekty
         const DEFAULT_PROJECTS = [
@@ -490,6 +529,54 @@
             'INFRA 9065 MEETING',
             'INFRA 9065 TRAINING'
         ];
+
+        // Funkcje zarządzania widocznością sekcji
+        function loadSectionVisibility() {
+            const stored = localStorage.getItem(SECTION_VISIBILITY_KEY);
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            return {
+                'entry-form': true,
+                'entries-list': true,
+                'project-management': true,
+                'summary': true
+            };
+        }
+
+        function saveSectionVisibility(visibility) {
+            localStorage.setItem(SECTION_VISIBILITY_KEY, JSON.stringify(visibility));
+        }
+
+        function toggleSectionVisibility(sectionName, isVisible) {
+            const section = document.getElementById(`section-${sectionName}`);
+            if (section) {
+                section.style.display = isVisible ? 'block' : 'none';
+            }
+            const visibility = loadSectionVisibility();
+            visibility[sectionName] = isVisible;
+            saveSectionVisibility(visibility);
+        }
+
+        function initSectionToggles() {
+            const visibility = loadSectionVisibility();
+
+            // Ustaw stan checkboxów i widoczność sekcji
+            Object.keys(visibility).forEach(sectionName => {
+                const checkbox = document.getElementById(`toggle-${sectionName}`);
+                const section = document.getElementById(`section-${sectionName}`);
+
+                if (checkbox && section) {
+                    checkbox.checked = visibility[sectionName];
+                    section.style.display = visibility[sectionName] ? 'block' : 'none';
+
+                    // Dodaj event listener
+                    checkbox.addEventListener('change', function() {
+                        toggleSectionVisibility(sectionName, this.checked);
+                    });
+                }
+            });
+        }
 
         // Funkcje pomocnicze do formatowania daty
         function formatDate(dateString) {
@@ -710,6 +797,8 @@
             const filterTask = document.getElementById('filter-task').checked;
             const filterInc = document.getElementById('filter-inc').checked;
             const filterSctask = document.getElementById('filter-sctask').checked;
+            const filterChg = document.getElementById('filter-chg').checked;
+            const filterPtask = document.getElementById('filter-ptask').checked;
             const currentDate = new Date();
 
             const entriesBody = document.getElementById('entries-body');
@@ -730,6 +819,8 @@
                 if (entry.taskType === 'TASK' && filterTask) return true;
                 if (entry.taskType === 'INC' && filterInc) return true;
                 if (entry.taskType === 'SCTASK' && filterSctask) return true;
+                if (entry.taskType === 'CHG' && filterChg) return true;
+                if (entry.taskType === 'PTASK' && filterPtask) return true;
                 return false;
             });
 
@@ -939,6 +1030,7 @@
             loadProjects();
             updateProjectSelect();
             renderProjects();
+            initSectionToggles();
 
             // Ustawienie dzisiejszej daty w formularzu
             const today = new Date();
@@ -995,7 +1087,7 @@
             });
 
             // Obsługa filtrów dla rodzajów zadań
-            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask'];
+            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask', 'filter-chg', 'filter-ptask'];
 
             // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
             document.getElementById('filter-all-tasks').addEventListener('change', function() {
