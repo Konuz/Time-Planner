@@ -233,6 +233,59 @@
             background-color: #5a6268;
         }
 
+        .show-more-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 30px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .show-more-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .project-card {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-card span {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .project-action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+
+        .project-action-btn:hover {
+            text-decoration: underline;
+        }
+
+        .project-action-btn.delete {
+            color: var(--error-color);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -287,20 +340,6 @@
                     <label for="client">Projekt:</label>
                     <select id="client" name="client" required>
                         <option value="">-- Wybierz projekt --</option>
-                        <option value="TKV">TKV</option>
-                        <option value="HIT BAU INC">HIT BAU INC</option>
-                        <option value="HIT BAU MAINT">HIT BAU MAINT</option>
-                        <option value="HIT BAU PLANNED PATCH">HIT BAU PLANNED PATCH</option>
-                        <option value="HIT BAU EXTRA PATCH">HIT BAU EXTRA PATCH</option>
-                        <option value="HIT BILLABLE">HIT BILLABLE</option>
-                        <option value="HIT OTHER">HIT OTHER</option>
-                        <option value="HIT POT CHARGABLE">HIT POT CHARGABLE</option>
-                        <option value="INFRA 0020 DC CAP">INFRA 0020 DC CAP</option>
-                        <option value="INFRA 0020 H&M">INFRA 0020 H&M</option>
-                        <option value="INFRA 0020 REITAN">INFRA 0020 REITAN</option>
-                        <option value="INFRA 0020 STOCKHOLM">INFRA 0020 STOCKHOLM</option>
-                        <option value="INFRA 9065 MEETING">INFRA 9065 MEETING</option>
-                        <option value="INFRA 9065 TRAINING">INFRA 9065 TRAINING</option>
                     </select>
                     <div class="invalid-feedback" id="client-feedback"></div>
                 </div>
@@ -344,6 +383,12 @@
                 </div>
                 <div class="filter-option">
                     <label>
+                        <input type="checkbox" id="filter-all-tasks" checked>
+                        <strong>Zaznacz/Odznacz wszystkie</strong>
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <label>
                         <input type="checkbox" id="filter-ctask" checked>
                         CTASK
                     </label>
@@ -383,9 +428,32 @@
                     <!-- All entries -->
                 </tbody>
             </table>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="show-more-btn" class="show-more-btn" style="display: none;">Pokaż wszystkie wpisy</button>
+            </div>
         </section>
-        
-        <section class="summary">
+
+        <section class="project-management" style="margin-top: 40px;">
+            <h2>Zarządzanie projektami</h2>
+            <div class="entry-form">
+                <div class="form-group">
+                    <label for="project-name">Nazwa projektu:</label>
+                    <input type="text" id="project-name" placeholder="Np. INFRA 9065 PROJECT">
+                </div>
+                <div class="form-group btn-group">
+                    <button type="button" id="add-project-btn">Dodaj projekt</button>
+                    <button type="button" class="reset-btn" id="cancel-project-btn" style="display: none;">Anuluj</button>
+                </div>
+            </div>
+            <div class="project-list" style="margin-top: 20px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Lista projektów:</h3>
+                <div id="projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                    <!-- Projects will be listed here -->
+                </div>
+            </div>
+        </section>
+
+        <section class="summary" style="margin-top: 40px;">
             <h2>Podsumowanie</h2>
             <div class="summary-info">
                 <p>Aktualny miesiąc: <span id="current-month">Maj 2025</span></p>
@@ -399,6 +467,29 @@
         // Zmienne globalne
         let entries = [];
         const STORAGE_KEY = 'timesheet-entries';
+        let showAllEntries = false;
+        const ENTRIES_LIMIT = 20;
+        let projects = [];
+        const PROJECTS_STORAGE_KEY = 'timesheet-projects';
+        let editingProjectIndex = -1;
+
+        // Domyślne projekty
+        const DEFAULT_PROJECTS = [
+            'TKV',
+            'HIT BAU INC',
+            'HIT BAU MAINT',
+            'HIT BAU PLANNED PATCH',
+            'HIT BAU EXTRA PATCH',
+            'HIT BILLABLE',
+            'HIT OTHER',
+            'HIT POT CHARGABLE',
+            'INFRA 0020 DC CAP',
+            'INFRA 0020 H&M',
+            'INFRA 0020 REITAN',
+            'INFRA 0020 STOCKHOLM',
+            'INFRA 9065 MEETING',
+            'INFRA 9065 TRAINING'
+        ];
 
         // Funkcje pomocnicze do formatowania daty
         function formatDate(dateString) {
@@ -443,6 +534,136 @@
         // Zapisanie wpisów
         function saveEntries() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        }
+
+        // Funkcje zarządzania projektami
+        function loadProjects() {
+            const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
+            if (storedProjects) {
+                projects = JSON.parse(storedProjects);
+            } else {
+                projects = [...DEFAULT_PROJECTS];
+                saveProjects();
+            }
+        }
+
+        function saveProjects() {
+            localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+        }
+
+        function updateProjectSelect() {
+            const clientSelect = document.getElementById('client');
+            const currentValue = clientSelect.value;
+
+            clientSelect.innerHTML = '<option value="">-- Wybierz projekt --</option>';
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                clientSelect.appendChild(option);
+            });
+
+            // Przywróć poprzednią wartość jeśli nadal istnieje
+            if (projects.includes(currentValue)) {
+                clientSelect.value = currentValue;
+            }
+        }
+
+        function renderProjects() {
+            const projectsContainer = document.getElementById('projects-container');
+            projectsContainer.innerHTML = '';
+
+            if (projects.length === 0) {
+                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+                return;
+            }
+
+            projects.forEach((project, index) => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card';
+                projectCard.innerHTML = `
+                    <span>${project}</span>
+                    <div class="project-actions">
+                        <button class="project-action-btn edit-project-btn" data-index="${index}">Edytuj</button>
+                        <button class="project-action-btn delete delete-project-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
+                projectsContainer.appendChild(projectCard);
+            });
+
+            // Dodaj event listenery dla przycisków
+            document.querySelectorAll('.edit-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    editProject(index);
+                });
+            });
+
+            document.querySelectorAll('.delete-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteProject(index);
+                });
+            });
+        }
+
+        function addProject() {
+            const projectNameInput = document.getElementById('project-name');
+            const projectName = projectNameInput.value.trim();
+
+            if (!projectName) {
+                alert('Podaj nazwę projektu');
+                return;
+            }
+
+            if (editingProjectIndex === -1) {
+                // Dodawanie nowego projektu
+                if (projects.includes(projectName)) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects.push(projectName);
+            } else {
+                // Edycja istniejącego projektu
+                if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects[editingProjectIndex] = projectName;
+                editingProjectIndex = -1;
+                document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
+                document.getElementById('cancel-project-btn').style.display = 'none';
+            }
+
+            saveProjects();
+            updateProjectSelect();
+            renderProjects();
+            projectNameInput.value = '';
+        }
+
+        function editProject(index) {
+            const projectName = projects[index];
+            document.getElementById('project-name').value = projectName;
+            editingProjectIndex = index;
+            document.getElementById('add-project-btn').textContent = 'Zapisz zmiany';
+            document.getElementById('cancel-project-btn').style.display = 'inline-block';
+            document.querySelector('.project-management').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteProject(index) {
+            if (confirm(`Czy na pewno chcesz usunąć projekt "${projects[index]}"?`)) {
+                projects.splice(index, 1);
+                saveProjects();
+                updateProjectSelect();
+                renderProjects();
+            }
+        }
+
+        function cancelProjectEdit() {
+            document.getElementById('project-name').value = '';
+            editingProjectIndex = -1;
+            document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
+            document.getElementById('cancel-project-btn').style.display = 'none';
         }
 
         // Dodanie nowego wpisu
@@ -514,14 +735,30 @@
 
             filteredEntries.sort((a, b) => b.date - a.date);
 
-            if (filteredEntries.length === 0) {
+            const totalEntries = filteredEntries.length;
+            const showMoreBtn = document.getElementById('show-more-btn');
+
+            // Określ ile wpisów pokazać
+            const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
+
+            // Pokaż/ukryj przycisk "Pokaż więcej"
+            if (totalEntries > ENTRIES_LIMIT) {
+                showMoreBtn.style.display = 'inline-block';
+                showMoreBtn.textContent = showAllEntries ?
+                    `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
+                    `Pokaż wszystkie wpisy (${totalEntries})`;
+            } else {
+                showMoreBtn.style.display = 'none';
+            }
+
+            if (totalEntries === 0) {
                 entriesBody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 20px;">Brak wpisów spełniających kryteria filtrowania</td>
                     </tr>
                 `;
             } else {
-                filteredEntries.forEach(entry => {
+                entriesToShow.forEach(entry => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${formatDate(entry.date)}</td>
@@ -699,7 +936,10 @@
         // Inicjalizacja aplikacji
         function initApp() {
             loadEntries();
-            
+            loadProjects();
+            updateProjectSelect();
+            renderProjects();
+
             // Ustawienie dzisiejszej daty w formularzu
             const today = new Date();
             document.getElementById('date').value = today.toISOString().split('T')[0];
@@ -755,14 +995,55 @@
             });
 
             // Obsługa filtrów dla rodzajów zadań
-            document.getElementById('filter-ctask').addEventListener('change', renderEntries);
-            document.getElementById('filter-task').addEventListener('change', renderEntries);
-            document.getElementById('filter-inc').addEventListener('change', renderEntries);
-            document.getElementById('filter-sctask').addEventListener('change', renderEntries);
+            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask'];
+
+            // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
+            document.getElementById('filter-all-tasks').addEventListener('change', function() {
+                const isChecked = this.checked;
+                taskFilters.forEach(filterId => {
+                    document.getElementById(filterId).checked = isChecked;
+                });
+                renderEntries();
+            });
+
+            // Obsługa pojedynczych filtrów zadań
+            taskFilters.forEach(filterId => {
+                document.getElementById(filterId).addEventListener('change', function() {
+                    // Sprawdź czy wszystkie są zaznaczone
+                    const allChecked = taskFilters.every(id => document.getElementById(id).checked);
+                    const noneChecked = taskFilters.every(id => !document.getElementById(id).checked);
+
+                    // Aktualizuj stan checkboxa "wszystkie"
+                    if (allChecked) {
+                        document.getElementById('filter-all-tasks').checked = true;
+                    } else if (noneChecked) {
+                        document.getElementById('filter-all-tasks').checked = false;
+                    }
+
+                    renderEntries();
+                });
+            });
             
+            // Obsługa przycisku "Pokaż więcej"
+            document.getElementById('show-more-btn').addEventListener('click', function() {
+                showAllEntries = !showAllEntries;
+                renderEntries();
+            });
+
             // Obsługa przycisku eksportu
             document.getElementById('export-button').addEventListener('click', exportData);
-            
+
+            // Obsługa zarządzania projektami
+            document.getElementById('add-project-btn').addEventListener('click', addProject);
+            document.getElementById('cancel-project-btn').addEventListener('click', cancelProjectEdit);
+
+            // Obsługa Enter w polu nazwy projektu
+            document.getElementById('project-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addProject();
+                }
+            });
+
             // Renderowanie początkowe
             renderEntries();
             updateSummary();
