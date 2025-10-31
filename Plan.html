@@ -286,6 +286,32 @@
             color: var(--error-color);
         }
 
+        .task-type-dropdown {
+            margin-top: 10px;
+        }
+
+        .task-type-dropdown summary {
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .task-type-dropdown summary:hover {
+            background-color: var(--bg-light);
+        }
+
+        .task-type-dropdown summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .task-type-dropdown .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .task-type-dropdown[open] .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -404,51 +430,56 @@
                         Pokaż tylko wpisy z bieżącego tygodnia
                     </label>
                 </div>
-                <div class="filter-option">
-                    <label style="font-weight: 600; margin-top: 10px; display: block;">Rodzaj zadania:</label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-all-tasks" checked>
-                        <strong>Zaznacz/Odznacz wszystkie</strong>
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-ctask" checked>
-                        CTASK
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-task" checked>
-                        TASK
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-inc" checked>
-                        INC
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-sctask" checked>
-                        SCTASK
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-chg" checked>
-                        CHG
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-ptask" checked>
-                        PTASK
-                    </label>
-                </div>
+                <details class="task-type-dropdown" open>
+                    <summary style="font-weight: 600; cursor: pointer; padding: 8px; background-color: var(--bg-highlight); border-radius: var(--border-radius); list-style: none; display: flex; align-items: center; justify-content: space-between;">
+                        <span>Rodzaj zadania</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div style="margin-top: 10px; padding-left: 10px;">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-tasks" checked>
+                                <strong>Zaznacz/Odznacz wszystkie</strong>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-ctask" checked>
+                                CTASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-task" checked>
+                                TASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-inc" checked>
+                                INC
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-sctask" checked>
+                                SCTASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-chg" checked>
+                                CHG
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-ptask" checked>
+                                PTASK
+                            </label>
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <table class="task-table">
