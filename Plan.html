@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GODZINY PRACY</title>
+    <style>
+        :root {
+            --primary-color: #1976d2;
+            --primary-dark: #1565c0;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --border-color: #5f5f5f;
+            --bg-light: rgb(34, 34, 34);
+            --bg-highlight: #292929;
+            --text-color: #797979;
+            --border-radius: 4px;
+            --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #303030;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .entry-form {
+            margin-bottom: 40px;
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            flex: 1;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: var(--bg-light);
+            padding: 12px;
+            border-radius: var(--border-radius);
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(25, 118, 210, 0.05);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            padding: 0;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .delete-btn {
+            color: var(--error-color);
+        }
+
+        .delete-btn:hover {
+            color: #c82333;
+        }
+
+        .summary-info {
+            background-color: var(--bg-highlight);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-info p {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .summary-info span {
+            font-weight: 600;
+        }
+
+        .invalid-feedback {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .export-btn {
+            background-color: var(--success-color);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .export-btn:hover {
+            background-color: #218838;
+        }
+
+        .reset-btn {
+            background-color: #6c757d;
+        }
+
+        .reset-btn:hover {
+            background-color: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+            
+            .action-btn {
+                font-size: 12px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GODZINY PRACY</h1>
+        </header>
+        
+        <section class="entry-form">
+            <h2>Dodaj nowy wpis</h2>
+            <form id="timesheet-form">
+                <div class="form-group">
+                    <label for="date">Data:</label>
+                    <input type="date" id="date" name="date" required>
+                    <div class="invalid-feedback" id="date-feedback"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-type">Rodzaj zadania:</label>
+                    <select id="task-type" name="task-type" required>
+                        <option value="">-- Wybierz rodzaj zadania --</option>
+                        <option value="CTASK">CTASK</option>
+                        <option value="TASK">TASK</option>
+                    </select>
+                    <div class="invalid-feedback" id="task-type-feedback"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hours">Liczba przepracowanych godzin (max 8):</label>
+                    <input type="number" id="hours" name="hours" min="0.25" max="8" step="0.25" required>
+                    <div class="invalid-feedback" id="hours-feedback"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-number">Numer zadania:</label>
+                    <input type="text" id="task-number" name="task-number" required placeholder="Np. CTASK1234567">
+                    <div class="invalid-feedback" id="task-number-feedback"></div>
+                </div>
+                
+                <div class="form-group btn-group">
+                    <button type="submit">Dodaj wpis</button>
+                    <button type="button" class="reset-btn" id="reset-form">Wyczyść</button>
+                </div>
+            </form>
+        </section>
+        
+        <section class="entries">
+            <h2>Lista wpisów</h2>
+            <div class="filters">
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-current-month" checked>
+                        Pokaż tylko wpisy z bieżącego miesiąca
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-current-week">
+                        Pokaż tylko wpisy z bieżącego tygodnia
+                    </label>
+                </div>
+            </div>
+            <table id="entries-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Rodzaj zadania</th>
+                        <th>Liczba godzin</th>
+                        <th>Numer zadania</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="entries-body">
+                    <!-- Tutaj będą wstawiane wpisy za pomocą JavaScript -->
+                </tbody>
+            </table>
+        </section>
+        
+        <section class="summary">
+            <h2>Podsumowanie</h2>
+            <div class="summary-info">
+                <p>Aktualny miesiąc: <span id="current-month">Maj 2025</span></p>
+                <p>Całkowita liczba godzin: <span id="total-hours">0</span></p>
+            </div>
+            <button class="export-btn" id="export-button">Eksportuj dane z bieżącego miesiąca (CSV)</button>
+        </section>
+    </div>
+    
+    <script>
+        // Zmienne globalne
+        let entries = [];
+        const STORAGE_KEY = 'timesheet-entries';
+
+        // Funkcje pomocnicze do formatowania daty
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pl-PL');
+        }
+
+        function getMonthName(date) {
+            return date.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+        }
+
+        function isSameMonth(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth();
+        }
+
+        function isSameWeek(date1, date2) {
+            // Poniedziałek jako pierwszy dzień tygodnia
+            const getWeekStart = (date) => {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                const weekStart = new Date(d.setDate(diff));
+                weekStart.setHours(0, 0, 0, 0);
+                return weekStart;
+            };
+            
+            const week1 = getWeekStart(date1);
+            const week2 = getWeekStart(date2);
+            
+            return week1.getTime() === week2.getTime();
+        }
+
+        // Załadowanie wpisów
+        function loadEntries() {
+            const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            entries = storedEntries.map(entry => ({
+                ...entry,
+                date: new Date(entry.date)
+            }));
+        }
+
+        // Zapisanie wpisów
+        function saveEntries() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        }
+
+        // Dodanie nowego wpisu
+        function addEntry(entry) {
+            const newEntry = {
+                ...entry,
+                id: Date.now(),
+                date: new Date(entry.date)
+            };
+            entries.push(newEntry);
+            saveEntries();
+            renderEntries();
+            updateSummary();
+        }
+
+        // Usunięcie wpisu
+        function deleteEntry(id) {
+            entries = entries.filter(entry => entry.id !== id);
+            saveEntries();
+            renderEntries();
+            updateSummary();
+        }
+
+        // Edytowanie wpisu
+        function editEntry(id, updatedEntry) {
+            const index = entries.findIndex(entry => entry.id === id);
+            if (index !== -1) {
+                entries[index] = {
+                    ...entries[index],
+                    ...updatedEntry,
+                    date: new Date(updatedEntry.date + 'T00:00:00') // Dodaj czas aby uniknąć problemów z timezone
+                };
+                saveEntries();
+                renderEntries();
+                updateSummary();
+            }
+        }
+
+        // Renderowanie listy wpisów
+        function renderEntries() {
+            const entriesBody = document.getElementById('entries-body');
+            const filterCurrentMonth = document.getElementById('filter-current-month').checked;
+            const filterCurrentWeek = document.getElementById('filter-current-week').checked;
+            const currentDate = new Date();
+            
+            entriesBody.innerHTML = '';
+            
+            let filteredEntries = [...entries];
+            
+            if (filterCurrentWeek) {
+                filteredEntries = filteredEntries.filter(entry => isSameWeek(entry.date, currentDate));
+            } else if (filterCurrentMonth) {
+                filteredEntries = filteredEntries.filter(entry => isSameMonth(entry.date, currentDate));
+            }
+            
+            filteredEntries.sort((a, b) => b.date - a.date);
+            
+            if (filteredEntries.length === 0) {
+                entriesBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Brak wpisów</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredEntries.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.taskType}</td>
+                    <td>${entry.hours}</td>
+                    <td>${entry.taskNumber}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
+                        <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
+                    </td>
+                `;
+                entriesBody.appendChild(row);
+            });
+            
+            // Dodanie obsługi zdarzeń dla przycisków
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    showEditForm(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+                        deleteEntry(id);
+                    }
+                });
+            });
+        }
+
+        // Wyświetlenie formularza edycji
+        function showEditForm(id) {
+            const entry = entries.find(entry => entry.id === id);
+            if (!entry) return;
+            
+            document.getElementById('date').value = entry.date.toISOString().split('T')[0];
+            document.getElementById('task-type').value = entry.taskType;
+            document.getElementById('hours').value = entry.hours;
+            document.getElementById('task-number').value = entry.taskNumber;
+            
+            const submitButton = document.querySelector('#timesheet-form button[type="submit"]');
+            submitButton.textContent = 'Aktualizuj wpis';
+            submitButton.dataset.editId = id;
+            
+            document.querySelector('.entry-form h2').textContent = 'Edytuj wpis';
+            
+            // Przewijanie do formularza
+            document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Resetowanie formularza
+        function resetForm() {
+            document.getElementById('timesheet-form').reset();
+            document.querySelector('#timesheet-form button[type="submit"]').textContent = 'Dodaj wpis';
+            document.querySelector('#timesheet-form button[type="submit"]').removeAttribute('data-edit-id');
+            document.querySelector('.entry-form h2').textContent = 'Dodaj nowy wpis';
+            
+            // Czyszczenie komunikatów walidacji
+            document.querySelectorAll('.invalid-feedback').forEach(el => {
+                el.textContent = '';
+            });
+            
+            // Ustawienie dzisiejszej daty
+            const today = new Date();
+            document.getElementById('date').value = today.toISOString().split('T')[0];
+        }
+
+        // Aktualizacja podsumowania
+        function updateSummary() {
+            const currentDate = new Date();
+            const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
+            const totalHours = currentMonthEntries.reduce((sum, entry) => sum + parseFloat(entry.hours), 0);
+            
+            document.getElementById('current-month').textContent = getMonthName(currentDate);
+            document.getElementById('total-hours').textContent = totalHours.toFixed(2);
+        }
+
+        // Eksport danych
+        function exportData() {
+            const currentDate = new Date();
+            const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
+            
+            if (currentMonthEntries.length === 0) {
+                alert('Brak danych do eksportu');
+                return;
+            }
+            
+            const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+            const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
+            
+            // Utworzenie zawartości CSV
+            let csvContent = 'Data,Rodzaj zadania,Liczba godzin,Numer zadania\n';
+            currentMonthEntries.forEach(entry => {
+                csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.hours},${entry.taskNumber}\n`;
+            });
+            
+            // Utworzenie linku do pobrania
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', filename);
+            link.click();
+        }
+
+        // Walidacja formularza
+        function validateForm() {
+            let isValid = true;
+            
+            // Walidacja daty
+            const dateInput = document.getElementById('date');
+            const dateFeedback = document.getElementById('date-feedback');
+            if (!dateInput.value) {
+                dateFeedback.textContent = 'Wybierz datę';
+                isValid = false;
+            } else {
+                dateFeedback.textContent = '';
+            }
+            
+            // Walidacja rodzaju zadania
+            const taskTypeInput = document.getElementById('task-type');
+            const taskTypeFeedback = document.getElementById('task-type-feedback');
+            if (!taskTypeInput.value) {
+                taskTypeFeedback.textContent = 'Wybierz rodzaj zadania';
+                isValid = false;
+            } else {
+                taskTypeFeedback.textContent = '';
+            }
+            
+            // Walidacja liczby godzin
+            const hoursInput = document.getElementById('hours');
+            const hoursFeedback = document.getElementById('hours-feedback');
+            const hoursValue = parseFloat(hoursInput.value);
+            
+            if (!hoursInput.value) {
+                hoursFeedback.textContent = 'Podaj liczbę godzin';
+                isValid = false;
+            } else if (isNaN(hoursValue) || hoursValue <= 0) {
+                hoursFeedback.textContent = 'Liczba godzin musi być większa od 0';
+                isValid = false;
+            } else if (hoursValue > 8) {
+                hoursFeedback.textContent = 'Maksymalna liczba godzin to 8';
+                isValid = false;
+            } else {
+                hoursFeedback.textContent = '';
+            }
+            
+            // Walidacja numeru zadania
+            const taskNumberInput = document.getElementById('task-number');
+            const taskNumberFeedback = document.getElementById('task-number-feedback');
+            if (!taskNumberInput.value) {
+                taskNumberFeedback.textContent = 'Podaj numer zadania';
+                isValid = false;
+            } else {
+                taskNumberFeedback.textContent = '';
+            }
+            
+            return isValid;
+        }
+
+        // Obsługa zmiany filtrów
+        function handleFilterChange() {
+            const filterCurrentMonth = document.getElementById('filter-current-month');
+            const filterCurrentWeek = document.getElementById('filter-current-week');
+            
+            // Zapewnienie że tylko jeden filtr może być aktywny jednocześnie
+            if (filterCurrentWeek.checked) {
+                filterCurrentMonth.checked = false;
+            }
+            
+            renderEntries();
+        }
+
+        // Inicjalizacja aplikacji
+        function initApp() {
+            loadEntries();
+            
+            // Ustawienie dzisiejszej daty w formularzu
+            const today = new Date();
+            document.getElementById('date').value = today.toISOString().split('T')[0];
+            
+            // Obsługa formularza
+            document.getElementById('timesheet-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                const date = document.getElementById('date').value;
+                const taskType = document.getElementById('task-type').value;
+                const hours = document.getElementById('hours').value;
+                const taskNumber = document.getElementById('task-number').value;
+                
+                const entry = {
+                    date,
+                    taskType,
+                    hours: parseFloat(hours),
+                    taskNumber
+                };
+                
+                const editId = this.querySelector('button[type="submit"]').dataset.editId;
+                if (editId) {
+                    editEntry(parseInt(editId), entry);
+                } else {
+                    addEntry(entry);
+                }
+                
+                resetForm();
+            });
+            
+            // Obsługa przycisku resetowania
+            document.getElementById('reset-form').addEventListener('click', resetForm);
+            
+            // Obsługa filtrowania
+            document.getElementById('filter-current-month').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('filter-current-week').checked = false;
+                }
+                renderEntries();
+            });
+            
+            document.getElementById('filter-current-week').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('filter-current-month').checked = false;
+                }
+                renderEntries();
+            });
+            
+            // Obsługa przycisku eksportu
+            document.getElementById('export-button').addEventListener('click', exportData);
+            
+            // Renderowanie początkowe
+            renderEntries();
+            updateSummary();
+        }
+
+        // Uruchomienie aplikacji po załadowaniu strony
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
