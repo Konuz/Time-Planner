@@ -142,19 +142,6 @@
             align-items: center;
         }
 
-        .tables-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .table-column {
-            background-color: var(--bg-light);
-            padding: 15px;
-            border-radius: var(--border-radius);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -246,19 +233,88 @@
             background-color: #5a6268;
         }
 
-        @media (max-width: 1200px) {
-            .tables-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .show-more-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 30px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .show-more-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .project-card {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-card span {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .project-action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+
+        .project-action-btn:hover {
+            text-decoration: underline;
+        }
+
+        .project-action-btn.delete {
+            color: var(--error-color);
+        }
+
+        .task-type-dropdown {
+            margin-top: 10px;
+        }
+
+        .task-type-dropdown summary {
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .task-type-dropdown summary:hover {
+            background-color: var(--bg-light);
+        }
+
+        .task-type-dropdown summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .task-type-dropdown .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .task-type-dropdown[open] .dropdown-arrow {
+            transform: rotate(180deg);
         }
 
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
-            }
-
-            .tables-grid {
-                grid-template-columns: 1fr;
             }
 
             .task-table {
@@ -284,8 +340,32 @@
         <header>
             <h1>GODZINY PRACY</h1>
         </header>
-        
-        <section class="entry-form">
+
+        <section class="section-toggles" style="margin-bottom: 30px;">
+            <div style="background-color: var(--bg-light); padding: 15px; border-radius: var(--border-radius);">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px;">Widoczność sekcji:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-entry-form" checked>
+                        <span style="margin-left: 8px;">Dodaj nowy wpis</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-entries-list" checked>
+                        <span style="margin-left: 8px;">Lista wpisów</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-project-management" checked>
+                        <span style="margin-left: 8px;">Zarządzanie projektami</span>
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="toggle-summary" checked>
+                        <span style="margin-left: 8px;">Podsumowanie</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section class="entry-form" id="section-entry-form">
             <h2>Dodaj nowy wpis</h2>
             <form id="timesheet-form">
                 <div class="form-group">
@@ -302,13 +382,17 @@
                         <option value="TASK">TASK</option>
                         <option value="INC">INC</option>
                         <option value="SCTASK">SCTASK</option>
+                        <option value="CHG">CHG</option>
+                        <option value="PTASK">PTASK</option>
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="client">Klient:</label>
-                    <input type="text" id="client" name="client" required placeholder="Np. TKV">
+                    <label for="client">Projekt:</label>
+                    <select id="client" name="client" required>
+                        <option value="">-- Wybierz projekt --</option>
+                    </select>
                     <div class="invalid-feedback" id="client-feedback"></div>
                 </div>
 
@@ -330,8 +414,8 @@
                 </div>
             </form>
         </section>
-        
-        <section class="entries">
+
+        <section class="entries" id="section-entries-list">
             <h2>Lista wpisów</h2>
             <div class="filters">
                 <div class="filter-option">
@@ -346,84 +430,99 @@
                         Pokaż tylko wpisy z bieżącego tygodnia
                     </label>
                 </div>
+                <details class="task-type-dropdown" open>
+                    <summary style="font-weight: 600; cursor: pointer; padding: 8px; background-color: var(--bg-highlight); border-radius: var(--border-radius); list-style: none; display: flex; align-items: center; justify-content: space-between;">
+                        <span>Rodzaj zadania</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div style="margin-top: 10px; padding-left: 10px;">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-tasks" checked>
+                                <strong>Zaznacz/Odznacz wszystkie</strong>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-ctask" checked>
+                                CTASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-task" checked>
+                                TASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-inc" checked>
+                                INC
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-sctask" checked>
+                                SCTASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-chg" checked>
+                                CHG
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-ptask" checked>
+                                PTASK
+                            </label>
+                        </div>
+                    </div>
+                </details>
             </div>
 
-            <div class="tables-grid">
-                <div class="table-column">
-                    <h3>CTASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-ctask">
-                            <!-- CTASK entries -->
-                        </tbody>
-                    </table>
-                </div>
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Rodzaj zadania</th>
+                        <th>Projekt</th>
+                        <th>Godziny</th>
+                        <th>Numer</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="entries-body">
+                    <!-- All entries -->
+                </tbody>
+            </table>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="show-more-btn" class="show-more-btn" style="display: none;">Pokaż wszystkie wpisy</button>
+            </div>
+        </section>
 
-                <div class="table-column">
-                    <h3>TASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-task">
-                            <!-- TASK entries -->
-                        </tbody>
-                    </table>
+        <section class="project-management" id="section-project-management" style="margin-top: 40px;">
+            <h2>Zarządzanie projektami</h2>
+            <div class="entry-form">
+                <div class="form-group">
+                    <label for="project-name">Nazwa projektu:</label>
+                    <input type="text" id="project-name" placeholder="Np. INFRA 9065 PROJECT">
                 </div>
-
-                <div class="table-column">
-                    <h3>INC</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-inc">
-                            <!-- INC entries -->
-                        </tbody>
-                    </table>
+                <div class="form-group btn-group">
+                    <button type="button" id="add-project-btn">Dodaj projekt</button>
+                    <button type="button" class="reset-btn" id="cancel-project-btn" style="display: none;">Anuluj</button>
                 </div>
-
-                <div class="table-column">
-                    <h3>SCTASK</h3>
-                    <table class="task-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Klient</th>
-                                <th>Godziny</th>
-                                <th>Numer</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody id="entries-body-sctask">
-                            <!-- SCTASK entries -->
-                        </tbody>
-                    </table>
+            </div>
+            <div class="project-list" style="margin-top: 20px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Lista projektów:</h3>
+                <div id="projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                    <!-- Projects will be listed here -->
                 </div>
             </div>
         </section>
-        
-        <section class="summary">
+
+        <section class="summary" id="section-summary" style="margin-top: 40px;">
             <h2>Podsumowanie</h2>
             <div class="summary-info">
                 <p>Aktualny miesiąc: <span id="current-month">Maj 2025</span></p>
@@ -437,6 +536,78 @@
         // Zmienne globalne
         let entries = [];
         const STORAGE_KEY = 'timesheet-entries';
+        let showAllEntries = false;
+        const ENTRIES_LIMIT = 20;
+        let projects = [];
+        const PROJECTS_STORAGE_KEY = 'timesheet-projects';
+        let editingProjectIndex = -1;
+        const SECTION_VISIBILITY_KEY = 'section-visibility';
+
+        // Domyślne projekty
+        const DEFAULT_PROJECTS = [
+            'TKV',
+            'HIT BAU INC',
+            'HIT BAU MAINT',
+            'HIT BAU PLANNED PATCH',
+            'HIT BAU EXTRA PATCH',
+            'HIT BILLABLE',
+            'HIT OTHER',
+            'HIT POT CHARGABLE',
+            'INFRA 0020 DC CAP',
+            'INFRA 0020 H&M',
+            'INFRA 0020 REITAN',
+            'INFRA 0020 STOCKHOLM',
+            'INFRA 9065 MEETING',
+            'INFRA 9065 TRAINING'
+        ];
+
+        // Funkcje zarządzania widocznością sekcji
+        function loadSectionVisibility() {
+            const stored = localStorage.getItem(SECTION_VISIBILITY_KEY);
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            return {
+                'entry-form': true,
+                'entries-list': true,
+                'project-management': true,
+                'summary': true
+            };
+        }
+
+        function saveSectionVisibility(visibility) {
+            localStorage.setItem(SECTION_VISIBILITY_KEY, JSON.stringify(visibility));
+        }
+
+        function toggleSectionVisibility(sectionName, isVisible) {
+            const section = document.getElementById(`section-${sectionName}`);
+            if (section) {
+                section.style.display = isVisible ? 'block' : 'none';
+            }
+            const visibility = loadSectionVisibility();
+            visibility[sectionName] = isVisible;
+            saveSectionVisibility(visibility);
+        }
+
+        function initSectionToggles() {
+            const visibility = loadSectionVisibility();
+
+            // Ustaw stan checkboxów i widoczność sekcji
+            Object.keys(visibility).forEach(sectionName => {
+                const checkbox = document.getElementById(`toggle-${sectionName}`);
+                const section = document.getElementById(`section-${sectionName}`);
+
+                if (checkbox && section) {
+                    checkbox.checked = visibility[sectionName];
+                    section.style.display = visibility[sectionName] ? 'block' : 'none';
+
+                    // Dodaj event listener
+                    checkbox.addEventListener('change', function() {
+                        toggleSectionVisibility(sectionName, this.checked);
+                    });
+                }
+            });
+        }
 
         // Funkcje pomocnicze do formatowania daty
         function formatDate(dateString) {
@@ -483,6 +654,136 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
         }
 
+        // Funkcje zarządzania projektami
+        function loadProjects() {
+            const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
+            if (storedProjects) {
+                projects = JSON.parse(storedProjects);
+            } else {
+                projects = [...DEFAULT_PROJECTS];
+                saveProjects();
+            }
+        }
+
+        function saveProjects() {
+            localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+        }
+
+        function updateProjectSelect() {
+            const clientSelect = document.getElementById('client');
+            const currentValue = clientSelect.value;
+
+            clientSelect.innerHTML = '<option value="">-- Wybierz projekt --</option>';
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                clientSelect.appendChild(option);
+            });
+
+            // Przywróć poprzednią wartość jeśli nadal istnieje
+            if (projects.includes(currentValue)) {
+                clientSelect.value = currentValue;
+            }
+        }
+
+        function renderProjects() {
+            const projectsContainer = document.getElementById('projects-container');
+            projectsContainer.innerHTML = '';
+
+            if (projects.length === 0) {
+                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+                return;
+            }
+
+            projects.forEach((project, index) => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card';
+                projectCard.innerHTML = `
+                    <span>${project}</span>
+                    <div class="project-actions">
+                        <button class="project-action-btn edit-project-btn" data-index="${index}">Edytuj</button>
+                        <button class="project-action-btn delete delete-project-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
+                projectsContainer.appendChild(projectCard);
+            });
+
+            // Dodaj event listenery dla przycisków
+            document.querySelectorAll('.edit-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    editProject(index);
+                });
+            });
+
+            document.querySelectorAll('.delete-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteProject(index);
+                });
+            });
+        }
+
+        function addProject() {
+            const projectNameInput = document.getElementById('project-name');
+            const projectName = projectNameInput.value.trim();
+
+            if (!projectName) {
+                alert('Podaj nazwę projektu');
+                return;
+            }
+
+            if (editingProjectIndex === -1) {
+                // Dodawanie nowego projektu
+                if (projects.includes(projectName)) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects.push(projectName);
+            } else {
+                // Edycja istniejącego projektu
+                if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects[editingProjectIndex] = projectName;
+                editingProjectIndex = -1;
+                document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
+                document.getElementById('cancel-project-btn').style.display = 'none';
+            }
+
+            saveProjects();
+            updateProjectSelect();
+            renderProjects();
+            projectNameInput.value = '';
+        }
+
+        function editProject(index) {
+            const projectName = projects[index];
+            document.getElementById('project-name').value = projectName;
+            editingProjectIndex = index;
+            document.getElementById('add-project-btn').textContent = 'Zapisz zmiany';
+            document.getElementById('cancel-project-btn').style.display = 'inline-block';
+            document.querySelector('.project-management').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteProject(index) {
+            if (confirm(`Czy na pewno chcesz usunąć projekt "${projects[index]}"?`)) {
+                projects.splice(index, 1);
+                saveProjects();
+                updateProjectSelect();
+                renderProjects();
+            }
+        }
+
+        function cancelProjectEdit() {
+            document.getElementById('project-name').value = '';
+            editingProjectIndex = -1;
+            document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
+            document.getElementById('cancel-project-btn').style.display = 'none';
+        }
+
         // Dodanie nowego wpisu
         function addEntry(entry) {
             const newEntry = {
@@ -523,68 +824,78 @@
         function renderEntries() {
             const filterCurrentMonth = document.getElementById('filter-current-month').checked;
             const filterCurrentWeek = document.getElementById('filter-current-week').checked;
+            const filterCtask = document.getElementById('filter-ctask').checked;
+            const filterTask = document.getElementById('filter-task').checked;
+            const filterInc = document.getElementById('filter-inc').checked;
+            const filterSctask = document.getElementById('filter-sctask').checked;
+            const filterChg = document.getElementById('filter-chg').checked;
+            const filterPtask = document.getElementById('filter-ptask').checked;
             const currentDate = new Date();
 
-            // Pobierz wszystkie body tables
-            const taskTypes = ['ctask', 'task', 'inc', 'sctask'];
-            const entriesBodies = {};
-            taskTypes.forEach(type => {
-                entriesBodies[type] = document.getElementById(`entries-body-${type}`);
-                entriesBodies[type].innerHTML = '';
-            });
+            const entriesBody = document.getElementById('entries-body');
+            entriesBody.innerHTML = '';
 
             let filteredEntries = [...entries];
 
+            // Filtrowanie według daty
             if (filterCurrentWeek) {
                 filteredEntries = filteredEntries.filter(entry => isSameWeek(entry.date, currentDate));
             } else if (filterCurrentMonth) {
                 filteredEntries = filteredEntries.filter(entry => isSameMonth(entry.date, currentDate));
             }
 
+            // Filtrowanie według rodzaju zadania
+            filteredEntries = filteredEntries.filter(entry => {
+                if (entry.taskType === 'CTASK' && filterCtask) return true;
+                if (entry.taskType === 'TASK' && filterTask) return true;
+                if (entry.taskType === 'INC' && filterInc) return true;
+                if (entry.taskType === 'SCTASK' && filterSctask) return true;
+                if (entry.taskType === 'CHG' && filterChg) return true;
+                if (entry.taskType === 'PTASK' && filterPtask) return true;
+                return false;
+            });
+
             filteredEntries.sort((a, b) => b.date - a.date);
 
-            // Grupowanie wpisów według typu zadania
-            const entriesByType = {
-                CTASK: [],
-                TASK: [],
-                INC: [],
-                SCTASK: []
-            };
+            const totalEntries = filteredEntries.length;
+            const showMoreBtn = document.getElementById('show-more-btn');
 
-            filteredEntries.forEach(entry => {
-                if (entriesByType[entry.taskType]) {
-                    entriesByType[entry.taskType].push(entry);
-                }
-            });
+            // Określ ile wpisów pokazać
+            const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
 
-            // Renderowanie wpisów dla każdego typu
-            Object.keys(entriesByType).forEach(taskType => {
-                const typeKey = taskType.toLowerCase();
-                const tbody = entriesBodies[typeKey];
+            // Pokaż/ukryj przycisk "Pokaż więcej"
+            if (totalEntries > ENTRIES_LIMIT) {
+                showMoreBtn.style.display = 'inline-block';
+                showMoreBtn.textContent = showAllEntries ?
+                    `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
+                    `Pokaż wszystkie wpisy (${totalEntries})`;
+            } else {
+                showMoreBtn.style.display = 'none';
+            }
 
-                if (entriesByType[taskType].length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; font-size: 12px;">Brak wpisów</td>
-                        </tr>
+            if (totalEntries === 0) {
+                entriesBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">Brak wpisów spełniających kryteria filtrowania</td>
+                    </tr>
+                `;
+            } else {
+                entriesToShow.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(entry.date)}</td>
+                        <td>${entry.taskType}</td>
+                        <td>${entry.client || '-'}</td>
+                        <td>${entry.hours}</td>
+                        <td>${entry.taskNumber}</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
+                            <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
+                        </td>
                     `;
-                } else {
-                    entriesByType[taskType].forEach(entry => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${formatDate(entry.date)}</td>
-                            <td>${entry.client || '-'}</td>
-                            <td>${entry.hours}</td>
-                            <td>${entry.taskNumber}</td>
-                            <td>
-                                <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
-                                <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                }
-            });
+                    entriesBody.appendChild(row);
+                });
+            }
 
             // Dodanie obsługi zdarzeń dla przycisków
             document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -666,7 +977,7 @@
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
             
             // Utworzenie zawartości CSV
-            let csvContent = 'Data,Rodzaj zadania,Klient,Liczba godzin,Numer zadania\n';
+            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
@@ -703,11 +1014,11 @@
                 taskTypeFeedback.textContent = '';
             }
 
-            // Walidacja klienta
+            // Walidacja projektu
             const clientInput = document.getElementById('client');
             const clientFeedback = document.getElementById('client-feedback');
             if (!clientInput.value) {
-                clientFeedback.textContent = 'Podaj nazwę klienta';
+                clientFeedback.textContent = 'Wybierz projekt';
                 isValid = false;
             } else {
                 clientFeedback.textContent = '';
@@ -744,23 +1055,14 @@
             return isValid;
         }
 
-        // Obsługa zmiany filtrów
-        function handleFilterChange() {
-            const filterCurrentMonth = document.getElementById('filter-current-month');
-            const filterCurrentWeek = document.getElementById('filter-current-week');
-            
-            // Zapewnienie że tylko jeden filtr może być aktywny jednocześnie
-            if (filterCurrentWeek.checked) {
-                filterCurrentMonth.checked = false;
-            }
-            
-            renderEntries();
-        }
-
         // Inicjalizacja aplikacji
         function initApp() {
             loadEntries();
-            
+            loadProjects();
+            updateProjectSelect();
+            renderProjects();
+            initSectionToggles();
+
             // Ustawienie dzisiejszej daty w formularzu
             const today = new Date();
             document.getElementById('date').value = today.toISOString().split('T')[0];
@@ -807,17 +1109,64 @@
                 }
                 renderEntries();
             });
-            
+
             document.getElementById('filter-current-week').addEventListener('change', function() {
                 if (this.checked) {
                     document.getElementById('filter-current-month').checked = false;
                 }
                 renderEntries();
             });
+
+            // Obsługa filtrów dla rodzajów zadań
+            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask', 'filter-chg', 'filter-ptask'];
+
+            // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
+            document.getElementById('filter-all-tasks').addEventListener('change', function() {
+                const isChecked = this.checked;
+                taskFilters.forEach(filterId => {
+                    document.getElementById(filterId).checked = isChecked;
+                });
+                renderEntries();
+            });
+
+            // Obsługa pojedynczych filtrów zadań
+            taskFilters.forEach(filterId => {
+                document.getElementById(filterId).addEventListener('change', function() {
+                    // Sprawdź czy wszystkie są zaznaczone
+                    const allChecked = taskFilters.every(id => document.getElementById(id).checked);
+                    const noneChecked = taskFilters.every(id => !document.getElementById(id).checked);
+
+                    // Aktualizuj stan checkboxa "wszystkie"
+                    if (allChecked) {
+                        document.getElementById('filter-all-tasks').checked = true;
+                    } else if (noneChecked) {
+                        document.getElementById('filter-all-tasks').checked = false;
+                    }
+
+                    renderEntries();
+                });
+            });
             
+            // Obsługa przycisku "Pokaż więcej"
+            document.getElementById('show-more-btn').addEventListener('click', function() {
+                showAllEntries = !showAllEntries;
+                renderEntries();
+            });
+
             // Obsługa przycisku eksportu
             document.getElementById('export-button').addEventListener('click', exportData);
-            
+
+            // Obsługa zarządzania projektami
+            document.getElementById('add-project-btn').addEventListener('click', addProject);
+            document.getElementById('cancel-project-btn').addEventListener('click', cancelProjectEdit);
+
+            // Obsługa Enter w polu nazwy projektu
+            document.getElementById('project-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addProject();
+                }
+            });
+
             // Renderowanie początkowe
             renderEntries();
             updateSummary();
