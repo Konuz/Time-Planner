@@ -384,6 +384,8 @@
                         <option value="SCTASK">SCTASK</option>
                         <option value="CHG">CHG</option>
                         <option value="PTASK">PTASK</option>
+                        <option value="TRAINING">TRAINING</option>
+                        <option value="MEETING">MEETING</option>
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback"></div>
                 </div>
@@ -476,6 +478,18 @@
                             <label>
                                 <input type="checkbox" id="filter-ptask" checked>
                                 PTASK
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-training" checked>
+                                TRAINING
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-meeting" checked>
+                                MEETING
                             </label>
                         </div>
                     </div>
@@ -830,6 +844,8 @@
             const filterSctask = document.getElementById('filter-sctask').checked;
             const filterChg = document.getElementById('filter-chg').checked;
             const filterPtask = document.getElementById('filter-ptask').checked;
+            const filterTraining = document.getElementById('filter-training').checked;
+            const filterMeeting = document.getElementById('filter-meeting').checked;
             const currentDate = new Date();
 
             const entriesBody = document.getElementById('entries-body');
@@ -852,6 +868,8 @@
                 if (entry.taskType === 'SCTASK' && filterSctask) return true;
                 if (entry.taskType === 'CHG' && filterChg) return true;
                 if (entry.taskType === 'PTASK' && filterPtask) return true;
+                if (entry.taskType === 'TRAINING' && filterTraining) return true;
+                if (entry.taskType === 'MEETING' && filterMeeting) return true;
                 return false;
             });
 
@@ -1118,7 +1136,7 @@
             });
 
             // Obsługa filtrów dla rodzajów zadań
-            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask', 'filter-chg', 'filter-ptask'];
+            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask', 'filter-chg', 'filter-ptask', 'filter-training', 'filter-meeting'];
 
             // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
             document.getElementById('filter-all-tasks').addEventListener('change', function() {
