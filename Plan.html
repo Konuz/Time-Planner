@@ -878,7 +878,10 @@
             <div class="timer-task-input">
                 <label for="timer-task-number">Numer zadania:</label>
                 <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
-                <button id="timer-quick-add" class="timer-btn timer-btn-success">➕ Dodaj wpis</button>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 2; margin-top: 0;">➕ Dodaj wpis</button>
+                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">🆕 Nowe</button>
+                </div>
             </div>
 
             <div class="pomodoro-stats">
@@ -1677,7 +1680,7 @@
             } else {
                 // Break completed, switch back to work
                 switchMode('work');
-                pomodoroState.elapsedTime = 0;
+                // NIE resetuj elapsedTime - pozwól kontynuować to samo zadanie
             }
 
             updatePomodoroDisplay();
@@ -1745,6 +1748,25 @@
             updatePomodoroDisplay();
         }
 
+        // Start new task (clear task number and reset elapsed time)
+        function startNewTask() {
+            if (pomodoroState.elapsedTime > 0) {
+                const currentHours = (pomodoroState.elapsedTime / 3600).toFixed(2);
+                const confirmMsg = `Masz naliczony czas ${currentHours}h dla zadania "${pomodoroState.currentTaskNumber}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?`;
+
+                if (window.confirm(confirmMsg)) {
+                    // Add current task before starting new one
+                    quickAddTask();
+                }
+            }
+
+            // Clear task number and reset time
+            document.getElementById('timer-task-number').value = '';
+            pomodoroState.currentTaskNumber = '';
+            pomodoroState.elapsedTime = 0;
+            updatePomodoroDisplay();
+        }
+
         // Quick add task from timer
         function quickAddTask() {
             const taskNumber = document.getElementById('timer-task-number').value.trim();
@@ -1771,7 +1793,7 @@
             if (existingEntryIndex !== -1) {
                 // Sum hours to existing entry
                 entries[existingEntryIndex].hours += parseFloat(hours.toFixed(2));
-                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${hours.toFixed(2)}h)`);
+                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${hours.toFixed(2)}h)\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
             } else {
                 // Create new entry
                 const newEntry = {
@@ -1783,15 +1805,16 @@
                     taskNumber: taskNumber
                 };
                 entries.push(newEntry);
-                alert(`Wpis dodany: ${taskNumber} (${hours.toFixed(2)}h). Uzupełnij szczegóły w edycji.`);
+                alert(`Wpis dodany: ${taskNumber} (${hours.toFixed(2)}h). Uzupełnij szczegóły w edycji.\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
             }
 
             saveEntries();
             renderEntries();
             updateSummary();
 
-            // Reset elapsed time for this task
+            // Reset elapsed time for this task but keep task number
             pomodoroState.elapsedTime = 0;
+            pomodoroState.currentTaskNumber = taskNumber;
             updatePomodoroDisplay();
         }
 
@@ -1823,9 +1846,31 @@
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
             document.getElementById('timer-reset').addEventListener('click', resetTimer);
             document.getElementById('timer-quick-add').addEventListener('click', quickAddTask);
+            document.getElementById('timer-new-task').addEventListener('click', startNewTask);
 
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
             document.getElementById('pomodoro-minimized').addEventListener('click', toggleMinimize);
+
+            // Reset elapsed time when task number changes (new task)
+            document.getElementById('timer-task-number').addEventListener('change', function() {
+                const newTaskNumber = this.value.trim();
+                if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
+                    if (pomodoroState.elapsedTime > 0) {
+                        const confirm = window.confirm(`Zmiana zadania spowoduje reset naliczonego czasu (${(pomodoroState.elapsedTime / 3600).toFixed(2)}h). Kontynuować?`);
+                        if (confirm) {
+                            pomodoroState.elapsedTime = 0;
+                            pomodoroState.currentTaskNumber = newTaskNumber;
+                            updatePomodoroDisplay();
+                        } else {
+                            this.value = pomodoroState.currentTaskNumber;
+                        }
+                    } else {
+                        pomodoroState.currentTaskNumber = newTaskNumber;
+                    }
+                } else if (!pomodoroState.currentTaskNumber) {
+                    pomodoroState.currentTaskNumber = newTaskNumber;
+                }
+            });
 
             // Settings change listeners
             ['work-duration', 'short-break-duration', 'long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
