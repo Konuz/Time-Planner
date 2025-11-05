@@ -565,6 +565,41 @@
             font-weight: 600;
         }
 
+        /* Non-blocking notification */
+        .pomodoro-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-highlight);
+            color: var(--text-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: none;
+            max-width: 400px;
+            text-align: center;
+            font-size: 14px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .pomodoro-notification.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
         .timer-task-input input {
             width: 100%;
             padding: 10px;
@@ -796,6 +831,9 @@
     </style>
 </head>
 <body class="preload">
+    <!-- Non-blocking notification for Pomodoro timer -->
+    <div id="pomodoro-notification" class="pomodoro-notification"></div>
+
     <div class="container">
         <header>
             <h1>GODZINY PRACY</h1>
@@ -1037,13 +1075,16 @@
 
             <div class="pomodoro-controls">
                 <button id="timer-start" class="timer-btn timer-btn-primary">Start</button>
-                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Pauza</button>
+                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Przerwanie</button>
                 <button id="timer-reset" class="timer-btn timer-btn-secondary">Reset</button>
             </div>
 
             <div class="timer-task-input">
                 <label for="timer-task-number">Numer zadania:</label>
-                <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567" style="flex: 1;">
+                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)">✅</button>
+                </div>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
                     <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;">Dodaj wpis</button>
                     <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">Nowe</button>
@@ -1054,6 +1095,14 @@
                 <div class="stat-row">
                     <span>Sesja:</span>
                     <span id="pomodoro-session">🍅○○○ (1/4)</span>
+                </div>
+                <div class="stat-row">
+                    <span>Przerwy krótkie:</span>
+                    <span id="pomodoro-short-breaks">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Przerwy długie:</span>
+                    <span id="pomodoro-long-breaks">0</span>
                 </div>
                 <div class="stat-row">
                     <span>Dziś:</span>
@@ -1118,6 +1167,8 @@
             currentTaskNumber: '',
             sessionCount: 0,
             todayPomodoros: 0,
+            shortBreaksToday: 0,
+            longBreaksToday: 0,
             todayHours: 0,
             startTime: null,
             elapsedTime: 0
@@ -1657,10 +1708,14 @@
                 // Reset daily stats if it's a new day
                 if (data.lastDate !== today) {
                     pomodoroState.todayPomodoros = 0;
+                    pomodoroState.shortBreaksToday = 0;
+                    pomodoroState.longBreaksToday = 0;
                     pomodoroState.todayHours = 0;
                     pomodoroState.sessionCount = 0;
                 } else {
                     pomodoroState.todayPomodoros = data.todayPomodoros || 0;
+                    pomodoroState.shortBreaksToday = data.shortBreaksToday || 0;
+                    pomodoroState.longBreaksToday = data.longBreaksToday || 0;
                     pomodoroState.todayHours = data.todayHours || 0;
                     pomodoroState.sessionCount = data.sessionCount || 0;
                 }
@@ -1685,6 +1740,8 @@
             const today = new Date().toDateString();
             const data = {
                 todayPomodoros: pomodoroState.todayPomodoros,
+                shortBreaksToday: pomodoroState.shortBreaksToday,
+                longBreaksToday: pomodoroState.longBreaksToday,
                 todayHours: pomodoroState.todayHours,
                 sessionCount: pomodoroState.sessionCount,
                 lastDate: today
@@ -1876,18 +1933,15 @@
 
         // Update statistics
         function updatePomodoroStats() {
-            // Session progress (full session = 16 pomodoros, displayed in 2 rows of 8)
-            const completed = pomodoroState.sessionCount % 16;
+            // Session progress (full session = 4 pomodoros per Pomodoro Technique)
+            const completed = pomodoroState.sessionCount % 4;
+            const sessionDisplay = '🍅'.repeat(completed) + '○'.repeat(4 - completed);
 
-            // First row: items 0-7
-            const row1Filled = Math.min(completed, 8);
-            const row1 = '🍅'.repeat(row1Filled) + '○'.repeat(8 - row1Filled);
+            document.getElementById('pomodoro-session').textContent = `${sessionDisplay} (${completed}/4)`;
 
-            // Second row: items 8-15
-            const row2Filled = Math.max(0, completed - 8);
-            const row2 = '🍅'.repeat(row2Filled) + '○'.repeat(8 - row2Filled);
-
-            document.getElementById('pomodoro-session').innerHTML = `${row1}<br>${row2} (${completed}/16)`;
+            // Break counters
+            document.getElementById('pomodoro-short-breaks').textContent = pomodoroState.shortBreaksToday;
+            document.getElementById('pomodoro-long-breaks').textContent = pomodoroState.longBreaksToday;
 
             // Today stats
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
@@ -1947,11 +2001,19 @@
                 // Reset elapsed time since it's now counted in todayHours
                 pomodoroState.elapsedTime = 0;
 
+                // Increment break counters before saving
+                // Switch to break (full session = 4 pomodoros per Pomodoro Technique philosophy)
+                if (pomodoroState.sessionCount % 4 === 0) {
+                    pomodoroState.longBreaksToday++;
+                } else {
+                    pomodoroState.shortBreaksToday++;
+                }
+
                 savePomodoroData();
                 updatePomodoroStats();
 
-                // Switch to break (full session = 16 pomodoros = 8 hours)
-                if (pomodoroState.sessionCount % 16 === 0) {
+                // Switch to appropriate break mode
+                if (pomodoroState.sessionCount % 4 === 0) {
                     switchMode('longBreak');
                 } else {
                     switchMode('shortBreak');
@@ -2004,13 +2066,95 @@
             updatePomodoroDisplay();
         }
 
-        // Pause timer
+        // Round work time according to Pomodoro philosophy
+        // < 15 min → 0 (don't add)
+        // >= 15 min and < 45 min → 0.5h
+        // >= 45 min and < 1h 15min → 1h
+        // Pattern repeats for each hour
+        function roundWorkTime(seconds) {
+            if (seconds < 900) { // < 15 min
+                return 0;
+            }
+
+            const hours = Math.floor(seconds / 3600);
+            const remainingSeconds = seconds % 3600;
+
+            if (remainingSeconds < 900) { // < 15 min
+                return hours;
+            } else if (remainingSeconds < 2700) { // >= 15 min and < 45 min
+                return hours + 0.5;
+            } else { // >= 45 min
+                return hours + 1;
+            }
+        }
+
+        // Interrupt timer (Pomodoro philosophy: interruption voids the Pomodoro but tracks time)
         function pauseTimer() {
             if (!pomodoroState.isRunning) return;
 
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
+
+            // Handle work time tracking
+            if (pomodoroState.mode === 'work' && pomodoroState.elapsedTime > 0) {
+                const taskNumber = document.getElementById('timer-task-number').value.trim();
+
+                if (!taskNumber) {
+                    showNotification('⚠️ Podaj numer zadania aby zapisać czas pracy');
+                    // Reset and return to work mode
+                    pomodoroState.elapsedTime = 0;
+                    switchMode('work');
+                    document.getElementById('timer-start').style.display = 'inline-block';
+                    document.getElementById('timer-pause').style.display = 'none';
+                    updatePomodoroDisplay();
+                    return;
+                }
+
+                const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
+
+                if (roundedHours === 0) {
+                    // Less than 15 minutes - don't add entry
+                    showNotification('⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.');
+                } else {
+                    // Add entry with rounded time
+                    const today = new Date().toISOString().split('T')[0];
+
+                    // Check if entry with same task number exists today
+                    const existingEntryIndex = entries.findIndex(entry => {
+                        const entryDate = entry.date.toISOString().split('T')[0];
+                        return entry.taskNumber === taskNumber && entryDate === today;
+                    });
+
+                    if (existingEntryIndex !== -1) {
+                        // Sum hours to existing entry
+                        entries[existingEntryIndex].hours += roundedHours;
+                        showNotification(`✅ Czas dodany: ${taskNumber} (+${roundedHours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.`, 4000);
+                    } else {
+                        // Create new entry
+                        const newEntry = {
+                            id: Date.now(),
+                            date: new Date(),
+                            taskType: '', // To be filled later
+                            client: '', // To be filled later
+                            hours: roundedHours,
+                            taskNumber: taskNumber
+                        };
+                        entries.push(newEntry);
+                        showNotification(`✅ Wpis dodany: ${taskNumber} (${roundedHours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.`, 4000);
+                    }
+
+                    saveEntries();
+                    renderEntries();
+                    updateSummary();
+                }
+            }
+
+            // Void the Pomodoro (don't count it) and reset
+            pomodoroState.elapsedTime = 0;
+            pomodoroState.currentTaskNumber = '';
+            document.getElementById('timer-task-number').value = '';
+            switchMode('work');
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
@@ -2068,12 +2212,12 @@
             const taskNumber = document.getElementById('timer-task-number').value.trim();
 
             if (!taskNumber) {
-                alert('Podaj numer zadania');
+                showNotification('⚠️ Podaj numer zadania');
                 return;
             }
 
             if (pomodoroState.elapsedTime === 0) {
-                alert('Timer nie został jeszcze uruchomiony');
+                showNotification('⚠️ Timer nie został jeszcze uruchomiony');
                 return;
             }
 
@@ -2090,7 +2234,7 @@
                 // Sum hours to existing entry
                 entries[existingEntryIndex].hours += parseFloat(hours.toFixed(2));
                 const timeFormatted = formatSecondsToHMS(hours * 3600);
-                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${timeFormatted})\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
+                showNotification(`✅ Czas dodany: ${taskNumber} (+${timeFormatted}). Możesz kontynuować pracę!`, 3000);
             } else {
                 // Create new entry
                 const newEntry = {
@@ -2103,7 +2247,7 @@
                 };
                 entries.push(newEntry);
                 const timeFormatted = formatSecondsToHMS(hours * 3600);
-                alert(`Wpis dodany: ${taskNumber} (${timeFormatted}). Uzupełnij szczegóły w edycji.\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
+                showNotification(`✅ Wpis dodany: ${taskNumber} (${timeFormatted}). Możesz kontynuować pracę!`, 3000);
             }
 
             saveEntries();
@@ -2113,6 +2257,83 @@
             // Reset elapsed time for this task but keep task number
             pomodoroState.elapsedTime = 0;
             pomodoroState.currentTaskNumber = taskNumber;
+            updatePomodoroDisplay();
+        }
+
+        // Non-blocking notification (doesn't pause timer like alert())
+        function showNotification(message, duration = 3000) {
+            const notification = document.getElementById('pomodoro-notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            // Auto-hide after duration
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Complete current task and start new one (Pomodoro overlearning/task grouping)
+        // Timer continues running - maintains session continuity
+        function completeCurrentTask() {
+            const taskNumber = document.getElementById('timer-task-number').value.trim();
+
+            if (!taskNumber) {
+                showNotification('⚠️ Podaj numer zadania');
+                return;
+            }
+
+            if (pomodoroState.elapsedTime === 0) {
+                showNotification('⚠️ Timer nie został jeszcze uruchomiony');
+                return;
+            }
+
+            // Round time according to Pomodoro philosophy
+            const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
+
+            if (roundedHours === 0) {
+                // Less than 15 minutes - don't add entry, but keep timer running
+                showNotification('⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!', 4000);
+                // Don't reset elapsedTime or clear field - let user continue working
+                // Timer keeps running in the background
+                return;
+            }
+
+            // Add entry with rounded time
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check if entry with same task number exists today
+            const existingEntryIndex = entries.findIndex(entry => {
+                const entryDate = entry.date.toISOString().split('T')[0];
+                return entry.taskNumber === taskNumber && entryDate === today;
+            });
+
+            if (existingEntryIndex !== -1) {
+                // Sum hours to existing entry
+                entries[existingEntryIndex].hours += roundedHours;
+                showNotification(`✅ Zadanie zakończone: ${taskNumber} (+${roundedHours}h). Timer nadal liczy!`, 3000);
+            } else {
+                // Create new entry
+                const newEntry = {
+                    id: Date.now(),
+                    date: new Date(),
+                    taskType: '', // To be filled later
+                    client: '', // To be filled later
+                    hours: roundedHours,
+                    taskNumber: taskNumber
+                };
+                entries.push(newEntry);
+                showNotification(`✅ Zadanie zakończone: ${taskNumber} (${roundedHours}h). Timer nadal liczy!`, 3000);
+            }
+
+            saveEntries();
+            renderEntries();
+            updateSummary();
+
+            // Clear task number and reset elapsed time for new task
+            // Timer keeps running (session continuity)
+            document.getElementById('timer-task-number').value = '';
+            pomodoroState.currentTaskNumber = '';
+            pomodoroState.elapsedTime = 0;
             updatePomodoroDisplay();
         }
 
@@ -2378,6 +2599,7 @@
             document.getElementById('timer-start').addEventListener('click', startTimer);
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
             document.getElementById('timer-reset').addEventListener('click', resetTimer);
+            document.getElementById('timer-complete-task').addEventListener('click', completeCurrentTask);
             document.getElementById('timer-quick-add').addEventListener('click', quickAddTask);
             document.getElementById('timer-new-task').addEventListener('click', startNewTask);
 
