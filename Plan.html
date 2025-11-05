@@ -333,6 +333,316 @@
                 flex-direction: column;
             }
         }
+
+        /* Pomodoro Timer Styles */
+        .pomodoro-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .pomodoro-widget:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .pomodoro-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 12px 16px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .pomodoro-icon {
+            font-size: 20px;
+        }
+
+        .pomodoro-title {
+            flex: 1;
+            font-weight: 700;
+            color: white;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .pomodoro-minimize-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .pomodoro-minimize-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .pomodoro-content {
+            padding: 20px;
+        }
+
+        .pomodoro-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ff6b6b;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .timer-mode {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .pomodoro-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .timer-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--bg-highlight);
+            color: var(--text-color);
+        }
+
+        .timer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-btn:active {
+            transform: translateY(0);
+        }
+
+        .timer-btn-primary {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+        }
+
+        .timer-btn-warning {
+            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+            color: #1e1e1e;
+        }
+
+        .timer-btn-secondary {
+            background: linear-gradient(135deg, #868e96 0%, #495057 100%);
+            color: white;
+        }
+
+        .timer-btn-success {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .timer-task-input {
+            margin-bottom: 16px;
+        }
+
+        .timer-task-input label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-color);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .timer-task-input input {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .timer-task-input input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        }
+
+        .pomodoro-stats {
+            background-color: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-row span:last-child {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .pomodoro-settings details {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .pomodoro-settings summary {
+            cursor: pointer;
+            user-select: none;
+            font-size: 13px;
+            color: var(--text-color);
+            font-weight: 600;
+            list-style: none;
+        }
+
+        .pomodoro-settings summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .settings-content {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-content label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-color);
+        }
+
+        .settings-content input[type="number"] {
+            width: 60px;
+            padding: 6px;
+            background-color: var(--bg-highlight);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 12px;
+        }
+
+        .settings-content input[type="checkbox"] {
+            width: auto;
+        }
+
+        /* Minimized State */
+        .pomodoro-minimized {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pomodoro-minimized:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .minimized-timer {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        .minimized-icon {
+            font-size: 24px;
+        }
+
+        /* Running Animation */
+        .timer-running .timer-display {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pomodoro-widget {
+                width: 280px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .timer-display {
+                font-size: 40px;
+            }
+
+            .pomodoro-minimized {
+                top: 10px;
+                right: 10px;
+                width: 80px;
+                height: 50px;
+            }
+
+            .minimized-timer {
+                font-size: 14px;
+            }
+
+            .minimized-icon {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -545,7 +855,78 @@
             <button class="export-btn" id="export-button">Eksportuj dane z bieżącego miesiąca (CSV)</button>
         </section>
     </div>
-    
+
+    <!-- Pomodoro Timer Widget -->
+    <div id="pomodoro-widget" class="pomodoro-widget">
+        <div id="pomodoro-header" class="pomodoro-header">
+            <span class="pomodoro-icon">🍅</span>
+            <span class="pomodoro-title">POMODORO</span>
+            <button id="pomodoro-minimize" class="pomodoro-minimize-btn">−</button>
+        </div>
+        <div id="pomodoro-content" class="pomodoro-content">
+            <div class="pomodoro-display">
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-mode" id="timer-mode">Czas pracy</div>
+            </div>
+
+            <div class="pomodoro-controls">
+                <button id="timer-start" class="timer-btn timer-btn-primary">▶️ Start</button>
+                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">⏸️ Pauza</button>
+                <button id="timer-reset" class="timer-btn timer-btn-secondary">🔄 Reset</button>
+            </div>
+
+            <div class="timer-task-input">
+                <label for="timer-task-number">Numer zadania:</label>
+                <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
+                <button id="timer-quick-add" class="timer-btn timer-btn-success">➕ Dodaj wpis</button>
+            </div>
+
+            <div class="pomodoro-stats">
+                <div class="stat-row">
+                    <span>Sesja:</span>
+                    <span id="pomodoro-session">🍅○○○ (1/4)</span>
+                </div>
+                <div class="stat-row">
+                    <span>Dziś:</span>
+                    <span id="pomodoro-today">0h (0 🍅)</span>
+                </div>
+                <div class="stat-row">
+                    <span>Aktualny czas:</span>
+                    <span id="pomodoro-current-time">0.00h</span>
+                </div>
+            </div>
+
+            <div class="pomodoro-settings">
+                <details>
+                    <summary>⚙️ Ustawienia</summary>
+                    <div class="settings-content">
+                        <label>
+                            <input type="number" id="work-duration" value="25" min="1" max="60"> min - Praca
+                        </label>
+                        <label>
+                            <input type="number" id="short-break-duration" value="5" min="1" max="30"> min - Krótka przerwa
+                        </label>
+                        <label>
+                            <input type="number" id="long-break-duration" value="15" min="1" max="60"> min - Długa przerwa
+                        </label>
+                        <label>
+                            <input type="checkbox" id="sound-enabled" checked> Dźwięk powiadomienia
+                        </label>
+                        <label>
+                            <input type="checkbox" id="auto-start-break" checked> Auto-start przerwy
+                        </label>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimized Pomodoro Icon -->
+    <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;">
+        <span class="minimized-timer" id="minimized-timer">25:00</span>
+        <span class="minimized-icon">🍅</span>
+    </div>
+
     <script>
         // Zmienne globalne
         let entries = [];
@@ -556,6 +937,29 @@
         const PROJECTS_STORAGE_KEY = 'timesheet-projects';
         let editingProjectIndex = -1;
         const SECTION_VISIBILITY_KEY = 'section-visibility';
+
+        // Pomodoro Timer Variables
+        const POMODORO_STORAGE_KEY = 'pomodoro-data';
+        const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
+        let pomodoroTimer = null;
+        let pomodoroState = {
+            mode: 'work', // 'work', 'shortBreak', 'longBreak'
+            timeRemaining: 25 * 60, // w sekundach
+            isRunning: false,
+            currentTaskNumber: '',
+            sessionCount: 0,
+            todayPomodoros: 0,
+            todayHours: 0,
+            startTime: null,
+            elapsedTime: 0
+        };
+        let pomodoroSettings = {
+            workDuration: 25,
+            shortBreakDuration: 5,
+            longBreakDuration: 15,
+            soundEnabled: true,
+            autoStartBreak: true
+        };
 
         // Domyślne projekty
         const DEFAULT_PROJECTS = [
@@ -1073,6 +1477,372 @@
             return isValid;
         }
 
+        // ============ POMODORO TIMER FUNCTIONS ============
+
+        // Load Pomodoro data from localStorage
+        function loadPomodoroData() {
+            const stored = localStorage.getItem(POMODORO_STORAGE_KEY);
+            if (stored) {
+                const data = JSON.parse(stored);
+                const today = new Date().toDateString();
+                // Reset daily stats if it's a new day
+                if (data.lastDate !== today) {
+                    pomodoroState.todayPomodoros = 0;
+                    pomodoroState.todayHours = 0;
+                } else {
+                    pomodoroState.todayPomodoros = data.todayPomodoros || 0;
+                    pomodoroState.todayHours = data.todayHours || 0;
+                }
+            }
+
+            const settings = localStorage.getItem(POMODORO_SETTINGS_KEY);
+            if (settings) {
+                pomodoroSettings = JSON.parse(settings);
+                document.getElementById('work-duration').value = pomodoroSettings.workDuration;
+                document.getElementById('short-break-duration').value = pomodoroSettings.shortBreakDuration;
+                document.getElementById('long-break-duration').value = pomodoroSettings.longBreakDuration;
+                document.getElementById('sound-enabled').checked = pomodoroSettings.soundEnabled;
+                document.getElementById('auto-start-break').checked = pomodoroSettings.autoStartBreak;
+            }
+
+            updatePomodoroDisplay();
+            updatePomodoroStats();
+        }
+
+        // Save Pomodoro data to localStorage
+        function savePomodoroData() {
+            const today = new Date().toDateString();
+            const data = {
+                todayPomodoros: pomodoroState.todayPomodoros,
+                todayHours: pomodoroState.todayHours,
+                lastDate: today
+            };
+            localStorage.setItem(POMODORO_STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Save Pomodoro settings
+        function savePomodoroSettings() {
+            pomodoroSettings.workDuration = parseInt(document.getElementById('work-duration').value);
+            pomodoroSettings.shortBreakDuration = parseInt(document.getElementById('short-break-duration').value);
+            pomodoroSettings.longBreakDuration = parseInt(document.getElementById('long-break-duration').value);
+            pomodoroSettings.soundEnabled = document.getElementById('sound-enabled').checked;
+            pomodoroSettings.autoStartBreak = document.getElementById('auto-start-break').checked;
+            localStorage.setItem(POMODORO_SETTINGS_KEY, JSON.stringify(pomodoroSettings));
+        }
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Play notification sound
+        function playNotificationSound() {
+            if (!pomodoroSettings.soundEnabled) return;
+
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+
+            // Play multiple beeps
+            setTimeout(() => {
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                osc2.frequency.value = 800;
+                osc2.type = 'sine';
+                gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc2.start(audioContext.currentTime);
+                osc2.stop(audioContext.currentTime + 0.5);
+            }, 200);
+        }
+
+        // Update timer display
+        function updatePomodoroDisplay() {
+            const timeStr = formatTime(pomodoroState.timeRemaining);
+            document.getElementById('timer-display').textContent = timeStr;
+            document.getElementById('minimized-timer').textContent = timeStr;
+
+            const widget = document.getElementById('pomodoro-widget');
+            if (pomodoroState.isRunning) {
+                widget.classList.add('timer-running');
+            } else {
+                widget.classList.remove('timer-running');
+            }
+
+            // Update mode text
+            let modeText = '';
+            switch(pomodoroState.mode) {
+                case 'work':
+                    modeText = 'Czas pracy';
+                    break;
+                case 'shortBreak':
+                    modeText = 'Krótka przerwa';
+                    break;
+                case 'longBreak':
+                    modeText = 'Długa przerwa';
+                    break;
+            }
+            document.getElementById('timer-mode').textContent = modeText;
+
+            // Update current elapsed time
+            if (pomodoroState.mode === 'work') {
+                const currentHours = (pomodoroState.elapsedTime / 3600).toFixed(2);
+                document.getElementById('pomodoro-current-time').textContent = `${currentHours}h`;
+            }
+        }
+
+        // Update statistics
+        function updatePomodoroStats() {
+            // Session progress
+            const sessionNum = (pomodoroState.sessionCount % 4) + 1;
+            const tomatoes = '🍅'.repeat(pomodoroState.sessionCount % 4) + '○'.repeat(4 - (pomodoroState.sessionCount % 4));
+            document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/4)`;
+
+            // Today stats
+            const todayHoursStr = pomodoroState.todayHours.toFixed(2);
+            document.getElementById('pomodoro-today').textContent = `${todayHoursStr}h (${pomodoroState.todayPomodoros} 🍅)`;
+        }
+
+        // Timer countdown function
+        function timerTick() {
+            if (!pomodoroState.isRunning) return;
+
+            pomodoroState.timeRemaining--;
+
+            // Track elapsed time for work mode
+            if (pomodoroState.mode === 'work') {
+                pomodoroState.elapsedTime++;
+            }
+
+            updatePomodoroDisplay();
+
+            if (pomodoroState.timeRemaining <= 0) {
+                timerComplete();
+            }
+        }
+
+        // Timer complete handler
+        function timerComplete() {
+            pomodoroState.isRunning = false;
+            clearInterval(pomodoroTimer);
+            pomodoroTimer = null;
+
+            playNotificationSound();
+
+            // Show notification
+            if (Notification.permission === 'granted') {
+                new Notification('Pomodoro Timer', {
+                    body: pomodoroState.mode === 'work' ? 'Czas pracy zakończony! Czas na przerwę.' : 'Przerwa zakończona! Wracaj do pracy.',
+                    icon: '🍅'
+                });
+            }
+
+            if (pomodoroState.mode === 'work') {
+                // Work session completed
+                pomodoroState.sessionCount++;
+                pomodoroState.todayPomodoros++;
+                pomodoroState.todayHours += pomodoroState.elapsedTime / 3600;
+
+                savePomodoroData();
+                updatePomodoroStats();
+
+                // Switch to break
+                if (pomodoroState.sessionCount % 4 === 0) {
+                    switchMode('longBreak');
+                } else {
+                    switchMode('shortBreak');
+                }
+
+                // Auto-start break if enabled
+                if (pomodoroSettings.autoStartBreak) {
+                    setTimeout(startTimer, 1000);
+                }
+            } else {
+                // Break completed, switch back to work
+                switchMode('work');
+                pomodoroState.elapsedTime = 0;
+            }
+
+            updatePomodoroDisplay();
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+        }
+
+        // Switch timer mode
+        function switchMode(mode) {
+            pomodoroState.mode = mode;
+
+            switch(mode) {
+                case 'work':
+                    pomodoroState.timeRemaining = pomodoroSettings.workDuration * 60;
+                    break;
+                case 'shortBreak':
+                    pomodoroState.timeRemaining = pomodoroSettings.shortBreakDuration * 60;
+                    break;
+                case 'longBreak':
+                    pomodoroState.timeRemaining = pomodoroSettings.longBreakDuration * 60;
+                    break;
+            }
+
+            updatePomodoroDisplay();
+        }
+
+        // Start timer
+        function startTimer() {
+            if (pomodoroState.isRunning) return;
+
+            pomodoroState.isRunning = true;
+            pomodoroState.startTime = Date.now();
+
+            pomodoroTimer = setInterval(timerTick, 1000);
+
+            document.getElementById('timer-start').style.display = 'none';
+            document.getElementById('timer-pause').style.display = 'inline-block';
+            updatePomodoroDisplay();
+        }
+
+        // Pause timer
+        function pauseTimer() {
+            if (!pomodoroState.isRunning) return;
+
+            pomodoroState.isRunning = false;
+            clearInterval(pomodoroTimer);
+            pomodoroTimer = null;
+
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            updatePomodoroDisplay();
+        }
+
+        // Reset timer
+        function resetTimer() {
+            pomodoroState.isRunning = false;
+            clearInterval(pomodoroTimer);
+            pomodoroTimer = null;
+
+            pomodoroState.elapsedTime = 0;
+            switchMode('work');
+
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            updatePomodoroDisplay();
+        }
+
+        // Quick add task from timer
+        function quickAddTask() {
+            const taskNumber = document.getElementById('timer-task-number').value.trim();
+
+            if (!taskNumber) {
+                alert('Podaj numer zadania');
+                return;
+            }
+
+            if (pomodoroState.elapsedTime === 0) {
+                alert('Timer nie został jeszcze uruchomiony');
+                return;
+            }
+
+            const hours = pomodoroState.elapsedTime / 3600;
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check if entry with same task number exists today
+            const existingEntryIndex = entries.findIndex(entry => {
+                const entryDate = entry.date.toISOString().split('T')[0];
+                return entry.taskNumber === taskNumber && entryDate === today;
+            });
+
+            if (existingEntryIndex !== -1) {
+                // Sum hours to existing entry
+                entries[existingEntryIndex].hours += parseFloat(hours.toFixed(2));
+                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${hours.toFixed(2)}h)`);
+            } else {
+                // Create new entry
+                const newEntry = {
+                    id: Date.now(),
+                    date: new Date(),
+                    taskType: '', // To be filled later
+                    client: '', // To be filled later
+                    hours: parseFloat(hours.toFixed(2)),
+                    taskNumber: taskNumber
+                };
+                entries.push(newEntry);
+                alert(`Wpis dodany: ${taskNumber} (${hours.toFixed(2)}h). Uzupełnij szczegóły w edycji.`);
+            }
+
+            saveEntries();
+            renderEntries();
+            updateSummary();
+
+            // Reset elapsed time for this task
+            pomodoroState.elapsedTime = 0;
+            updatePomodoroDisplay();
+        }
+
+        // Toggle minimize
+        function toggleMinimize() {
+            const widget = document.getElementById('pomodoro-widget');
+            const minimized = document.getElementById('pomodoro-minimized');
+
+            if (widget.style.display === 'none') {
+                widget.style.display = 'block';
+                minimized.style.display = 'none';
+            } else {
+                widget.style.display = 'none';
+                minimized.style.display = 'flex';
+            }
+        }
+
+        // Initialize Pomodoro Timer
+        function initPomodoroTimer() {
+            loadPomodoroData();
+
+            // Request notification permission
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            // Event listeners
+            document.getElementById('timer-start').addEventListener('click', startTimer);
+            document.getElementById('timer-pause').addEventListener('click', pauseTimer);
+            document.getElementById('timer-reset').addEventListener('click', resetTimer);
+            document.getElementById('timer-quick-add').addEventListener('click', quickAddTask);
+
+            document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
+            document.getElementById('pomodoro-minimized').addEventListener('click', toggleMinimize);
+
+            // Settings change listeners
+            ['work-duration', 'short-break-duration', 'long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
+                document.getElementById(id).addEventListener('change', savePomodoroSettings);
+            });
+
+            // Update minimized timer every second
+            setInterval(() => {
+                if (pomodoroState.isRunning) {
+                    const timeStr = formatTime(pomodoroState.timeRemaining);
+                    document.getElementById('minimized-timer').textContent = timeStr;
+                }
+            }, 1000);
+        }
+
+        // ============ END POMODORO TIMER FUNCTIONS ============
+
         // Inicjalizacja aplikacji
         function initApp() {
             loadEntries();
@@ -1080,6 +1850,7 @@
             updateProjectSelect();
             renderProjects();
             initSectionToggles();
+            initPomodoroTimer();
 
             // Ustawienie dzisiejszej daty w formularzu
             const today = new Date();
