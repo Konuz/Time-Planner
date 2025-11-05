@@ -865,7 +865,7 @@
         </div>
         <div id="pomodoro-content" class="pomodoro-content">
             <div class="pomodoro-display">
-                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-display" id="timer-display">30:00</div>
                 <div class="timer-mode" id="timer-mode">Czas pracy</div>
             </div>
 
@@ -904,7 +904,7 @@
                     <summary>⚙️ Ustawienia</summary>
                     <div class="settings-content">
                         <label>
-                            <input type="number" id="work-duration" value="25" min="1" max="60"> min - Praca
+                            <input type="number" id="work-duration" value="30" min="1" max="60"> min - Praca
                         </label>
                         <label>
                             <input type="number" id="short-break-duration" value="5" min="1" max="30"> min - Krótka przerwa
@@ -926,7 +926,7 @@
 
     <!-- Minimized Pomodoro Icon -->
     <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;">
-        <span class="minimized-timer" id="minimized-timer">25:00</span>
+        <span class="minimized-timer" id="minimized-timer">30:00</span>
         <span class="minimized-icon">🍅</span>
     </div>
 
@@ -947,7 +947,7 @@
         let pomodoroTimer = null;
         let pomodoroState = {
             mode: 'work', // 'work', 'shortBreak', 'longBreak'
-            timeRemaining: 25 * 60, // w sekundach
+            timeRemaining: 30 * 60, // w sekundach
             isRunning: false,
             currentTaskNumber: '',
             sessionCount: 0,
@@ -957,7 +957,7 @@
             elapsedTime: 0
         };
         let pomodoroSettings = {
-            workDuration: 25,
+            workDuration: 30,
             shortBreakDuration: 5,
             longBreakDuration: 15,
             soundEnabled: true,
