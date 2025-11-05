@@ -667,12 +667,10 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .pomodoro-minimized:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            opacity: 0.9;
         }
 
         .minimized-timer {
@@ -2144,6 +2142,7 @@
                 startLeft = rect.left;
                 startTop = rect.top;
 
+                minimizedWidget.classList.add('no-transition');
                 e.preventDefault();
             });
 
@@ -2214,6 +2213,9 @@
                 if (isDragging || isResizing) {
                     widget.classList.remove('no-transition');
                 }
+                if (isDraggingMinimized) {
+                    minimizedWidget.classList.remove('no-transition');
+                }
                 isDragging = false;
                 isDraggingMinimized = false;
                 isResizing = false;
@@ -2241,6 +2243,7 @@
             // Touch support for minimized window
             minimizedWidget.addEventListener('touchstart', function(e) {
                 isDraggingMinimized = true;
+                minimizedDragMoved = false;
                 const touch = e.touches[0];
                 startX = touch.clientX;
                 startY = touch.clientY;
@@ -2248,6 +2251,8 @@
                 const rect = minimizedWidget.getBoundingClientRect();
                 startLeft = rect.left;
                 startTop = rect.top;
+
+                minimizedWidget.classList.add('no-transition');
             });
 
             document.addEventListener('touchmove', function(e) {
@@ -2265,6 +2270,10 @@
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
+                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                        minimizedDragMoved = true;
+                    }
+
                     minimizedWidget.style.left = (startLeft + deltaX) + 'px';
                     minimizedWidget.style.top = (startTop + deltaY) + 'px';
                     minimizedWidget.style.right = 'auto';
@@ -2275,6 +2284,9 @@
             document.addEventListener('touchend', function() {
                 if (isDragging) {
                     widget.classList.remove('no-transition');
+                }
+                if (isDraggingMinimized) {
+                    minimizedWidget.classList.remove('no-transition');
                 }
                 isDragging = false;
                 isDraggingMinimized = false;
