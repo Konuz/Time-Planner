@@ -1706,6 +1706,14 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
+        // Format seconds to HH:MM:SS
+        function formatSecondsToHMS(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
         // Interpolate between colors based on progress
         function getColorForProgress(progress) {
             // progress: 1.0 = full time (blue), 0.0 = no time (red)
@@ -1852,8 +1860,8 @@
 
             // Update current elapsed time
             if (pomodoroState.mode === 'work') {
-                const currentHours = (pomodoroState.elapsedTime / 3600).toFixed(2);
-                document.getElementById('pomodoro-current-time').textContent = `${currentHours}h`;
+                const currentTimeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
+                document.getElementById('pomodoro-current-time').textContent = currentTimeFormatted;
             }
         }
 
@@ -1865,8 +1873,9 @@
             document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/8)`;
 
             // Today stats
-            const todayHoursStr = pomodoroState.todayHours.toFixed(2);
-            document.getElementById('pomodoro-today').textContent = `${todayHoursStr}h (${pomodoroState.todayPomodoros} 🍅)`;
+            const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
+            const todayTimeFormatted = formatSecondsToHMS(todaySeconds);
+            document.getElementById('pomodoro-today').textContent = `${todayTimeFormatted} (${pomodoroState.todayPomodoros} 🍅)`;
         }
 
         // Timer countdown function
@@ -2054,7 +2063,8 @@
             if (existingEntryIndex !== -1) {
                 // Sum hours to existing entry
                 entries[existingEntryIndex].hours += parseFloat(hours.toFixed(2));
-                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${hours.toFixed(2)}h)\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
+                const timeFormatted = formatSecondsToHMS(hours * 3600);
+                alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${timeFormatted})\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
             } else {
                 // Create new entry
                 const newEntry = {
@@ -2066,7 +2076,8 @@
                     taskNumber: taskNumber
                 };
                 entries.push(newEntry);
-                alert(`Wpis dodany: ${taskNumber} (${hours.toFixed(2)}h). Uzupełnij szczegóły w edycji.\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
+                const timeFormatted = formatSecondsToHMS(hours * 3600);
+                alert(`Wpis dodany: ${taskNumber} (${timeFormatted}). Uzupełnij szczegóły w edycji.\n\nMożesz kontynuować pracę - rozpocznij kolejną sesję Pomodoro.`);
             }
 
             saveEntries();
@@ -2360,7 +2371,8 @@
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
-                        const confirm = window.confirm(`Zmiana zadania spowoduje reset naliczonego czasu (${(pomodoroState.elapsedTime / 3600).toFixed(2)}h). Kontynuować?`);
+                        const timeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
+                        const confirm = window.confirm(`Zmiana zadania spowoduje reset naliczonego czasu (${timeFormatted}). Kontynuować?`);
                         if (confirm) {
                             pomodoroState.elapsedTime = 0;
                             pomodoroState.currentTaskNumber = newTaskNumber;
