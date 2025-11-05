@@ -1867,10 +1867,10 @@
 
         // Update statistics
         function updatePomodoroStats() {
-            // Session progress
-            const sessionNum = (pomodoroState.sessionCount % 8) + 1;
-            const tomatoes = '🍅'.repeat(pomodoroState.sessionCount % 8) + '○'.repeat(8 - (pomodoroState.sessionCount % 8));
-            document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/8)`;
+            // Session progress (full session = 16 pomodoros)
+            const sessionNum = (pomodoroState.sessionCount % 16) + 1;
+            const tomatoes = '🍅'.repeat(pomodoroState.sessionCount % 16) + '○'.repeat(16 - (pomodoroState.sessionCount % 16));
+            document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/16)`;
 
             // Today stats
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
@@ -1914,8 +1914,14 @@
 
             if (pomodoroState.mode === 'work') {
                 // Work session completed
-                pomodoroState.sessionCount++;
-                pomodoroState.todayPomodoros++;
+                // Only count as full pomodoro if at least 30 minutes (1800 seconds) elapsed
+                const isFullPomodoro = pomodoroState.elapsedTime >= 1800;
+
+                if (isFullPomodoro) {
+                    pomodoroState.sessionCount++;
+                    pomodoroState.todayPomodoros++;
+                }
+
                 pomodoroState.todayHours += pomodoroState.elapsedTime / 3600;
 
                 // Reset elapsed time since it's now counted in todayHours
@@ -1924,8 +1930,8 @@
                 savePomodoroData();
                 updatePomodoroStats();
 
-                // Switch to break
-                if (pomodoroState.sessionCount % 8 === 0) {
+                // Switch to break (full session = 16 pomodoros = 8 hours)
+                if (pomodoroState.sessionCount % 16 === 0) {
                     switchMode('longBreak');
                 } else {
                     switchMode('shortBreak');
