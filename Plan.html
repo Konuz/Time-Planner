@@ -517,18 +517,16 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             background-color: var(--bg-highlight);
             color: var(--text-color);
         }
 
         .timer-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
         }
 
         .timer-btn:active {
-            transform: translateY(0);
+            opacity: 0.8;
         }
 
         .timer-btn-primary {
@@ -1862,9 +1860,9 @@
         // Update statistics
         function updatePomodoroStats() {
             // Session progress
-            const sessionNum = (pomodoroState.sessionCount % 4) + 1;
-            const tomatoes = '🍅'.repeat(pomodoroState.sessionCount % 4) + '○'.repeat(4 - (pomodoroState.sessionCount % 4));
-            document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/4)`;
+            const sessionNum = (pomodoroState.sessionCount % 8) + 1;
+            const tomatoes = '🍅'.repeat(pomodoroState.sessionCount % 8) + '○'.repeat(8 - (pomodoroState.sessionCount % 8));
+            document.getElementById('pomodoro-session').textContent = `${tomatoes} (${sessionNum}/8)`;
 
             // Today stats
             const todayHoursStr = pomodoroState.todayHours.toFixed(2);
@@ -1915,7 +1913,7 @@
                 updatePomodoroStats();
 
                 // Switch to break
-                if (pomodoroState.sessionCount % 4 === 0) {
+                if (pomodoroState.sessionCount % 8 === 0) {
                     switchMode('longBreak');
                 } else {
                     switchMode('shortBreak');
@@ -2081,6 +2079,8 @@
 
         // Drag and resize functionality
         let isDragging = false;
+        let isDraggingMinimized = false;
+        let minimizedDragMoved = false;
         let isResizing = false;
         let resizeDirection = null;
         let startX, startY;
@@ -2131,6 +2131,22 @@
                 });
             });
 
+            // Drag functionality for minimized window
+            const minimizedWidget = document.getElementById('pomodoro-minimized');
+
+            minimizedWidget.addEventListener('mousedown', function(e) {
+                isDraggingMinimized = true;
+                minimizedDragMoved = false;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                const rect = minimizedWidget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                e.preventDefault();
+            });
+
             // Mouse move
             document.addEventListener('mousemove', function(e) {
                 if (isDragging) {
@@ -2141,6 +2157,18 @@
                     widget.style.top = (startTop + deltaY) + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
+                } else if (isDraggingMinimized) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+
+                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                        minimizedDragMoved = true;
+                    }
+
+                    minimizedWidget.style.left = (startLeft + deltaX) + 'px';
+                    minimizedWidget.style.top = (startTop + deltaY) + 'px';
+                    minimizedWidget.style.right = 'auto';
+                    minimizedWidget.style.bottom = 'auto';
                 } else if (isResizing) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
@@ -2187,6 +2215,7 @@
                     widget.classList.remove('no-transition');
                 }
                 isDragging = false;
+                isDraggingMinimized = false;
                 isResizing = false;
                 resizeDirection = null;
             });
@@ -2209,6 +2238,18 @@
                 widget.classList.add('no-transition');
             });
 
+            // Touch support for minimized window
+            minimizedWidget.addEventListener('touchstart', function(e) {
+                isDraggingMinimized = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+
+                const rect = minimizedWidget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+            });
+
             document.addEventListener('touchmove', function(e) {
                 if (isDragging) {
                     const touch = e.touches[0];
@@ -2219,6 +2260,15 @@
                     widget.style.top = (startTop + deltaY) + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
+                } else if (isDraggingMinimized) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+
+                    minimizedWidget.style.left = (startLeft + deltaX) + 'px';
+                    minimizedWidget.style.top = (startTop + deltaY) + 'px';
+                    minimizedWidget.style.right = 'auto';
+                    minimizedWidget.style.bottom = 'auto';
                 }
             });
 
@@ -2227,6 +2277,7 @@
                     widget.classList.remove('no-transition');
                 }
                 isDragging = false;
+                isDraggingMinimized = false;
             });
         }
 
@@ -2278,7 +2329,12 @@
             document.getElementById('timer-new-task').addEventListener('click', startNewTask);
 
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
-            document.getElementById('pomodoro-minimized').addEventListener('click', toggleMinimize);
+            document.getElementById('pomodoro-minimized').addEventListener('click', function(e) {
+                // Only toggle if not dragged
+                if (!minimizedDragMoved) {
+                    toggleMinimize();
+                }
+            });
 
             // Initialize drag and resize functionality
             initDragAndResize();
