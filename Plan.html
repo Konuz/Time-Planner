@@ -1037,7 +1037,7 @@
 
             <div class="pomodoro-controls">
                 <button id="timer-start" class="timer-btn timer-btn-primary">Start</button>
-                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Pauza</button>
+                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Przerwanie</button>
                 <button id="timer-reset" class="timer-btn timer-btn-secondary">Reset</button>
             </div>
 
@@ -2025,13 +2025,95 @@
             updatePomodoroDisplay();
         }
 
-        // Pause timer
+        // Round work time according to Pomodoro philosophy
+        // < 15 min → 0 (don't add)
+        // >= 15 min and < 45 min → 0.5h
+        // >= 45 min and < 1h 15min → 1h
+        // Pattern repeats for each hour
+        function roundWorkTime(seconds) {
+            if (seconds < 900) { // < 15 min
+                return 0;
+            }
+
+            const hours = Math.floor(seconds / 3600);
+            const remainingSeconds = seconds % 3600;
+
+            if (remainingSeconds < 900) { // < 15 min
+                return hours;
+            } else if (remainingSeconds < 2700) { // >= 15 min and < 45 min
+                return hours + 0.5;
+            } else { // >= 45 min
+                return hours + 1;
+            }
+        }
+
+        // Interrupt timer (Pomodoro philosophy: interruption voids the Pomodoro but tracks time)
         function pauseTimer() {
             if (!pomodoroState.isRunning) return;
 
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
+
+            // Handle work time tracking
+            if (pomodoroState.mode === 'work' && pomodoroState.elapsedTime > 0) {
+                const taskNumber = document.getElementById('timer-task-number').value.trim();
+
+                if (!taskNumber) {
+                    alert('Podaj numer zadania aby zapisać czas pracy');
+                    // Reset and return to work mode
+                    pomodoroState.elapsedTime = 0;
+                    switchMode('work');
+                    document.getElementById('timer-start').style.display = 'inline-block';
+                    document.getElementById('timer-pause').style.display = 'none';
+                    updatePomodoroDisplay();
+                    return;
+                }
+
+                const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
+
+                if (roundedHours === 0) {
+                    // Less than 15 minutes - don't add entry
+                    alert('Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.');
+                } else {
+                    // Add entry with rounded time
+                    const today = new Date().toISOString().split('T')[0];
+
+                    // Check if entry with same task number exists today
+                    const existingEntryIndex = entries.findIndex(entry => {
+                        const entryDate = entry.date.toISOString().split('T')[0];
+                        return entry.taskNumber === taskNumber && entryDate === today;
+                    });
+
+                    if (existingEntryIndex !== -1) {
+                        // Sum hours to existing entry
+                        entries[existingEntryIndex].hours += roundedHours;
+                        alert(`Czas dodany do istniejącego wpisu: ${taskNumber} (+${roundedHours}h zaokrąglone)\n\nPomidor został anulowany zgodnie z filozofią Pomodoro.`);
+                    } else {
+                        // Create new entry
+                        const newEntry = {
+                            id: Date.now(),
+                            date: new Date(),
+                            taskType: '', // To be filled later
+                            client: '', // To be filled later
+                            hours: roundedHours,
+                            taskNumber: taskNumber
+                        };
+                        entries.push(newEntry);
+                        alert(`Wpis dodany: ${taskNumber} (${roundedHours}h zaokrąglone). Uzupełnij szczegóły w edycji.\n\nPomidor został anulowany zgodnie z filozofią Pomodoro.`);
+                    }
+
+                    saveEntries();
+                    renderEntries();
+                    updateSummary();
+                }
+            }
+
+            // Void the Pomodoro (don't count it) and reset
+            pomodoroState.elapsedTime = 0;
+            pomodoroState.currentTaskNumber = '';
+            document.getElementById('timer-task-number').value = '';
+            switchMode('work');
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
