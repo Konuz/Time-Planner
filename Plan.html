@@ -36,6 +36,11 @@
             padding: 20px;
         }
 
+        /* Prevent transitions on page load */
+        .preload * {
+            transition: none !important;
+        }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -473,10 +478,6 @@
             stroke-linecap: round;
             stroke-dasharray: 565.48;
             stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.5s linear;
-        }
-
-        .timer-circle-progress.timer-active {
             transition: stroke-dashoffset 0.5s linear, stroke 0.5s ease;
         }
 
@@ -488,9 +489,6 @@
             text-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
             position: relative;
             z-index: 1;
-        }
-
-        .timer-display.timer-active {
             transition: color 0.5s ease, text-shadow 0.5s ease;
         }
 
@@ -794,7 +792,7 @@
         }
     </style>
 </head>
-<body>
+<body class="preload">
     <div class="container">
         <header>
             <h1>GODZINY PRACY</h1>
@@ -1814,25 +1812,29 @@
             const offset = circumference * (1 - progress);
             document.getElementById('timer-circle-progress').style.strokeDashoffset = offset;
 
-            // Update color based on progress (only for work mode)
-            if (pomodoroState.mode === 'work') {
+            // Update color based on progress (only for work mode and when timer is running)
+            const timerDisplay = document.getElementById('timer-display');
+            const progressCircle = document.getElementById('timer-circle-progress');
+
+            if (pomodoroState.mode === 'work' && pomodoroState.isRunning) {
+                // Only apply inline styles when timer is actually running
                 const color = getColorForProgress(progress);
                 const hexColor = colorToHex(color.r, color.g, color.b);
                 const glowColor = colorToRgba(color.r, color.g, color.b, 0.3);
 
-                // Update timer display color
-                const timerDisplay = document.getElementById('timer-display');
                 timerDisplay.style.color = hexColor;
                 timerDisplay.style.textShadow = `0 2px 10px ${glowColor}`;
-
-                // Update progress ring color
-                document.getElementById('timer-circle-progress').style.stroke = hexColor;
-            } else {
-                // For breaks, use blue color
-                const timerDisplay = document.getElementById('timer-display');
+                progressCircle.style.stroke = hexColor;
+            } else if (pomodoroState.mode !== 'work') {
+                // For breaks, always use blue color
                 timerDisplay.style.color = '#2196F3';
                 timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-                document.getElementById('timer-circle-progress').style.stroke = '#2196F3';
+                progressCircle.style.stroke = '#2196F3';
+            } else {
+                // For work mode but not running, remove inline styles to use CSS defaults
+                timerDisplay.style.color = '';
+                timerDisplay.style.textShadow = '';
+                progressCircle.style.stroke = '';
             }
 
             // Update mode text
@@ -1960,10 +1962,6 @@
             pomodoroState.isRunning = true;
             pomodoroState.startTime = Date.now();
 
-            // Enable transitions for smooth color changes while timer is running
-            document.getElementById('timer-display').classList.add('timer-active');
-            document.getElementById('timer-circle-progress').classList.add('timer-active');
-
             pomodoroTimer = setInterval(timerTick, 1000);
 
             document.getElementById('timer-start').style.display = 'none';
@@ -1979,10 +1977,6 @@
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
 
-            // Disable transitions when paused
-            document.getElementById('timer-display').classList.remove('timer-active');
-            document.getElementById('timer-circle-progress').classList.remove('timer-active');
-
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
             updatePomodoroDisplay();
@@ -1995,10 +1989,6 @@
             pomodoroTimer = null;
 
             pomodoroState.elapsedTime = 0;
-
-            // Disable transitions to prevent flashing during reset
-            document.getElementById('timer-display').classList.remove('timer-active');
-            document.getElementById('timer-circle-progress').classList.remove('timer-active');
 
             switchMode('work');
 
@@ -2243,10 +2233,6 @@
 
         // Initialize Pomodoro Timer
         function initPomodoroTimer() {
-            // Ensure timer-active class is not present on initialization
-            document.getElementById('timer-display').classList.remove('timer-active');
-            document.getElementById('timer-circle-progress').classList.remove('timer-active');
-
             loadPomodoroData();
 
             // Request notification permission
@@ -2425,6 +2411,13 @@
 
         // Uruchomienie aplikacji po załadowaniu strony
         document.addEventListener('DOMContentLoaded', initApp);
+
+        // Remove preload class after page loads to enable transitions
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.body.classList.remove('preload');
+            }, 100);
+        });
     </script>
 </body>
 </html>
