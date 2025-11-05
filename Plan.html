@@ -1056,6 +1056,10 @@
                     <span id="pomodoro-session">🍅○○○ (1/4)</span>
                 </div>
                 <div class="stat-row">
+                    <span>Cykle dziś:</span>
+                    <span id="pomodoro-cycles">0</span>
+                </div>
+                <div class="stat-row">
                     <span>Dziś:</span>
                     <span id="pomodoro-today">0h (0 🍅)</span>
                 </div>
@@ -1118,6 +1122,7 @@
             currentTaskNumber: '',
             sessionCount: 0,
             todayPomodoros: 0,
+            todayCycles: 0,
             todayHours: 0,
             startTime: null,
             elapsedTime: 0
@@ -1657,10 +1662,12 @@
                 // Reset daily stats if it's a new day
                 if (data.lastDate !== today) {
                     pomodoroState.todayPomodoros = 0;
+                    pomodoroState.todayCycles = 0;
                     pomodoroState.todayHours = 0;
                     pomodoroState.sessionCount = 0;
                 } else {
                     pomodoroState.todayPomodoros = data.todayPomodoros || 0;
+                    pomodoroState.todayCycles = data.todayCycles || 0;
                     pomodoroState.todayHours = data.todayHours || 0;
                     pomodoroState.sessionCount = data.sessionCount || 0;
                 }
@@ -1685,6 +1692,7 @@
             const today = new Date().toDateString();
             const data = {
                 todayPomodoros: pomodoroState.todayPomodoros,
+                todayCycles: pomodoroState.todayCycles,
                 todayHours: pomodoroState.todayHours,
                 sessionCount: pomodoroState.sessionCount,
                 lastDate: today
@@ -1876,18 +1884,14 @@
 
         // Update statistics
         function updatePomodoroStats() {
-            // Session progress (full session = 16 pomodoros, displayed in 2 rows of 8)
-            const completed = pomodoroState.sessionCount % 16;
+            // Session progress (full session = 4 pomodoros per Pomodoro Technique)
+            const completed = pomodoroState.sessionCount % 4;
+            const sessionDisplay = '🍅'.repeat(completed) + '○'.repeat(4 - completed);
 
-            // First row: items 0-7
-            const row1Filled = Math.min(completed, 8);
-            const row1 = '🍅'.repeat(row1Filled) + '○'.repeat(8 - row1Filled);
+            document.getElementById('pomodoro-session').textContent = `${sessionDisplay} (${completed}/4)`;
 
-            // Second row: items 8-15
-            const row2Filled = Math.max(0, completed - 8);
-            const row2 = '🍅'.repeat(row2Filled) + '○'.repeat(8 - row2Filled);
-
-            document.getElementById('pomodoro-session').innerHTML = `${row1}<br>${row2} (${completed}/16)`;
+            // Today cycles (completed 4-pomodoro cycles)
+            document.getElementById('pomodoro-cycles').textContent = pomodoroState.todayCycles;
 
             // Today stats
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
@@ -1940,6 +1944,11 @@
                 if (isFullPomodoro) {
                     pomodoroState.sessionCount++;
                     pomodoroState.todayPomodoros++;
+
+                    // Increment cycle count when completing a full 4-pomodoro cycle
+                    if (pomodoroState.sessionCount % 4 === 0) {
+                        pomodoroState.todayCycles++;
+                    }
                 }
 
                 pomodoroState.todayHours += pomodoroState.elapsedTime / 3600;
@@ -1950,8 +1959,8 @@
                 savePomodoroData();
                 updatePomodoroStats();
 
-                // Switch to break (full session = 16 pomodoros = 8 hours)
-                if (pomodoroState.sessionCount % 16 === 0) {
+                // Switch to break (full session = 4 pomodoros per Pomodoro Technique philosophy)
+                if (pomodoroState.sessionCount % 4 === 0) {
                     switchMode('longBreak');
                 } else {
                     switchMode('shortBreak');
