@@ -391,10 +391,10 @@
             background: none;
             border: none;
             color: white;
-            width: 14px;
-            height: 14px;
+            width: 5px;
+            height: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1977,11 +1977,11 @@
             pomodoroTimer = null;
 
             pomodoroState.elapsedTime = 0;
-            switchMode('work');
+            switchMode('work'); // This already calls updatePomodoroDisplay()
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
-            updatePomodoroDisplay();
+            // Don't call updatePomodoroDisplay() here - switchMode() already does it
         }
 
         // Start new task (clear task number and reset elapsed time)
@@ -2274,6 +2274,11 @@
                     document.getElementById('minimized-timer').textContent = timeStr;
                 }
             }, 1000);
+
+            // Force initial display update to ensure glow is applied
+            setTimeout(() => {
+                updatePomodoroDisplay();
+            }, 100);
         }
 
         // ============ END POMODORO TIMER FUNCTIONS ============
