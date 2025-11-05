@@ -376,12 +376,11 @@
         }
 
         .pomodoro-minimize-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: none;
             border: none;
             color: white;
             width: 28px;
             height: 28px;
-            border-radius: 50%;
             cursor: pointer;
             font-size: 20px;
             display: flex;
@@ -390,11 +389,11 @@
             transition: all 0.2s ease;
             padding: 0;
             line-height: 1;
+            margin-left: auto;
         }
 
         .pomodoro-minimize-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+            opacity: 0.7;
         }
 
         .pomodoro-content {
@@ -406,13 +405,47 @@
             margin-bottom: 20px;
         }
 
+        .timer-circle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            transform: rotate(-90deg);
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: var(--bg-light);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: #ff6b6b;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.5s linear;
+        }
+
         .timer-display {
             font-size: 48px;
             font-weight: 700;
             color: #ff6b6b;
             font-family: 'Courier New', monospace;
             text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
-            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
         }
 
         .timer-mode {
@@ -865,22 +898,28 @@
         </div>
         <div id="pomodoro-content" class="pomodoro-content">
             <div class="pomodoro-display">
-                <div class="timer-display" id="timer-display">30:00</div>
+                <div class="timer-circle-container">
+                    <svg class="timer-circle" viewBox="0 0 200 200">
+                        <circle class="timer-circle-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="timer-circle-progress" cx="100" cy="100" r="90" id="timer-circle-progress"></circle>
+                    </svg>
+                    <div class="timer-display" id="timer-display">30:00</div>
+                </div>
                 <div class="timer-mode" id="timer-mode">Czas pracy</div>
             </div>
 
             <div class="pomodoro-controls">
-                <button id="timer-start" class="timer-btn timer-btn-primary">▶️ Start</button>
-                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">⏸️ Pauza</button>
-                <button id="timer-reset" class="timer-btn timer-btn-secondary">🔄 Reset</button>
+                <button id="timer-start" class="timer-btn timer-btn-primary">Start</button>
+                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Pauza</button>
+                <button id="timer-reset" class="timer-btn timer-btn-secondary">Reset</button>
             </div>
 
             <div class="timer-task-input">
                 <label for="timer-task-number">Numer zadania:</label>
                 <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 2; margin-top: 0;">➕ Dodaj wpis</button>
-                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">🆕 Nowe</button>
+                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 2; margin-top: 0;">Dodaj wpis</button>
+                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">Nowe</button>
                 </div>
             </div>
 
@@ -1589,6 +1628,25 @@
                 widget.classList.remove('timer-running');
             }
 
+            // Update progress ring
+            let totalTime;
+            switch(pomodoroState.mode) {
+                case 'work':
+                    totalTime = pomodoroSettings.workDuration * 60;
+                    break;
+                case 'shortBreak':
+                    totalTime = pomodoroSettings.shortBreakDuration * 60;
+                    break;
+                case 'longBreak':
+                    totalTime = pomodoroSettings.longBreakDuration * 60;
+                    break;
+            }
+
+            const progress = pomodoroState.timeRemaining / totalTime;
+            const circumference = 2 * Math.PI * 90; // r=90
+            const offset = circumference * (1 - progress);
+            document.getElementById('timer-circle-progress').style.strokeDashoffset = offset;
+
             // Update mode text
             let modeText = '';
             switch(pomodoroState.mode) {
@@ -1818,6 +1876,64 @@
             updatePomodoroDisplay();
         }
 
+        // Drag and drop functionality
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        function dragStart(e) {
+            const widget = document.getElementById('pomodoro-widget');
+
+            if (e.type === "touchstart") {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+
+            if (e.target === document.getElementById('pomodoro-header') ||
+                e.target.classList.contains('pomodoro-icon') ||
+                e.target.classList.contains('pomodoro-title')) {
+                isDragging = true;
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+
+                const widget = document.getElementById('pomodoro-widget');
+
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, widget);
+            }
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        }
+
         // Toggle minimize
         function toggleMinimize() {
             const widget = document.getElementById('pomodoro-widget');
@@ -1850,6 +1966,19 @@
 
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
             document.getElementById('pomodoro-minimized').addEventListener('click', toggleMinimize);
+
+            // Drag and drop event listeners
+            const pomodoroWidget = document.getElementById('pomodoro-widget');
+            const pomodoroHeader = document.getElementById('pomodoro-header');
+
+            pomodoroHeader.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
+            // Touch events for mobile
+            pomodoroHeader.addEventListener('touchstart', dragStart);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', dragEnd);
 
             // Reset elapsed time when task number changes (new task)
             document.getElementById('timer-task-number').addEventListener('change', function() {
