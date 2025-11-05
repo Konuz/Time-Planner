@@ -2246,6 +2246,15 @@
 
         // Initialize Pomodoro Timer
         function initPomodoroTimer() {
+            // Set initial styles immediately to ensure glow is visible
+            const timerDisplay = document.getElementById('timer-display');
+            const progressCircle = document.getElementById('timer-circle-progress');
+
+            // Apply blue color with glow immediately
+            timerDisplay.style.color = '#2196F3';
+            timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
+            progressCircle.style.stroke = '#2196F3';
+
             loadPomodoroData();
 
             // Request notification permission
@@ -2429,6 +2438,10 @@
         window.addEventListener('load', function() {
             setTimeout(function() {
                 document.body.classList.remove('preload');
+                // Force update display to ensure colors are properly applied
+                if (typeof updatePomodoroDisplay === 'function') {
+                    updatePomodoroDisplay();
+                }
             }, 100);
         });
     </script>
