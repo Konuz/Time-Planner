@@ -2246,16 +2246,20 @@
 
         // Initialize Pomodoro Timer
         function initPomodoroTimer() {
-            // Set initial styles immediately to ensure glow is visible
+            // Use same pattern as resetTimer() - temporarily disable transitions
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
 
-            // Apply blue color with glow immediately
-            timerDisplay.style.color = '#2196F3';
-            timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-            progressCircle.style.stroke = '#2196F3';
+            timerDisplay.classList.add('no-transition');
+            progressCircle.classList.add('no-transition');
 
             loadPomodoroData();
+
+            // Re-enable transitions after DOM updates
+            setTimeout(() => {
+                timerDisplay.classList.remove('no-transition');
+                progressCircle.classList.remove('no-transition');
+            }, 50);
 
             // Request notification permission
             if (Notification.permission === 'default') {
