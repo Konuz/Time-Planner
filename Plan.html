@@ -565,6 +565,41 @@
             font-weight: 600;
         }
 
+        /* Non-blocking notification */
+        .pomodoro-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-highlight);
+            color: var(--text-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: none;
+            max-width: 400px;
+            text-align: center;
+            font-size: 14px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .pomodoro-notification.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
         .timer-task-input input {
             width: 100%;
             padding: 10px;
@@ -796,6 +831,9 @@
     </style>
 </head>
 <body class="preload">
+    <!-- Non-blocking notification for Pomodoro timer -->
+    <div id="pomodoro-notification" class="pomodoro-notification"></div>
+
     <div class="container">
         <header>
             <h1>GODZINY PRACY</h1>
@@ -2222,18 +2260,30 @@
             updatePomodoroDisplay();
         }
 
+        // Non-blocking notification (doesn't pause timer like alert())
+        function showNotification(message, duration = 3000) {
+            const notification = document.getElementById('pomodoro-notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            // Auto-hide after duration
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
         // Complete current task and start new one (Pomodoro overlearning/task grouping)
         // Timer continues running - maintains session continuity
         function completeCurrentTask() {
             const taskNumber = document.getElementById('timer-task-number').value.trim();
 
             if (!taskNumber) {
-                alert('Podaj numer zadania');
+                showNotification('⚠️ Podaj numer zadania');
                 return;
             }
 
             if (pomodoroState.elapsedTime === 0) {
-                alert('Timer nie został jeszcze uruchomiony');
+                showNotification('⚠️ Timer nie został jeszcze uruchomiony');
                 return;
             }
 
@@ -2242,7 +2292,7 @@
 
             if (roundedHours === 0) {
                 // Less than 15 minutes - don't add entry, but keep timer running
-                alert('Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę nad tym zadaniem aby móc je zapisać.');
+                showNotification('⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę!', 4000);
                 // Don't reset elapsedTime or clear field - let user continue working
                 // Timer keeps running in the background
                 return;
@@ -2260,7 +2310,7 @@
             if (existingEntryIndex !== -1) {
                 // Sum hours to existing entry
                 entries[existingEntryIndex].hours += roundedHours;
-                alert(`Zadanie zakończone: ${taskNumber} (+${roundedHours}h zaokrąglone)\n\nTimer nadal liczy - możesz rozpocząć nowe zadanie w tej samej sesji.`);
+                showNotification(`✅ Zadanie zakończone: ${taskNumber} (+${roundedHours}h). Timer nadal liczy!`, 3000);
             } else {
                 // Create new entry
                 const newEntry = {
@@ -2272,7 +2322,7 @@
                     taskNumber: taskNumber
                 };
                 entries.push(newEntry);
-                alert(`Zadanie zakończone: ${taskNumber} (${roundedHours}h zaokrąglone). Uzupełnij szczegóły w edycji.\n\nTimer nadal liczy - możesz rozpocząć nowe zadanie w tej samej sesji.`);
+                showNotification(`✅ Zadanie zakończone: ${taskNumber} (${roundedHours}h). Timer nadal liczy!`, 3000);
             }
 
             saveEntries();
