@@ -391,9 +391,9 @@
             background: none;
             border: none;
             color: white;
-            width: 5px;
-            min-width: 5px;
-            max-width: 5px;
+            width: 24px;
+            min-width: 24px;
+            max-width: 24px;
             height: 24px;
             cursor: pointer;
             font-size: 18px;
@@ -1981,15 +1981,22 @@
 
             pomodoroState.elapsedTime = 0;
 
-            // Set colors directly to blue before updating to prevent flashing
+            // Disable transitions temporarily to prevent flashing
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
 
-            timerDisplay.style.color = '#2196F3';
-            timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-            progressCircle.style.stroke = '#2196F3';
+            timerDisplay.style.transition = 'none';
+            progressCircle.style.transition = 'none';
 
             switchMode('work');
+
+            // Re-enable transitions after render completes
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    timerDisplay.style.transition = 'color 0.5s ease, text-shadow 0.5s ease';
+                    progressCircle.style.transition = 'stroke-dashoffset 0.5s linear, stroke 0.5s ease';
+                });
+            });
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
@@ -2287,17 +2294,23 @@
             }, 1000);
 
             // Force initial display update to ensure glow is applied
-            // Apply glow immediately without waiting
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
 
-            // Set initial glow colors directly
-            timerDisplay.style.color = '#2196F3';
-            timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-            progressCircle.style.stroke = '#2196F3';
+            // Disable transitions during initial load to prevent flashing
+            timerDisplay.style.transition = 'none';
+            progressCircle.style.transition = 'none';
 
-            // Update full display
+            // Update display which will set colors
             updatePomodoroDisplay();
+
+            // Re-enable transitions after render completes
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    timerDisplay.style.transition = 'color 0.5s ease, text-shadow 0.5s ease';
+                    progressCircle.style.transition = 'stroke-dashoffset 0.5s linear, stroke 0.5s ease';
+                });
+            });
         }
 
         // ============ END POMODORO TIMER FUNCTIONS ============
