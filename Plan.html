@@ -362,7 +362,7 @@
         }
 
         .pomodoro-header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
             padding: 12px 16px;
             border-radius: 16px 16px 0 0;
             display: flex;
@@ -399,6 +399,7 @@
             padding: 0;
             line-height: 1;
             margin-left: auto;
+            margin-right: 8px;
         }
 
         .pomodoro-minimize-btn:hover {
@@ -428,7 +429,7 @@
         }
 
         .pomodoro-content::-webkit-scrollbar-thumb:hover {
-            background: #ff6b6b;
+            background: #2196F3;
         }
 
         .pomodoro-display {
@@ -461,22 +462,23 @@
 
         .timer-circle-progress {
             fill: none;
-            stroke: #ff6b6b;
+            stroke: #2196F3;
             stroke-width: 8;
             stroke-linecap: round;
             stroke-dasharray: 565.48;
             stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.5s linear;
+            transition: stroke-dashoffset 0.5s linear, stroke 0.5s ease;
         }
 
         .timer-display {
             font-size: 48px;
             font-weight: 700;
-            color: #ff6b6b;
+            color: #2196F3;
             font-family: 'Courier New', monospace;
-            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            text-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
             position: relative;
             z-index: 1;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
         }
 
         .timer-mode {
@@ -584,7 +586,7 @@
 
         .stat-row span:last-child {
             font-weight: 600;
-            color: #ff6b6b;
+            color: #2196F3;
         }
 
         .pomodoro-settings details {
@@ -642,7 +644,7 @@
             right: 20px;
             width: 100px;
             height: 60px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             z-index: 9999;
@@ -1690,6 +1692,47 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
+        // Interpolate between colors based on progress
+        function getColorForProgress(progress) {
+            // progress: 1.0 = full time (blue), 0.0 = no time (red)
+            // Color stops: blue -> green -> yellow -> red
+
+            let r, g, b;
+
+            if (progress > 0.66) {
+                // Blue to Green (100% - 66%)
+                const localProgress = (progress - 0.66) / 0.34;
+                r = Math.round(33 + (76 - 33) * (1 - localProgress));
+                g = Math.round(150 + (175 - 150) * (1 - localProgress));
+                b = Math.round(243 + (80 - 243) * (1 - localProgress));
+            } else if (progress > 0.33) {
+                // Green to Yellow (66% - 33%)
+                const localProgress = (progress - 0.33) / 0.33;
+                r = Math.round(76 + (255 - 76) * (1 - localProgress));
+                g = Math.round(175 + (193 - 175) * (1 - localProgress));
+                b = Math.round(80 + (7 - 80) * (1 - localProgress));
+            } else {
+                // Yellow to Red (33% - 0%)
+                const localProgress = progress / 0.33;
+                r = 255;
+                g = Math.round(193 * localProgress);
+                b = Math.round(7 * localProgress);
+            }
+
+            return { r, g, b };
+        }
+
+        function colorToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        function colorToRgba(r, g, b, alpha) {
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
         // Play notification sound
         function playNotificationSound() {
             if (!pomodoroSettings.soundEnabled) return;
@@ -1757,6 +1800,27 @@
             const circumference = 2 * Math.PI * 90; // r=90
             const offset = circumference * (1 - progress);
             document.getElementById('timer-circle-progress').style.strokeDashoffset = offset;
+
+            // Update color based on progress (only for work mode)
+            if (pomodoroState.mode === 'work') {
+                const color = getColorForProgress(progress);
+                const hexColor = colorToHex(color.r, color.g, color.b);
+                const glowColor = colorToRgba(color.r, color.g, color.b, 0.3);
+
+                // Update timer display color
+                const timerDisplay = document.getElementById('timer-display');
+                timerDisplay.style.color = hexColor;
+                timerDisplay.style.textShadow = `0 2px 10px ${glowColor}`;
+
+                // Update progress ring color
+                document.getElementById('timer-circle-progress').style.stroke = hexColor;
+            } else {
+                // For breaks, use blue color
+                const timerDisplay = document.getElementById('timer-display');
+                timerDisplay.style.color = '#2196F3';
+                timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
+                document.getElementById('timer-circle-progress').style.stroke = '#2196F3';
+            }
 
             // Update mode text
             let modeText = '';
