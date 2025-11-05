@@ -2241,12 +2241,10 @@
             const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
 
             if (roundedHours === 0) {
-                // Less than 15 minutes - don't add entry
-                alert('Niewystarczający czas pracy (< 15 min). Kontynuuj pracę nad tym zadaniem lub rozpocznij nowe.');
-                // Clear field so user can enter new task
-                document.getElementById('timer-task-number').value = '';
-                pomodoroState.elapsedTime = 0;
-                updatePomodoroDisplay();
+                // Less than 15 minutes - don't add entry, but keep timer running
+                alert('Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę nad tym zadaniem aby móc je zapisać.');
+                // Don't reset elapsedTime or clear field - let user continue working
+                // Timer keeps running in the background
                 return;
             }
 
