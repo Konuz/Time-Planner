@@ -1658,9 +1658,11 @@
                 if (data.lastDate !== today) {
                     pomodoroState.todayPomodoros = 0;
                     pomodoroState.todayHours = 0;
+                    pomodoroState.sessionCount = 0;
                 } else {
                     pomodoroState.todayPomodoros = data.todayPomodoros || 0;
                     pomodoroState.todayHours = data.todayHours || 0;
+                    pomodoroState.sessionCount = data.sessionCount || 0;
                 }
             }
 
@@ -1684,6 +1686,7 @@
             const data = {
                 todayPomodoros: pomodoroState.todayPomodoros,
                 todayHours: pomodoroState.todayHours,
+                sessionCount: pomodoroState.sessionCount,
                 lastDate: today
             };
             localStorage.setItem(POMODORO_STORAGE_KEY, JSON.stringify(data));
@@ -1930,8 +1933,11 @@
 
             if (pomodoroState.mode === 'work') {
                 // Work session completed
-                // Only count as full pomodoro if at least 30 minutes (1800 seconds) elapsed
-                const isFullPomodoro = pomodoroState.elapsedTime >= 1800;
+                // Only count as full pomodoro if at least 90% of work duration elapsed
+                const requiredTime = pomodoroSettings.workDuration * 60 * 0.9; // 90% of work duration
+                const isFullPomodoro = pomodoroState.elapsedTime >= requiredTime;
+
+                console.log('Timer completed - elapsedTime:', pomodoroState.elapsedTime, 'requiredTime:', requiredTime, 'isFullPomodoro:', isFullPomodoro);
 
                 if (isFullPomodoro) {
                     pomodoroState.sessionCount++;
