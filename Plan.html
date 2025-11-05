@@ -2246,6 +2246,9 @@
 
         // Initialize Pomodoro Timer
         function initPomodoroTimer() {
+            // Load data first (loads settings from localStorage)
+            loadPomodoroData();
+
             // Use same pattern as resetTimer() - temporarily disable transitions
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
@@ -2253,7 +2256,8 @@
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
 
-            loadPomodoroData();
+            // Synchronize timeRemaining with workDuration from settings (same as Reset does)
+            switchMode('work');
 
             // Re-enable transitions after DOM updates
             setTimeout(() => {
