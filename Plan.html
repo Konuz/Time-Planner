@@ -341,13 +341,16 @@
             right: 20px;
             width: 320px;
             min-width: 280px;
-            max-width: 600px;
+            max-width: 640px;
             background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 9999;
             border: 1px solid var(--border-color);
             transition: box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 40px);
         }
 
         .pomodoro-widget.no-transition {
@@ -404,6 +407,28 @@
 
         .pomodoro-content {
             padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .pomodoro-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb:hover {
+            background: #ff6b6b;
         }
 
         .pomodoro-display {
@@ -1004,7 +1029,7 @@
                 <label for="timer-task-number">Numer zadania:</label>
                 <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 2; margin-top: 0;">Dodaj wpis</button>
+                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;">Dodaj wpis</button>
                     <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">Nowe</button>
                 </div>
             </div>
@@ -2035,11 +2060,11 @@
 
                     // Handle different resize directions
                     if (resizeDirection.includes('e')) {
-                        newWidth = Math.max(280, Math.min(600, startWidth + deltaX));
+                        newWidth = Math.max(280, Math.min(640, startWidth + deltaX));
                     }
                     if (resizeDirection.includes('w')) {
-                        newWidth = Math.max(280, Math.min(600, startWidth - deltaX));
-                        if (newWidth > 280 && newWidth < 600) {
+                        newWidth = Math.max(280, Math.min(640, startWidth - deltaX));
+                        if (newWidth > 280 && newWidth < 640) {
                             newLeft = startLeft + deltaX;
                         }
                     }
