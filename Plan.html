@@ -392,9 +392,9 @@
             border: none;
             color: white;
             width: 5px;
-            height: 5px;
+            height: 24px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1977,11 +1977,24 @@
             pomodoroTimer = null;
 
             pomodoroState.elapsedTime = 0;
-            switchMode('work'); // This already calls updatePomodoroDisplay()
+
+            // Disable transitions temporarily to prevent flashing
+            const timerDisplay = document.getElementById('timer-display');
+            const progressCircle = document.getElementById('timer-circle-progress');
+
+            timerDisplay.style.transition = 'none';
+            progressCircle.style.transition = 'none';
+
+            switchMode('work');
+
+            // Re-enable transitions after a brief delay
+            setTimeout(() => {
+                timerDisplay.style.transition = 'color 0.5s ease, text-shadow 0.5s ease';
+                progressCircle.style.transition = 'stroke-dashoffset 0.5s linear, stroke 0.5s ease';
+            }, 50);
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
-            // Don't call updatePomodoroDisplay() here - switchMode() already does it
         }
 
         // Start new task (clear task number and reset elapsed time)
@@ -2276,9 +2289,20 @@
             }, 1000);
 
             // Force initial display update to ensure glow is applied
+            // Disable transitions during initial load to prevent flashing
+            const timerDisplay = document.getElementById('timer-display');
+            const progressCircle = document.getElementById('timer-circle-progress');
+
+            timerDisplay.style.transition = 'none';
+            progressCircle.style.transition = 'none';
+
+            updatePomodoroDisplay();
+
+            // Re-enable transitions after initial render
             setTimeout(() => {
-                updatePomodoroDisplay();
-            }, 100);
+                timerDisplay.style.transition = 'color 0.5s ease, text-shadow 0.5s ease';
+                progressCircle.style.transition = 'stroke-dashoffset 0.5s linear, stroke 0.5s ease';
+            }, 50);
         }
 
         // ============ END POMODORO TIMER FUNCTIONS ============
