@@ -1043,7 +1043,10 @@
 
             <div class="timer-task-input">
                 <label for="timer-task-number">Numer zadania:</label>
-                <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567">
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567" style="flex: 1;">
+                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="padding: 8px 12px; margin: 0;" title="Zakończ zadanie, zacznij nowe (ciągłość sesji)">✅</button>
+                </div>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
                     <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;">Dodaj wpis</button>
                     <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">Nowe</button>
@@ -2219,6 +2222,73 @@
             updatePomodoroDisplay();
         }
 
+        // Complete current task and start new one (Pomodoro overlearning/task grouping)
+        // Timer continues running - maintains session continuity
+        function completeCurrentTask() {
+            const taskNumber = document.getElementById('timer-task-number').value.trim();
+
+            if (!taskNumber) {
+                alert('Podaj numer zadania');
+                return;
+            }
+
+            if (pomodoroState.elapsedTime === 0) {
+                alert('Timer nie został jeszcze uruchomiony');
+                return;
+            }
+
+            // Round time according to Pomodoro philosophy
+            const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
+
+            if (roundedHours === 0) {
+                // Less than 15 minutes - don't add entry
+                alert('Niewystarczający czas pracy (< 15 min). Kontynuuj pracę nad tym zadaniem lub rozpocznij nowe.');
+                // Clear field so user can enter new task
+                document.getElementById('timer-task-number').value = '';
+                pomodoroState.elapsedTime = 0;
+                updatePomodoroDisplay();
+                return;
+            }
+
+            // Add entry with rounded time
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check if entry with same task number exists today
+            const existingEntryIndex = entries.findIndex(entry => {
+                const entryDate = entry.date.toISOString().split('T')[0];
+                return entry.taskNumber === taskNumber && entryDate === today;
+            });
+
+            if (existingEntryIndex !== -1) {
+                // Sum hours to existing entry
+                entries[existingEntryIndex].hours += roundedHours;
+                alert(`Zadanie zakończone: ${taskNumber} (+${roundedHours}h zaokrąglone)\n\nTimer nadal liczy - możesz rozpocząć nowe zadanie w tej samej sesji.`);
+            } else {
+                // Create new entry
+                const newEntry = {
+                    id: Date.now(),
+                    date: new Date(),
+                    taskType: '', // To be filled later
+                    client: '', // To be filled later
+                    hours: roundedHours,
+                    taskNumber: taskNumber
+                };
+                entries.push(newEntry);
+                alert(`Zadanie zakończone: ${taskNumber} (${roundedHours}h zaokrąglone). Uzupełnij szczegóły w edycji.\n\nTimer nadal liczy - możesz rozpocząć nowe zadanie w tej samej sesji.`);
+            }
+
+            saveEntries();
+            renderEntries();
+            updateSummary();
+
+            // Clear task number and reset elapsed time for new task
+            // Timer keeps running (session continuity)
+            document.getElementById('timer-task-number').value = '';
+            pomodoroState.currentTaskNumber = '';
+            pomodoroState.elapsedTime = 0;
+            updatePomodoroDisplay();
+        }
+
         // Drag and resize functionality
         let isDragging = false;
         let isDraggingMinimized = false;
@@ -2481,6 +2551,7 @@
             document.getElementById('timer-start').addEventListener('click', startTimer);
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
             document.getElementById('timer-reset').addEventListener('click', resetTimer);
+            document.getElementById('timer-complete-task').addEventListener('click', completeCurrentTask);
             document.getElementById('timer-quick-add').addEventListener('click', quickAddTask);
             document.getElementById('timer-new-task').addEventListener('click', startNewTask);
 
