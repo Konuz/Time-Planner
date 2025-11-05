@@ -1909,6 +1909,9 @@
                 pomodoroState.todayPomodoros++;
                 pomodoroState.todayHours += pomodoroState.elapsedTime / 3600;
 
+                // Reset elapsed time since it's now counted in todayHours
+                pomodoroState.elapsedTime = 0;
+
                 savePomodoroData();
                 updatePomodoroStats();
 
@@ -1926,7 +1929,6 @@
             } else {
                 // Break completed, switch back to work
                 switchMode('work');
-                // NIE resetuj elapsedTime - pozwól kontynuować to samo zadanie
             }
 
             updatePomodoroDisplay();
