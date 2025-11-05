@@ -1868,7 +1868,6 @@
         // Update statistics
         function updatePomodoroStats() {
             // Session progress (full session = 16 pomodoros, displayed in 2 rows of 8)
-            const sessionNum = (pomodoroState.sessionCount % 16) + 1;
             const completed = pomodoroState.sessionCount % 16;
 
             // First row: items 0-7
@@ -1879,7 +1878,7 @@
             const row2Filled = Math.max(0, completed - 8);
             const row2 = '🍅'.repeat(row2Filled) + '○'.repeat(8 - row2Filled);
 
-            document.getElementById('pomodoro-session').innerHTML = `${row1}<br>${row2} (${sessionNum}/16)`;
+            document.getElementById('pomodoro-session').innerHTML = `${row1}<br>${row2} (${completed}/16)`;
 
             // Today stats
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
