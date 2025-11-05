@@ -340,12 +340,18 @@
             top: 20px;
             right: 20px;
             width: 320px;
+            min-width: 280px;
+            max-width: 600px;
             background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 9999;
             border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .pomodoro-widget.no-transition {
+            transition: none !important;
         }
 
         .pomodoro-widget:hover {
@@ -649,6 +655,76 @@
             50% { opacity: 0.8; }
         }
 
+        /* Resize Handles */
+        .resize-handle {
+            position: absolute;
+            z-index: 10;
+        }
+
+        .resize-handle-n {
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            cursor: ns-resize;
+        }
+
+        .resize-handle-s {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            cursor: ns-resize;
+        }
+
+        .resize-handle-e {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: ew-resize;
+        }
+
+        .resize-handle-w {
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: ew-resize;
+        }
+
+        .resize-handle-ne {
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            cursor: nesw-resize;
+        }
+
+        .resize-handle-nw {
+            top: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            cursor: nwse-resize;
+        }
+
+        .resize-handle-se {
+            bottom: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            cursor: nwse-resize;
+        }
+
+        .resize-handle-sw {
+            bottom: 0;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            cursor: nesw-resize;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .pomodoro-widget {
@@ -891,6 +967,16 @@
 
     <!-- Pomodoro Timer Widget -->
     <div id="pomodoro-widget" class="pomodoro-widget">
+        <!-- Resize Handles -->
+        <div class="resize-handle resize-handle-n" data-direction="n"></div>
+        <div class="resize-handle resize-handle-s" data-direction="s"></div>
+        <div class="resize-handle resize-handle-e" data-direction="e"></div>
+        <div class="resize-handle resize-handle-w" data-direction="w"></div>
+        <div class="resize-handle resize-handle-ne" data-direction="ne"></div>
+        <div class="resize-handle resize-handle-nw" data-direction="nw"></div>
+        <div class="resize-handle resize-handle-se" data-direction="se"></div>
+        <div class="resize-handle resize-handle-sw" data-direction="sw"></div>
+
         <div id="pomodoro-header" class="pomodoro-header">
             <span class="pomodoro-icon">🍅</span>
             <span class="pomodoro-title">POMODORO</span>
@@ -1876,62 +1962,153 @@
             updatePomodoroDisplay();
         }
 
-        // Drag and drop functionality
+        // Drag and resize functionality
         let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
+        let isResizing = false;
+        let resizeDirection = null;
+        let startX, startY;
+        let startWidth, startHeight;
+        let startLeft, startTop;
 
-        function dragStart(e) {
+        function initDragAndResize() {
             const widget = document.getElementById('pomodoro-widget');
+            const header = document.getElementById('pomodoro-header');
+            const resizeHandles = document.querySelectorAll('.resize-handle');
 
-            if (e.type === "touchstart") {
-                initialX = e.touches[0].clientX - xOffset;
-                initialY = e.touches[0].clientY - yOffset;
-            } else {
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-            }
-
-            if (e.target === document.getElementById('pomodoro-header') ||
-                e.target.classList.contains('pomodoro-icon') ||
-                e.target.classList.contains('pomodoro-title')) {
-                isDragging = true;
-            }
-        }
-
-        function dragEnd(e) {
-            initialX = currentX;
-            initialY = currentY;
-            isDragging = false;
-        }
-
-        function drag(e) {
-            if (isDragging) {
-                e.preventDefault();
-
-                const widget = document.getElementById('pomodoro-widget');
-
-                if (e.type === "touchmove") {
-                    currentX = e.touches[0].clientX - initialX;
-                    currentY = e.touches[0].clientY - initialY;
-                } else {
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
+            // Drag functionality
+            header.addEventListener('mousedown', function(e) {
+                // Ignore if clicking on minimize button
+                if (e.target.classList.contains('pomodoro-minimize-btn')) {
+                    return;
                 }
 
-                xOffset = currentX;
-                yOffset = currentY;
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
 
-                setTranslate(currentX, currentY, widget);
-            }
-        }
+                const rect = widget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
 
-        function setTranslate(xPos, yPos, el) {
-            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+                widget.classList.add('no-transition');
+                e.preventDefault();
+            });
+
+            // Resize functionality
+            resizeHandles.forEach(handle => {
+                handle.addEventListener('mousedown', function(e) {
+                    isResizing = true;
+                    resizeDirection = this.getAttribute('data-direction');
+                    startX = e.clientX;
+                    startY = e.clientY;
+
+                    const rect = widget.getBoundingClientRect();
+                    startWidth = rect.width;
+                    startHeight = rect.height;
+                    startLeft = rect.left;
+                    startTop = rect.top;
+
+                    widget.classList.add('no-transition');
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            // Mouse move
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+
+                    widget.style.left = (startLeft + deltaX) + 'px';
+                    widget.style.top = (startTop + deltaY) + 'px';
+                    widget.style.right = 'auto';
+                    widget.style.bottom = 'auto';
+                } else if (isResizing) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+
+                    let newWidth = startWidth;
+                    let newHeight = startHeight;
+                    let newLeft = startLeft;
+                    let newTop = startTop;
+
+                    // Handle different resize directions
+                    if (resizeDirection.includes('e')) {
+                        newWidth = Math.max(280, Math.min(600, startWidth + deltaX));
+                    }
+                    if (resizeDirection.includes('w')) {
+                        newWidth = Math.max(280, Math.min(600, startWidth - deltaX));
+                        if (newWidth > 280 && newWidth < 600) {
+                            newLeft = startLeft + deltaX;
+                        }
+                    }
+                    if (resizeDirection.includes('s')) {
+                        newHeight = Math.max(400, startHeight + deltaY);
+                    }
+                    if (resizeDirection.includes('n')) {
+                        newHeight = Math.max(400, startHeight - deltaY);
+                        if (newHeight > 400) {
+                            newTop = startTop + deltaY;
+                        }
+                    }
+
+                    widget.style.width = newWidth + 'px';
+                    widget.style.height = newHeight + 'px';
+                    widget.style.left = newLeft + 'px';
+                    widget.style.top = newTop + 'px';
+                    widget.style.right = 'auto';
+                    widget.style.bottom = 'auto';
+                }
+            });
+
+            // Mouse up
+            document.addEventListener('mouseup', function() {
+                if (isDragging || isResizing) {
+                    widget.classList.remove('no-transition');
+                }
+                isDragging = false;
+                isResizing = false;
+                resizeDirection = null;
+            });
+
+            // Touch support for mobile
+            header.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('pomodoro-minimize-btn')) {
+                    return;
+                }
+
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+
+                const rect = widget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                widget.classList.add('no-transition');
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (isDragging) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+
+                    widget.style.left = (startLeft + deltaX) + 'px';
+                    widget.style.top = (startTop + deltaY) + 'px';
+                    widget.style.right = 'auto';
+                    widget.style.bottom = 'auto';
+                }
+            });
+
+            document.addEventListener('touchend', function() {
+                if (isDragging) {
+                    widget.classList.remove('no-transition');
+                }
+                isDragging = false;
+            });
         }
 
         // Toggle minimize
@@ -1967,18 +2144,8 @@
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
             document.getElementById('pomodoro-minimized').addEventListener('click', toggleMinimize);
 
-            // Drag and drop event listeners
-            const pomodoroWidget = document.getElementById('pomodoro-widget');
-            const pomodoroHeader = document.getElementById('pomodoro-header');
-
-            pomodoroHeader.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', dragEnd);
-
-            // Touch events for mobile
-            pomodoroHeader.addEventListener('touchstart', dragStart);
-            document.addEventListener('touchmove', drag);
-            document.addEventListener('touchend', dragEnd);
+            // Initialize drag and resize functionality
+            initDragAndResize();
 
             // Reset elapsed time when task number changes (new task)
             document.getElementById('timer-task-number').addEventListener('change', function() {
