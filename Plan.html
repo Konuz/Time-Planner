@@ -187,14 +187,13 @@
             border: none;
             color: var(--primary-color);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             margin-right: 10px;
-            padding: 0;
+            padding: 4px 8px;
         }
 
         .action-btn:hover {
             color: var(--primary-dark);
-            text-decoration: underline;
         }
 
         .delete-btn {
@@ -292,7 +291,7 @@
         }
 
         .project-action-btn:hover {
-            text-decoration: underline;
+            color: var(--primary-dark);
         }
 
         .project-action-btn.delete {
@@ -1734,8 +1733,8 @@
             });
 
             // Refresh displays that depend on language
-            if (typeof displayEntries === 'function') {
-                displayEntries();
+            if (typeof renderEntries === 'function') {
+                renderEntries();
             }
             if (typeof updatePomodoroDisplay === 'function') {
                 updatePomodoroDisplay();
