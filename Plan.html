@@ -1131,61 +1131,14 @@
                         <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
                         <span class="dropdown-arrow">▼</span>
                     </summary>
-                    <div style="margin-top: 10px; padding-left: 10px;">
+                    <div id="task-type-filters-container" style="margin-top: 10px; padding-left: 10px;">
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
                                 <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
                             </label>
                         </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-ctask" checked>
-                                CTASK
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-task" checked>
-                                TASK
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-inc" checked>
-                                INC
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-sctask" checked>
-                                SCTASK
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-chg" checked>
-                                CHG
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-ptask" checked>
-                                PTASK
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-training" checked>
-                                TRAINING
-                            </label>
-                        </div>
-                        <div class="filter-option">
-                            <label>
-                                <input type="checkbox" id="filter-meeting" checked>
-                                MEETING
-                            </label>
-                        </div>
+                        <!-- Filtry typów zadań będą generowane dynamicznie tutaj -->
                     </div>
                 </details>
             </div>
@@ -2082,6 +2035,106 @@
             });
         }
 
+        function renderTaskTypeFilters() {
+            const container = document.getElementById('task-type-filters-container');
+
+            // Zachowaj stan checkboxa "wszystkie"
+            const filterAllTasksElement = document.getElementById('filter-all-tasks');
+            const filterAllChecked = filterAllTasksElement ? filterAllTasksElement.checked : true;
+
+            // Zachowaj stany poszczególnych filtrów przed ich usunięciem
+            const filterStates = {};
+            taskTypes.forEach(taskType => {
+                const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+                filterStates[taskType] = filterElement ? filterElement.checked : true;
+            });
+
+            // Wyczyść kontener ale zachowaj checkbox "wszystkie"
+            container.innerHTML = `
+                <div class="filter-option">
+                    <label>
+                        <input type="checkbox" id="filter-all-tasks" ${filterAllChecked ? 'checked' : ''}>
+                        <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
+                    </label>
+                </div>`;
+
+            // Generuj filtry dla każdego typu zadania
+            taskTypes.forEach(taskType => {
+                const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
+                const isChecked = filterStates[taskType] !== undefined ? filterStates[taskType] : true;
+
+                const filterDiv = document.createElement('div');
+                filterDiv.className = 'filter-option';
+                filterDiv.innerHTML = `
+                    <label>
+                        <input type="checkbox" id="${filterId}" data-task-type="${taskType}" ${isChecked ? 'checked' : ''}>
+                        ${taskType}
+                    </label>`;
+                container.appendChild(filterDiv);
+            });
+
+            // Ponownie podepnij event listenery po regeneracji filtrów
+            initTaskTypeFilterListeners();
+        }
+
+        function initTaskTypeFilterListeners() {
+            // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
+            const filterAllTasks = document.getElementById('filter-all-tasks');
+            if (filterAllTasks) {
+                // Usuń stare event listenery poprzez klonowanie elementu
+                const newFilterAllTasks = filterAllTasks.cloneNode(true);
+                filterAllTasks.parentNode.replaceChild(newFilterAllTasks, filterAllTasks);
+
+                newFilterAllTasks.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    // Zaznacz/odznacz wszystkie filtry typów zadań
+                    taskTypes.forEach(taskType => {
+                        const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
+                        const filterElement = document.getElementById(filterId);
+                        if (filterElement) {
+                            filterElement.checked = isChecked;
+                        }
+                    });
+                    renderEntries();
+                });
+            }
+
+            // Obsługa pojedynczych filtrów typów zadań
+            taskTypes.forEach(taskType => {
+                const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+
+                if (filterElement) {
+                    filterElement.addEventListener('change', function() {
+                        // Sprawdź czy wszystkie są zaznaczone lub wszystkie odznaczone
+                        const allChecked = taskTypes.every(tt => {
+                            const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
+                            const el = document.getElementById(fid);
+                            return el ? el.checked : true;
+                        });
+                        const noneChecked = taskTypes.every(tt => {
+                            const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
+                            const el = document.getElementById(fid);
+                            return el ? !el.checked : false;
+                        });
+
+                        // Aktualizuj stan checkboxa "wszystkie"
+                        const filterAllTasks = document.getElementById('filter-all-tasks');
+                        if (filterAllTasks) {
+                            if (allChecked) {
+                                filterAllTasks.checked = true;
+                            } else if (noneChecked) {
+                                filterAllTasks.checked = false;
+                            }
+                        }
+
+                        renderEntries();
+                    });
+                }
+            });
+        }
+
         function addTaskType() {
             const taskTypeNameInput = document.getElementById('task-type-name');
             const taskTypeName = taskTypeNameInput.value.trim();
@@ -2113,6 +2166,7 @@
             saveTaskTypes();
             updateTaskTypeSelect();
             renderTaskTypes();
+            renderTaskTypeFilters(); // Odśwież filtry po zmianie typów zadań
             taskTypeNameInput.value = '';
             markAsChanged();
         }
@@ -2131,6 +2185,7 @@
                 saveTaskTypes();
                 updateTaskTypeSelect();
                 renderTaskTypes();
+                renderTaskTypeFilters(); // Odśwież filtry po usunięciu typu zadania
                 markAsChanged();
             }
         }
@@ -2356,14 +2411,6 @@
         function renderEntries() {
             const filterCurrentMonth = document.getElementById('filter-current-month').checked;
             const filterCurrentWeek = document.getElementById('filter-current-week').checked;
-            const filterCtask = document.getElementById('filter-ctask').checked;
-            const filterTask = document.getElementById('filter-task').checked;
-            const filterInc = document.getElementById('filter-inc').checked;
-            const filterSctask = document.getElementById('filter-sctask').checked;
-            const filterChg = document.getElementById('filter-chg').checked;
-            const filterPtask = document.getElementById('filter-ptask').checked;
-            const filterTraining = document.getElementById('filter-training').checked;
-            const filterMeeting = document.getElementById('filter-meeting').checked;
             const currentDate = new Date();
 
             const entriesBody = document.getElementById('entries-body');
@@ -2378,17 +2425,15 @@
                 filteredEntries = filteredEntries.filter(entry => isSameMonth(entry.date, currentDate));
             }
 
-            // Filtrowanie według rodzaju zadania
+            // Filtrowanie według rodzaju zadania - dynamicznie na podstawie taskTypes
             filteredEntries = filteredEntries.filter(entry => {
-                if (entry.taskType === 'CTASK' && filterCtask) return true;
-                if (entry.taskType === 'TASK' && filterTask) return true;
-                if (entry.taskType === 'INC' && filterInc) return true;
-                if (entry.taskType === 'SCTASK' && filterSctask) return true;
-                if (entry.taskType === 'CHG' && filterChg) return true;
-                if (entry.taskType === 'PTASK' && filterPtask) return true;
-                if (entry.taskType === 'TRAINING' && filterTraining) return true;
-                if (entry.taskType === 'MEETING' && filterMeeting) return true;
-                return false;
+                // Znajdź odpowiedni checkbox dla tego typu zadania
+                const filterId = `filter-${entry.taskType.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+
+                // Jeśli filtr istnieje, sprawdź czy jest zaznaczony
+                // Jeśli filtr nie istnieje (stary typ zadania), pokaż wpis
+                return filterElement ? filterElement.checked : true;
             });
 
             filteredEntries.sort((a, b) => b.date - a.date);
@@ -3558,6 +3603,7 @@
             renderProjects();
             loadTaskTypes();
             updateTaskTypeSelect();
+            renderTaskTypeFilters(); // Inicjalizuj dynamiczne filtry typów zadań
             initSectionToggles();
             initPomodoroTimer();
 
@@ -3615,36 +3661,8 @@
                 renderEntries();
             });
 
-            // Obsługa filtrów dla rodzajów zadań
-            const taskFilters = ['filter-ctask', 'filter-task', 'filter-inc', 'filter-sctask', 'filter-chg', 'filter-ptask', 'filter-training', 'filter-meeting'];
+            // Event listenery dla filtrów typów zadań są teraz inicjalizowane przez initTaskTypeFilterListeners()
 
-            // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
-            document.getElementById('filter-all-tasks').addEventListener('change', function() {
-                const isChecked = this.checked;
-                taskFilters.forEach(filterId => {
-                    document.getElementById(filterId).checked = isChecked;
-                });
-                renderEntries();
-            });
-
-            // Obsługa pojedynczych filtrów zadań
-            taskFilters.forEach(filterId => {
-                document.getElementById(filterId).addEventListener('change', function() {
-                    // Sprawdź czy wszystkie są zaznaczone
-                    const allChecked = taskFilters.every(id => document.getElementById(id).checked);
-                    const noneChecked = taskFilters.every(id => !document.getElementById(id).checked);
-
-                    // Aktualizuj stan checkboxa "wszystkie"
-                    if (allChecked) {
-                        document.getElementById('filter-all-tasks').checked = true;
-                    } else if (noneChecked) {
-                        document.getElementById('filter-all-tasks').checked = false;
-                    }
-
-                    renderEntries();
-                });
-            });
-            
             // Obsługa przycisku "Pokaż więcej"
             document.getElementById('show-more-btn').addEventListener('click', function() {
                 showAllEntries = !showAllEntries;
