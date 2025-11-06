@@ -187,14 +187,13 @@
             border: none;
             color: var(--primary-color);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             margin-right: 10px;
-            padding: 0;
+            padding: 4px 8px;
         }
 
         .action-btn:hover {
             color: var(--primary-dark);
-            text-decoration: underline;
         }
 
         .delete-btn {
@@ -292,7 +291,7 @@
         }
 
         .project-action-btn:hover {
-            text-decoration: underline;
+            color: var(--primary-dark);
         }
 
         .project-action-btn.delete {
@@ -852,6 +851,28 @@
             background-color: var(--primary-dark);
         }
 
+        .language-button {
+            position: absolute;
+            top: 15px;
+            right: 65px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .language-button:hover {
+            background-color: var(--primary-dark);
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -1019,100 +1040,101 @@
 
     <div class="container">
         <header>
-            <h1>GODZINY PRACY</h1>
-            <button class="settings-button" id="settings-btn" title="Ustawienia">⚙️</button>
+            <h1 data-i18n="app.title">GODZINY PRACY</h1>
+            <button class="language-button" id="language-btn" data-i18n-title="app.language" title="Zmień język / Change language">🌐</button>
+            <button class="settings-button" id="settings-btn" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
         <section class="section-toggles" style="margin-bottom: 30px;">
             <div style="background-color: var(--bg-light); padding: 15px; border-radius: var(--border-radius);">
-                <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;">Widoczność sekcji:</h3>
+                <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;" data-i18n="section.visibility">Widoczność sekcji:</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
                     <label style="display: flex; align-items: center; justify-content: center;">
                         <input type="checkbox" id="toggle-entry-form" checked>
-                        <span style="margin-left: 8px;">Dodaj nowy wpis</span>
+                        <span style="margin-left: 8px;" data-i18n="section.addEntry">Dodaj nowy wpis</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
                         <input type="checkbox" id="toggle-entries-list" checked>
-                        <span style="margin-left: 8px;">Lista wpisów</span>
+                        <span style="margin-left: 8px;" data-i18n="section.entriesList">Lista wpisów</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
                         <input type="checkbox" id="toggle-summary" checked>
-                        <span style="margin-left: 8px;">Podsumowanie</span>
+                        <span style="margin-left: 8px;" data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
             </div>
         </section>
 
         <section class="entry-form" id="section-entry-form">
-            <h2>Dodaj nowy wpis</h2>
+            <h2 data-i18n="form.addEntry">Dodaj nowy wpis</h2>
             <form id="timesheet-form">
                 <div class="form-group">
-                    <label for="date">Data:</label>
+                    <label for="date" data-i18n="form.date">Data:</label>
                     <input type="date" id="date" name="date" required>
                     <div class="invalid-feedback" id="date-feedback"></div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="task-type">Rodzaj zadania:</label>
+                    <label for="task-type" data-i18n="form.taskType">Rodzaj zadania:</label>
                     <select id="task-type" name="task-type" required>
-                        <option value="">-- Wybierz rodzaj zadania --</option>
+                        <option value="" data-i18n="form.selectTaskType">-- Wybierz rodzaj zadania --</option>
                         <!-- Opcje będą dynamicznie ładowane -->
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback"></div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="client">Projekt:</label>
+                    <label for="client" data-i18n="form.project">Projekt:</label>
                     <select id="client" name="client" required>
-                        <option value="">-- Wybierz projekt --</option>
+                        <option value="" data-i18n="form.selectProject">-- Wybierz projekt --</option>
                     </select>
                     <div class="invalid-feedback" id="client-feedback"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="hours">Liczba przepracowanych godzin (max 8):</label>
+                    <label for="hours" data-i18n="form.hours">Liczba przepracowanych godzin (max 8):</label>
                     <input type="number" id="hours" name="hours" min="0.25" max="8" step="0.25" required>
                     <div class="invalid-feedback" id="hours-feedback"></div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="task-number">Numer zadania:</label>
-                    <input type="text" id="task-number" name="task-number" required placeholder="Np. CTASK1234567">
+                    <label for="task-number" data-i18n="form.taskNumber">Numer zadania:</label>
+                    <input type="text" id="task-number" name="task-number" required data-i18n="form.taskNumberPlaceholder" placeholder="Np. CTASK1234567">
                     <div class="invalid-feedback" id="task-number-feedback"></div>
                 </div>
-                
+
                 <div class="form-group btn-group">
-                    <button type="submit">Dodaj wpis</button>
-                    <button type="button" class="reset-btn" id="reset-form">Wyczyść</button>
+                    <button type="submit" data-i18n="form.addButton">Dodaj wpis</button>
+                    <button type="button" class="reset-btn" id="reset-form" data-i18n="form.clearButton">Wyczyść</button>
                 </div>
             </form>
         </section>
 
         <section class="entries" id="section-entries-list">
-            <h2>Lista wpisów</h2>
+            <h2 data-i18n="entries.title">Lista wpisów</h2>
             <div class="filters">
                 <div class="filter-option">
                     <label>
                         <input type="checkbox" id="filter-current-month" checked>
-                        Pokaż tylko wpisy z bieżącego miesiąca
+                        <span data-i18n="entries.filterCurrentMonth">Pokaż tylko wpisy z bieżącego miesiąca</span>
                     </label>
                 </div>
                 <div class="filter-option">
                     <label>
                         <input type="checkbox" id="filter-current-week">
-                        Pokaż tylko wpisy z bieżącego tygodnia
+                        <span data-i18n="entries.filterCurrentWeek">Pokaż tylko wpisy z bieżącego tygodnia</span>
                     </label>
                 </div>
                 <details class="task-type-dropdown" open>
                     <summary style="font-weight: 600; cursor: pointer; padding: 8px; background-color: var(--bg-highlight); border-radius: var(--border-radius); list-style: none; display: flex; align-items: center; justify-content: space-between;">
-                        <span>Rodzaj zadania</span>
+                        <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
                         <span class="dropdown-arrow">▼</span>
                     </summary>
                     <div style="margin-top: 10px; padding-left: 10px;">
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
-                                <strong>Zaznacz/Odznacz wszystkie</strong>
+                                <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
                             </label>
                         </div>
                         <div class="filter-option">
@@ -1170,12 +1192,12 @@
             <table class="task-table">
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Rodzaj zadania</th>
-                        <th>Projekt</th>
-                        <th>Godziny</th>
-                        <th>Numer</th>
-                        <th>Akcje</th>
+                        <th data-i18n="table.date">Data</th>
+                        <th data-i18n="table.taskType">Rodzaj zadania</th>
+                        <th data-i18n="table.project">Projekt</th>
+                        <th data-i18n="table.hours">Godziny</th>
+                        <th data-i18n="table.number">Numer</th>
+                        <th data-i18n="table.actions">Akcje</th>
                     </tr>
                 </thead>
                 <tbody id="entries-body">
@@ -1183,7 +1205,7 @@
                 </tbody>
             </table>
             <div style="text-align: center; margin-top: 20px;">
-                <button id="show-more-btn" class="show-more-btn" style="display: none;">Pokaż wszystkie wpisy</button>
+                <button id="show-more-btn" class="show-more-btn" style="display: none;" data-i18n="entries.showAll">Pokaż wszystkie wpisy</button>
             </div>
         </section>
 
@@ -1193,12 +1215,12 @@
         </div>
 
         <section class="summary" id="section-summary" style="margin-top: 40px;">
-            <h2>Podsumowanie</h2>
+            <h2 data-i18n="summary.title">Podsumowanie</h2>
             <div class="summary-info">
-                <p>Aktualny miesiąc: <span id="current-month">Maj 2025</span></p>
-                <p>Całkowita liczba godzin: <span id="total-hours">0</span></p>
+                <p><span data-i18n="summary.currentMonth">Aktualny miesiąc:</span> <span id="current-month">Maj 2025</span></p>
+                <p><span data-i18n="summary.totalHours">Całkowita liczba godzin:</span> <span id="total-hours">0</span></p>
             </div>
-            <button class="export-btn" id="export-button">Eksportuj dane z bieżącego miesiąca (CSV)</button>
+            <button class="export-btn" id="export-button" data-i18n="summary.export">Eksportuj dane z bieżącego miesiąca (CSV)</button>
         </section>
     </div>
 
@@ -1206,14 +1228,14 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Ustawienia</h2>
+                <h2 data-i18n="settings.title">Ustawienia</h2>
                 <button class="modal-close" id="modal-close">&times;</button>
             </div>
 
             <!-- Tabs Navigation -->
             <div class="modal-tabs">
-                <button class="modal-tab active" data-tab="projects-tab">Projekty</button>
-                <button class="modal-tab" data-tab="tasks-tab">Zadania</button>
+                <button class="modal-tab active" data-tab="projects-tab" data-i18n="settings.projects">Projekty</button>
+                <button class="modal-tab" data-tab="tasks-tab" data-i18n="settings.tasks">Zadania</button>
             </div>
 
             <div class="modal-body">
@@ -1222,12 +1244,12 @@
                     <div class="modal-section">
                         <div class="entry-form">
                             <div class="form-group">
-                                <label for="modal-project-name">Nazwa projektu:</label>
-                                <input type="text" id="modal-project-name" placeholder="Np. INFRA 9065 PROJECT">
+                                <label for="modal-project-name" data-i18n="settings.projectName">Nazwa projektu:</label>
+                                <input type="text" id="modal-project-name" data-i18n="settings.projectPlaceholder" placeholder="Np. INFRA 9065 PROJECT">
                             </div>
                             <div class="form-group btn-group">
-                                <button type="button" id="modal-add-project-btn">Dodaj projekt</button>
-                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;">Anuluj</button>
+                                <button type="button" id="modal-add-project-btn" data-i18n="settings.addProject">Dodaj projekt</button>
+                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;" data-i18n="settings.cancel">Anuluj</button>
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
@@ -1243,12 +1265,12 @@
                     <div class="modal-section">
                         <div class="entry-form">
                             <div class="form-group">
-                                <label for="task-type-name">Rodzaj zadania:</label>
-                                <input type="text" id="task-type-name" placeholder="Np. CTASK">
+                                <label for="task-type-name" data-i18n="settings.taskType">Rodzaj zadania:</label>
+                                <input type="text" id="task-type-name" data-i18n="settings.taskTypePlaceholder" placeholder="Np. CTASK">
                             </div>
                             <div class="form-group btn-group">
-                                <button type="button" id="add-task-type-btn">Dodaj zadanie</button>
-                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;">Anuluj</button>
+                                <button type="button" id="add-task-type-btn" data-i18n="settings.addTask">Dodaj zadanie</button>
+                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;" data-i18n="settings.cancel">Anuluj</button>
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
@@ -1261,8 +1283,8 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" id="modal-apply-btn">Zastosuj</button>
-                <button type="button" id="modal-ok-btn">OK</button>
+                <button type="button" id="modal-apply-btn" data-i18n="settings.apply">Zastosuj</button>
+                <button type="button" id="modal-ok-btn" data-i18n="settings.ok">OK</button>
             </div>
         </div>
     </div>
@@ -1281,7 +1303,7 @@
 
         <div id="pomodoro-header" class="pomodoro-header">
             <span class="pomodoro-icon">🍅</span>
-            <span class="pomodoro-title">POMODORO</span>
+            <span class="pomodoro-title" data-i18n="pomodoro.title">POMODORO</span>
             <button id="pomodoro-minimize" class="pomodoro-minimize-btn">−</button>
         </div>
         <div id="pomodoro-content" class="pomodoro-content">
@@ -1293,68 +1315,68 @@
                     </svg>
                     <div class="timer-display" id="timer-display">30:00</div>
                 </div>
-                <div class="timer-mode" id="timer-mode">Czas pracy</div>
+                <div class="timer-mode" id="timer-mode" data-i18n="pomodoro.workTime">Czas pracy</div>
             </div>
 
             <div class="pomodoro-controls">
-                <button id="timer-start" class="timer-btn timer-btn-primary">Start</button>
-                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;">Przerwanie</button>
-                <button id="timer-reset" class="timer-btn timer-btn-secondary">Reset</button>
+                <button id="timer-start" class="timer-btn timer-btn-primary" data-i18n="pomodoro.start">Start</button>
+                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;" data-i18n="pomodoro.pause">Przerwanie</button>
+                <button id="timer-reset" class="timer-btn timer-btn-secondary" data-i18n="pomodoro.reset">Reset</button>
             </div>
 
             <div class="timer-task-input">
-                <label for="timer-task-number">Numer zadania:</label>
+                <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" placeholder="Np. CTASK1234567" style="flex: 1;">
-                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)">✅</button>
+                    <input type="text" id="timer-task-number" data-i18n="form.taskNumberPlaceholder" placeholder="Np. CTASK1234567" style="flex: 1;">
+                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)">✅</button>
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;">Dodaj wpis</button>
-                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;">Nowe</button>
+                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;" data-i18n="pomodoro.addEntry">Dodaj wpis</button>
+                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;" data-i18n="pomodoro.newTask">Nowe</button>
                 </div>
             </div>
 
             <div class="pomodoro-stats">
                 <div class="stat-row">
-                    <span>Sesja:</span>
+                    <span data-i18n="pomodoro.session">Sesja:</span>
                     <span id="pomodoro-session">🍅○○○ (1/4)</span>
                 </div>
                 <div class="stat-row">
-                    <span>Przerwy krótkie:</span>
+                    <span data-i18n="pomodoro.shortBreaks">Przerwy krótkie:</span>
                     <span id="pomodoro-short-breaks">0</span>
                 </div>
                 <div class="stat-row">
-                    <span>Przerwy długie:</span>
+                    <span data-i18n="pomodoro.longBreaks">Przerwy długie:</span>
                     <span id="pomodoro-long-breaks">0</span>
                 </div>
                 <div class="stat-row">
-                    <span>Dziś:</span>
+                    <span data-i18n="pomodoro.today">Dziś:</span>
                     <span id="pomodoro-today">0h (0 🍅)</span>
                 </div>
                 <div class="stat-row">
-                    <span>Aktualny czas:</span>
+                    <span data-i18n="pomodoro.currentTime">Aktualny czas:</span>
                     <span id="pomodoro-current-time">0.00h</span>
                 </div>
             </div>
 
             <div class="pomodoro-settings">
                 <details>
-                    <summary>⚙️ Ustawienia</summary>
+                    <summary data-i18n="pomodoro.settings">⚙️ Ustawienia</summary>
                     <div class="settings-content">
                         <label>
-                            <input type="number" id="work-duration" value="30" min="1" max="60"> min - Praca
+                            <input type="number" id="work-duration" value="30" min="1" max="60"> <span data-i18n="pomodoro.workDuration">min - Praca</span>
                         </label>
                         <label>
-                            <input type="number" id="short-break-duration" value="5" min="1" max="30"> min - Krótka przerwa
+                            <input type="number" id="short-break-duration" value="5" min="1" max="30"> <span data-i18n="pomodoro.shortBreakDuration">min - Krótka przerwa</span>
                         </label>
                         <label>
-                            <input type="number" id="long-break-duration" value="15" min="1" max="60"> min - Długa przerwa
+                            <input type="number" id="long-break-duration" value="15" min="1" max="60"> <span data-i18n="pomodoro.longBreakDuration">min - Długa przerwa</span>
                         </label>
                         <label>
-                            <input type="checkbox" id="sound-enabled" checked> Dźwięk powiadomienia
+                            <input type="checkbox" id="sound-enabled" checked> <span data-i18n="pomodoro.soundEnabled">Dźwięk powiadomienia</span>
                         </label>
                         <label>
-                            <input type="checkbox" id="auto-start-break" checked> Auto-start przerwy
+                            <input type="checkbox" id="auto-start-break" checked> <span data-i18n="pomodoro.autoStartBreak">Auto-start przerwy</span>
                         </label>
                     </div>
                 </details>
@@ -1407,6 +1429,361 @@
             soundEnabled: true,
             autoStartBreak: true
         };
+
+        // ============================
+        // Internationalization (i18n)
+        // ============================
+
+        let currentLanguage = localStorage.getItem('app-language') || 'pl';
+
+        const translations = {
+            pl: {
+                // Header
+                'app.title': 'GODZINY PRACY',
+                'app.settings': 'Ustawienia',
+                'app.language': 'Zmień język / Change language',
+
+                // Section visibility
+                'section.visibility': 'Widoczność sekcji:',
+                'section.addEntry': 'Dodaj nowy wpis',
+                'section.entriesList': 'Lista wpisów',
+                'section.summary': 'Podsumowanie',
+
+                // Form labels
+                'form.addEntry': 'Dodaj nowy wpis',
+                'form.editEntry': 'Edytuj wpis',
+                'form.date': 'Data:',
+                'form.taskType': 'Rodzaj zadania:',
+                'form.selectTaskType': '-- Wybierz rodzaj zadania --',
+                'form.project': 'Projekt:',
+                'form.selectProject': '-- Wybierz projekt --',
+                'form.hours': 'Liczba przepracowanych godzin (max 8):',
+                'form.taskNumber': 'Numer zadania:',
+                'form.taskNumberPlaceholder': 'Np. CTASK1234567',
+                'form.addButton': 'Dodaj wpis',
+                'form.updateButton': 'Aktualizuj wpis',
+                'form.clearButton': 'Wyczyść',
+
+                // Entries list
+                'entries.title': 'Lista wpisów',
+                'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
+                'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
+                'entries.taskTypeFilter': 'Rodzaj zadania',
+                'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
+                'entries.showAll': 'Pokaż wszystkie wpisy',
+
+                // Table headers
+                'table.date': 'Data',
+                'table.taskType': 'Rodzaj zadania',
+                'table.project': 'Projekt',
+                'table.hours': 'Godziny',
+                'table.number': 'Numer',
+                'table.actions': 'Akcje',
+
+                // Summary
+                'summary.title': 'Podsumowanie',
+                'summary.currentMonth': 'Aktualny miesiąc:',
+                'summary.totalHours': 'Całkowita liczba godzin:',
+                'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
+
+                // Settings modal
+                'settings.title': 'Ustawienia',
+                'settings.projects': 'Projekty',
+                'settings.tasks': 'Zadania',
+                'settings.projectName': 'Nazwa projektu:',
+                'settings.projectPlaceholder': 'Np. INFRA 9065 PROJECT',
+                'settings.addProject': 'Dodaj projekt',
+                'settings.cancel': 'Anuluj',
+                'settings.taskType': 'Rodzaj zadania:',
+                'settings.taskTypePlaceholder': 'Np. CTASK',
+                'settings.addTask': 'Dodaj zadanie',
+                'settings.apply': 'Zastosuj',
+                'settings.ok': 'OK',
+
+                // Pomodoro
+                'pomodoro.title': 'POMODORO',
+                'pomodoro.workTime': 'Czas pracy',
+                'pomodoro.shortBreak': 'Krótka przerwa',
+                'pomodoro.longBreak': 'Długa przerwa',
+                'pomodoro.start': 'Start',
+                'pomodoro.pause': 'Przerwanie',
+                'pomodoro.reset': 'Reset',
+                'pomodoro.taskNumber': 'Numer zadania:',
+                'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
+                'pomodoro.addEntry': 'Dodaj wpis',
+                'pomodoro.newTask': 'Nowe',
+                'pomodoro.session': 'Sesja:',
+                'pomodoro.shortBreaks': 'Przerwy krótkie:',
+                'pomodoro.longBreaks': 'Przerwy długie:',
+                'pomodoro.today': 'Dziś:',
+                'pomodoro.currentTime': 'Aktualny czas:',
+                'pomodoro.settings': '⚙️ Ustawienia',
+                'pomodoro.workDuration': 'min - Praca',
+                'pomodoro.shortBreakDuration': 'min - Krótka przerwa',
+                'pomodoro.longBreakDuration': 'min - Długa przerwa',
+                'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
+                'pomodoro.autoStartBreak': 'Auto-start przerwy',
+
+                // Messages
+                'msg.enterProjectName': 'Podaj nazwę projektu',
+                'msg.projectExists': 'Ten projekt już istnieje',
+                'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
+                'msg.enterTaskType': 'Podaj rodzaj zadania',
+                'msg.taskTypeExists': 'Ten typ zadania już istnieje',
+                'msg.confirmDeleteTaskType': 'Czy na pewno chcesz usunąć typ zadania',
+                'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
+                'msg.noDataToExport': 'Brak danych do eksportu',
+                'msg.confirmTaskChange': 'Zmiana zadania spowoduje reset naliczonego czasu',
+                'msg.continue': 'Kontynuować?',
+
+                // Validation messages
+                'validation.selectDate': 'Wybierz datę',
+                'validation.selectTaskType': 'Wybierz rodzaj zadania',
+                'validation.selectProject': 'Wybierz projekt',
+                'validation.enterHours': 'Podaj liczbę godzin',
+                'validation.hoursGreaterThanZero': 'Liczba godzin musi być większa od 0',
+                'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
+                'validation.enterTaskNumber': 'Podaj numer zadania',
+
+                // Months
+                'month.january': 'Styczeń',
+                'month.february': 'Luty',
+                'month.march': 'Marzec',
+                'month.april': 'Kwiecień',
+                'month.may': 'Maj',
+                'month.june': 'Czerwiec',
+                'month.july': 'Lipiec',
+                'month.august': 'Sierpień',
+                'month.september': 'Wrzesień',
+                'month.october': 'Październik',
+                'month.november': 'Listopad',
+                'month.december': 'Grudzień',
+
+                // Actions
+                'action.edit': 'Edytuj',
+                'action.delete': 'Usuń'
+            },
+            en: {
+                // Header
+                'app.title': 'WORK HOURS',
+                'app.settings': 'Settings',
+                'app.language': 'Change language / Zmień język',
+
+                // Section visibility
+                'section.visibility': 'Section visibility:',
+                'section.addEntry': 'Add new entry',
+                'section.entriesList': 'Entries list',
+                'section.summary': 'Summary',
+
+                // Form labels
+                'form.addEntry': 'Add new entry',
+                'form.editEntry': 'Edit entry',
+                'form.date': 'Date:',
+                'form.taskType': 'Task type:',
+                'form.selectTaskType': '-- Select task type --',
+                'form.project': 'Project:',
+                'form.selectProject': '-- Select project --',
+                'form.hours': 'Number of hours worked (max 8):',
+                'form.taskNumber': 'Task number:',
+                'form.taskNumberPlaceholder': 'E.g. CTASK1234567',
+                'form.addButton': 'Add entry',
+                'form.updateButton': 'Update entry',
+                'form.clearButton': 'Clear',
+
+                // Entries list
+                'entries.title': 'Entries list',
+                'entries.filterCurrentMonth': 'Show only entries from current month',
+                'entries.filterCurrentWeek': 'Show only entries from current week',
+                'entries.taskTypeFilter': 'Task type',
+                'entries.selectDeselectAll': 'Select/Deselect all',
+                'entries.showAll': 'Show all entries',
+
+                // Table headers
+                'table.date': 'Date',
+                'table.taskType': 'Task type',
+                'table.project': 'Project',
+                'table.hours': 'Hours',
+                'table.number': 'Number',
+                'table.actions': 'Actions',
+
+                // Summary
+                'summary.title': 'Summary',
+                'summary.currentMonth': 'Current month:',
+                'summary.totalHours': 'Total hours:',
+                'summary.export': 'Export current month data (CSV)',
+
+                // Settings modal
+                'settings.title': 'Settings',
+                'settings.projects': 'Projects',
+                'settings.tasks': 'Tasks',
+                'settings.projectName': 'Project name:',
+                'settings.projectPlaceholder': 'E.g. INFRA 9065 PROJECT',
+                'settings.addProject': 'Add project',
+                'settings.cancel': 'Cancel',
+                'settings.taskType': 'Task type:',
+                'settings.taskTypePlaceholder': 'E.g. CTASK',
+                'settings.addTask': 'Add task',
+                'settings.apply': 'Apply',
+                'settings.ok': 'OK',
+
+                // Pomodoro
+                'pomodoro.title': 'POMODORO',
+                'pomodoro.workTime': 'Work time',
+                'pomodoro.shortBreak': 'Short break',
+                'pomodoro.longBreak': 'Long break',
+                'pomodoro.start': 'Start',
+                'pomodoro.pause': 'Pause',
+                'pomodoro.reset': 'Reset',
+                'pomodoro.taskNumber': 'Task number:',
+                'pomodoro.completeTask': 'Complete task, start new (session continuity)',
+                'pomodoro.addEntry': 'Add entry',
+                'pomodoro.newTask': 'New',
+                'pomodoro.session': 'Session:',
+                'pomodoro.shortBreaks': 'Short breaks:',
+                'pomodoro.longBreaks': 'Long breaks:',
+                'pomodoro.today': 'Today:',
+                'pomodoro.currentTime': 'Current time:',
+                'pomodoro.settings': '⚙️ Settings',
+                'pomodoro.workDuration': 'min - Work',
+                'pomodoro.shortBreakDuration': 'min - Short break',
+                'pomodoro.longBreakDuration': 'min - Long break',
+                'pomodoro.soundEnabled': 'Notification sound',
+                'pomodoro.autoStartBreak': 'Auto-start break',
+
+                // Messages
+                'msg.enterProjectName': 'Enter project name',
+                'msg.projectExists': 'This project already exists',
+                'msg.confirmDeleteProject': 'Are you sure you want to delete project',
+                'msg.enterTaskType': 'Enter task type',
+                'msg.taskTypeExists': 'This task type already exists',
+                'msg.confirmDeleteTaskType': 'Are you sure you want to delete task type',
+                'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
+                'msg.noDataToExport': 'No data to export',
+                'msg.confirmTaskChange': 'Changing task will reset accumulated time',
+                'msg.continue': 'Continue?',
+
+                // Validation messages
+                'validation.selectDate': 'Select date',
+                'validation.selectTaskType': 'Select task type',
+                'validation.selectProject': 'Select project',
+                'validation.enterHours': 'Enter number of hours',
+                'validation.hoursGreaterThanZero': 'Number of hours must be greater than 0',
+                'validation.hoursMaxEight': 'Maximum number of hours is 8',
+                'validation.enterTaskNumber': 'Enter task number',
+
+                // Months
+                'month.january': 'January',
+                'month.february': 'February',
+                'month.march': 'March',
+                'month.april': 'April',
+                'month.may': 'May',
+                'month.june': 'June',
+                'month.july': 'July',
+                'month.august': 'August',
+                'month.september': 'September',
+                'month.october': 'October',
+                'month.november': 'November',
+                'month.december': 'December',
+
+                // Actions
+                'action.edit': 'Edit',
+                'action.delete': 'Delete'
+            }
+        };
+
+        // Translation function
+        function t(key, params = {}) {
+            let text = translations[currentLanguage][key] || translations['pl'][key] || key;
+
+            // Replace parameters in the text
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+
+            return text;
+        }
+
+        // Update UI with current language
+        function updateUILanguage() {
+            // Update document language
+            document.documentElement.lang = currentLanguage;
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = t(key);
+
+                if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
+                    if (element.hasAttribute('placeholder')) {
+                        element.placeholder = translation;
+                    }
+                } else if (element.tagName === 'INPUT' && element.type === 'button') {
+                    element.value = translation;
+                } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
+                    element.textContent = translation;
+                } else {
+                    element.textContent = translation;
+                }
+            });
+
+            // Update title attribute for buttons
+            document.querySelectorAll('[data-i18n-title]').forEach(element => {
+                const key = element.getAttribute('data-i18n-title');
+                element.title = t(key);
+            });
+
+            // Refresh displays that depend on language
+            if (typeof renderEntries === 'function') {
+                renderEntries();
+            }
+            if (typeof updatePomodoroDisplay === 'function') {
+                updatePomodoroDisplay();
+            }
+            if (typeof updateSummary === 'function') {
+                updateSummary();
+            }
+            if (typeof updateProjectSelect === 'function') {
+                updateProjectSelect();
+            }
+            if (typeof updateTaskTypeSelect === 'function') {
+                updateTaskTypeSelect();
+            }
+
+            // Update validation messages if they are currently displayed
+            const validationMapping = {
+                'date-feedback': 'validation.selectDate',
+                'task-type-feedback': 'validation.selectTaskType',
+                'client-feedback': 'validation.selectProject',
+                'hours-feedback': ['validation.enterHours', 'validation.hoursGreaterThanZero', 'validation.hoursMaxEight'],
+                'task-number-feedback': 'validation.enterTaskNumber'
+            };
+
+            Object.keys(validationMapping).forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element && element.textContent.trim() !== '') {
+                    const currentText = element.textContent.trim();
+                    const keys = Array.isArray(validationMapping[elementId]) ? validationMapping[elementId] : [validationMapping[elementId]];
+
+                    // Try to match which validation message is currently displayed
+                    for (const key of keys) {
+                        const plText = translations['pl'][key];
+                        const enText = translations['en'][key];
+
+                        if (currentText === plText || currentText === enText) {
+                            element.textContent = t(key);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Change language
+        function changeLanguage() {
+            currentLanguage = currentLanguage === 'pl' ? 'en' : 'pl';
+            localStorage.setItem('app-language', currentLanguage);
+            updateUILanguage();
+        }
 
         // Domyślne projekty
         const DEFAULT_PROJECTS = [
@@ -1489,11 +1866,13 @@
         // Funkcje pomocnicze do formatowania daty
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('pl-PL');
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            return date.toLocaleDateString(locale);
         }
 
         function getMonthName(date) {
-            return date.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
         }
 
         function isSameMonth(date1, date2) {
@@ -1550,7 +1929,7 @@
             const clientSelect = document.getElementById('client');
             const currentValue = clientSelect.value;
 
-            clientSelect.innerHTML = '<option value="">-- Wybierz projekt --</option>';
+            clientSelect.innerHTML = `<option value="">${t('form.selectProject')}</option>`;
             projects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project;
@@ -1579,8 +1958,8 @@
                 projectCard.innerHTML = `
                     <span>${project}</span>
                     <div class="project-actions">
-                        <button class="project-action-btn edit-project-btn" data-index="${index}">Edytuj</button>
-                        <button class="project-action-btn delete delete-project-btn" data-index="${index}">Usuń</button>
+                        <button class="project-action-btn edit-project-btn" data-index="${index}">${t('action.edit')}</button>
+                        <button class="project-action-btn delete delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 projectsContainer.appendChild(projectCard);
@@ -1607,21 +1986,21 @@
             const projectName = projectNameInput.value.trim();
 
             if (!projectName) {
-                alert('Podaj nazwę projektu');
+                alert(t('msg.enterProjectName'));
                 return;
             }
 
             if (editingProjectIndex === -1) {
                 // Dodawanie nowego projektu
                 if (projects.includes(projectName)) {
-                    alert('Ten projekt już istnieje');
+                    alert(t('msg.projectExists'));
                     return;
                 }
                 projects.push(projectName);
             } else {
                 // Edycja istniejącego projektu
                 if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
-                    alert('Ten projekt już istnieje');
+                    alert(t('msg.projectExists'));
                     return;
                 }
                 projects[editingProjectIndex] = projectName;
@@ -1646,7 +2025,7 @@
         }
 
         function deleteProject(index) {
-            if (confirm(`Czy na pewno chcesz usunąć projekt "${projects[index]}"?`)) {
+            if (confirm(`${t('msg.confirmDeleteProject')} "${projects[index]}"?`)) {
                 projects.splice(index, 1);
                 saveProjects();
                 updateProjectSelect();
@@ -1680,7 +2059,7 @@
             const taskTypeSelect = document.getElementById('task-type');
             const currentValue = taskTypeSelect.value;
 
-            taskTypeSelect.innerHTML = '<option value="">-- Wybierz rodzaj zadania --</option>';
+            taskTypeSelect.innerHTML = `<option value="">${t('form.selectTaskType')}</option>`;
             taskTypes.forEach(taskType => {
                 const option = document.createElement('option');
                 option.value = taskType;
@@ -1709,8 +2088,8 @@
                 taskTypeCard.innerHTML = `
                     <span>${taskType}</span>
                     <div class="project-actions">
-                        <button class="project-action-btn edit-task-type-btn" data-index="${index}">Edytuj</button>
-                        <button class="project-action-btn delete delete-task-type-btn" data-index="${index}">Usuń</button>
+                        <button class="project-action-btn edit-task-type-btn" data-index="${index}">${t('action.edit')}</button>
+                        <button class="project-action-btn delete delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 taskTypesContainer.appendChild(taskTypeCard);
@@ -1737,21 +2116,21 @@
             const taskTypeName = taskTypeNameInput.value.trim();
 
             if (!taskTypeName) {
-                alert('Podaj rodzaj zadania');
+                alert(t('msg.enterTaskType'));
                 return;
             }
 
             if (editingTaskTypeIndex === -1) {
                 // Dodawanie nowego typu zadania
                 if (taskTypes.includes(taskTypeName)) {
-                    alert('Ten typ zadania już istnieje');
+                    alert(t('msg.taskTypeExists'));
                     return;
                 }
                 taskTypes.push(taskTypeName);
             } else {
                 // Edycja istniejącego typu zadania
                 if (taskTypes.includes(taskTypeName) && taskTypes[editingTaskTypeIndex] !== taskTypeName) {
-                    alert('Ten typ zadania już istnieje');
+                    alert(t('msg.taskTypeExists'));
                     return;
                 }
                 taskTypes[editingTaskTypeIndex] = taskTypeName;
@@ -1776,7 +2155,7 @@
         }
 
         function deleteTaskType(index) {
-            if (confirm(`Czy na pewno chcesz usunąć typ zadania "${taskTypes[index]}"?`)) {
+            if (confirm(`${t('msg.confirmDeleteTaskType')} "${taskTypes[index]}"?`)) {
                 taskTypes.splice(index, 1);
                 saveTaskTypes();
                 updateTaskTypeSelect();
@@ -1883,8 +2262,8 @@
                 projectCard.innerHTML = `
                     <span>${project}</span>
                     <div class="project-actions">
-                        <button class="project-action-btn modal-edit-project-btn" data-index="${index}">Edytuj</button>
-                        <button class="project-action-btn delete modal-delete-project-btn" data-index="${index}">Usuń</button>
+                        <button class="project-action-btn modal-edit-project-btn" data-index="${index}">${t('action.edit')}</button>
+                        <button class="project-action-btn delete modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 projectsContainer.appendChild(projectCard);
@@ -1911,21 +2290,21 @@
             const projectName = projectNameInput.value.trim();
 
             if (!projectName) {
-                alert('Podaj nazwę projektu');
+                alert(t('msg.enterProjectName'));
                 return;
             }
 
             if (editingProjectIndex === -1) {
                 // Dodawanie nowego projektu
                 if (projects.includes(projectName)) {
-                    alert('Ten projekt już istnieje');
+                    alert(t('msg.projectExists'));
                     return;
                 }
                 projects.push(projectName);
             } else {
                 // Edycja istniejącego projektu
                 if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
-                    alert('Ten projekt już istnieje');
+                    alert(t('msg.projectExists'));
                     return;
                 }
                 projects[editingProjectIndex] = projectName;
@@ -1950,7 +2329,7 @@
         }
 
         function deleteModalProject(index) {
-            if (confirm(`Czy na pewno chcesz usunąć projekt "${projects[index]}"?`)) {
+            if (confirm(`${t('msg.confirmDeleteProject')} "${projects[index]}"?`)) {
                 projects.splice(index, 1);
                 saveProjects();
                 updateProjectSelect();
@@ -2075,8 +2454,8 @@
                         <td>${entry.hours}</td>
                         <td>${entry.taskNumber}</td>
                         <td>
-                            <button class="action-btn edit-btn" data-id="${entry.id}">Edytuj</button>
-                            <button class="action-btn delete-btn" data-id="${entry.id}">Usuń</button>
+                            <button class="action-btn edit-btn" data-id="${entry.id}">${t('action.edit')}</button>
+                            <button class="action-btn delete-btn" data-id="${entry.id}">${t('action.delete')}</button>
                         </td>
                     `;
                     entriesBody.appendChild(row);
@@ -2094,7 +2473,7 @@
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = parseInt(btn.getAttribute('data-id'));
-                    if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+                    if (confirm(t('msg.confirmDeleteEntry'))) {
                         deleteEntry(id);
                     }
                 });
@@ -2113,11 +2492,11 @@
             document.getElementById('task-number').value = entry.taskNumber;
             
             const submitButton = document.querySelector('#timesheet-form button[type="submit"]');
-            submitButton.textContent = 'Aktualizuj wpis';
+            submitButton.textContent = t('form.updateButton');
             submitButton.dataset.editId = id;
-            
-            document.querySelector('.entry-form h2').textContent = 'Edytuj wpis';
-            
+
+            document.querySelector('.entry-form h2').textContent = t('form.editEntry');
+
             // Przewijanie do formularza
             document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth' });
         }
@@ -2125,9 +2504,9 @@
         // Resetowanie formularza
         function resetForm() {
             document.getElementById('timesheet-form').reset();
-            document.querySelector('#timesheet-form button[type="submit"]').textContent = 'Dodaj wpis';
+            document.querySelector('#timesheet-form button[type="submit"]').textContent = t('form.addButton');
             document.querySelector('#timesheet-form button[type="submit"]').removeAttribute('data-edit-id');
-            document.querySelector('.entry-form h2').textContent = 'Dodaj nowy wpis';
+            document.querySelector('.entry-form h2').textContent = t('form.addEntry');
             
             // Czyszczenie komunikatów walidacji
             document.querySelectorAll('.invalid-feedback').forEach(el => {
@@ -2155,7 +2534,7 @@
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
             
             if (currentMonthEntries.length === 0) {
-                alert('Brak danych do eksportu');
+                alert(t('msg.noDataToExport'));
                 return;
             }
             
@@ -2184,17 +2563,17 @@
             const dateInput = document.getElementById('date');
             const dateFeedback = document.getElementById('date-feedback');
             if (!dateInput.value) {
-                dateFeedback.textContent = 'Wybierz datę';
+                dateFeedback.textContent = t('validation.selectDate');
                 isValid = false;
             } else {
                 dateFeedback.textContent = '';
             }
-            
+
             // Walidacja rodzaju zadania
             const taskTypeInput = document.getElementById('task-type');
             const taskTypeFeedback = document.getElementById('task-type-feedback');
             if (!taskTypeInput.value) {
-                taskTypeFeedback.textContent = 'Wybierz rodzaj zadania';
+                taskTypeFeedback.textContent = t('validation.selectTaskType');
                 isValid = false;
             } else {
                 taskTypeFeedback.textContent = '';
@@ -2204,7 +2583,7 @@
             const clientInput = document.getElementById('client');
             const clientFeedback = document.getElementById('client-feedback');
             if (!clientInput.value) {
-                clientFeedback.textContent = 'Wybierz projekt';
+                clientFeedback.textContent = t('validation.selectProject');
                 isValid = false;
             } else {
                 clientFeedback.textContent = '';
@@ -2214,25 +2593,25 @@
             const hoursInput = document.getElementById('hours');
             const hoursFeedback = document.getElementById('hours-feedback');
             const hoursValue = parseFloat(hoursInput.value);
-            
+
             if (!hoursInput.value) {
-                hoursFeedback.textContent = 'Podaj liczbę godzin';
+                hoursFeedback.textContent = t('validation.enterHours');
                 isValid = false;
             } else if (isNaN(hoursValue) || hoursValue <= 0) {
-                hoursFeedback.textContent = 'Liczba godzin musi być większa od 0';
+                hoursFeedback.textContent = t('validation.hoursGreaterThanZero');
                 isValid = false;
             } else if (hoursValue > 8) {
-                hoursFeedback.textContent = 'Maksymalna liczba godzin to 8';
+                hoursFeedback.textContent = t('validation.hoursMaxEight');
                 isValid = false;
             } else {
                 hoursFeedback.textContent = '';
             }
-            
+
             // Walidacja numeru zadania
             const taskNumberInput = document.getElementById('task-number');
             const taskNumberFeedback = document.getElementById('task-number-feedback');
             if (!taskNumberInput.value) {
-                taskNumberFeedback.textContent = 'Podaj numer zadania';
+                taskNumberFeedback.textContent = t('validation.enterTaskNumber');
                 isValid = false;
             } else {
                 taskNumberFeedback.textContent = '';
@@ -2457,13 +2836,13 @@
             let modeText = '';
             switch(pomodoroState.mode) {
                 case 'work':
-                    modeText = 'Czas pracy';
+                    modeText = t('pomodoro.workTime');
                     break;
                 case 'shortBreak':
-                    modeText = 'Krótka przerwa';
+                    modeText = t('pomodoro.shortBreak');
                     break;
                 case 'longBreak':
-                    modeText = 'Długa przerwa';
+                    modeText = t('pomodoro.longBreak');
                     break;
             }
             document.getElementById('timer-mode').textContent = modeText;
@@ -3164,7 +3543,7 @@
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
                         const timeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
-                        const confirm = window.confirm(`Zmiana zadania spowoduje reset naliczonego czasu (${timeFormatted}). Kontynuować?`);
+                        const confirm = window.confirm(`${t('msg.confirmTaskChange')} (${timeFormatted}). ${t('msg.continue')}`);
                         if (confirm) {
                             pomodoroState.elapsedTime = 0;
                             pomodoroState.currentTaskNumber = newTaskNumber;
@@ -3192,6 +3571,9 @@
                     document.getElementById('minimized-timer').textContent = timeStr;
                 }
             }, 1000);
+
+            // Start minimized by default
+            toggleMinimize();
 
         }
 
@@ -3308,6 +3690,9 @@
             // Obsługa okna modalnego ustawień
             document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
             document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
+
+            // Obsługa przycisku zmiany języka
+            document.getElementById('language-btn').addEventListener('click', changeLanguage);
             document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
             document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
 
@@ -3352,6 +3737,9 @@
             // Renderowanie początkowe
             renderEntries();
             updateSummary();
+
+            // Inicjalizacja języka
+            updateUILanguage();
         }
 
         // Uruchomienie aplikacji po załadowaniu strony
