@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GODZINY PRACY</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231976d2' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1099,7 +1100,7 @@
 
                 <div class="form-group">
                     <label for="task-number" data-i18n="form.taskNumber">Numer zadania:</label>
-                    <input type="text" id="task-number" name="task-number" required data-i18n="form.taskNumberPlaceholder" placeholder="Np. CTASK1234567">
+                    <input type="text" id="task-number" name="task-number" required>
                     <div class="invalid-feedback" id="task-number-feedback"></div>
                 </div>
 
@@ -1245,7 +1246,7 @@
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="modal-project-name" data-i18n="settings.projectName">Nazwa projektu:</label>
-                                <input type="text" id="modal-project-name" data-i18n="settings.projectPlaceholder" placeholder="Np. INFRA 9065 PROJECT">
+                                <input type="text" id="modal-project-name">
                             </div>
                             <div class="form-group btn-group">
                                 <button type="button" id="modal-add-project-btn" data-i18n="settings.addProject">Dodaj projekt</button>
@@ -1266,7 +1267,7 @@
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="task-type-name" data-i18n="settings.taskType">Rodzaj zadania:</label>
-                                <input type="text" id="task-type-name" data-i18n="settings.taskTypePlaceholder" placeholder="Np. CTASK">
+                                <input type="text" id="task-type-name">
                             </div>
                             <div class="form-group btn-group">
                                 <button type="button" id="add-task-type-btn" data-i18n="settings.addTask">Dodaj zadanie</button>
@@ -1327,7 +1328,7 @@
             <div class="timer-task-input">
                 <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" data-i18n="form.taskNumberPlaceholder" placeholder="Np. CTASK1234567" style="flex: 1;">
+                    <input type="text" id="timer-task-number" style="flex: 1;">
                     <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)">✅</button>
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 8px;">
@@ -1459,7 +1460,6 @@
                 'form.selectProject': '-- Wybierz projekt --',
                 'form.hours': 'Liczba przepracowanych godzin (max 8):',
                 'form.taskNumber': 'Numer zadania:',
-                'form.taskNumberPlaceholder': 'Np. CTASK1234567',
                 'form.addButton': 'Dodaj wpis',
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
@@ -1491,11 +1491,9 @@
                 'settings.projects': 'Projekty',
                 'settings.tasks': 'Zadania',
                 'settings.projectName': 'Nazwa projektu:',
-                'settings.projectPlaceholder': 'Np. INFRA 9065 PROJECT',
                 'settings.addProject': 'Dodaj projekt',
                 'settings.cancel': 'Anuluj',
                 'settings.taskType': 'Rodzaj zadania:',
-                'settings.taskTypePlaceholder': 'Np. CTASK',
                 'settings.addTask': 'Dodaj zadanie',
                 'settings.apply': 'Zastosuj',
                 'settings.ok': 'OK',
@@ -1585,7 +1583,6 @@
                 'form.selectProject': '-- Select project --',
                 'form.hours': 'Number of hours worked (max 8):',
                 'form.taskNumber': 'Task number:',
-                'form.taskNumberPlaceholder': 'E.g. CTASK1234567',
                 'form.addButton': 'Add entry',
                 'form.updateButton': 'Update entry',
                 'form.clearButton': 'Clear',
@@ -1617,11 +1614,9 @@
                 'settings.projects': 'Projects',
                 'settings.tasks': 'Tasks',
                 'settings.projectName': 'Project name:',
-                'settings.projectPlaceholder': 'E.g. INFRA 9065 PROJECT',
                 'settings.addProject': 'Add project',
                 'settings.cancel': 'Cancel',
                 'settings.taskType': 'Task type:',
-                'settings.taskTypePlaceholder': 'E.g. CTASK',
                 'settings.addTask': 'Add task',
                 'settings.apply': 'Apply',
                 'settings.ok': 'OK',
@@ -1786,34 +1781,10 @@
         }
 
         // Domyślne projekty
-        const DEFAULT_PROJECTS = [
-            'TKV',
-            'HIT BAU INC',
-            'HIT BAU MAINT',
-            'HIT BAU PLANNED PATCH',
-            'HIT BAU EXTRA PATCH',
-            'HIT BILLABLE',
-            'HIT OTHER',
-            'HIT POT CHARGABLE',
-            'INFRA 0020 DC CAP',
-            'INFRA 0020 H&M',
-            'INFRA 0020 REITAN',
-            'INFRA 0020 STOCKHOLM',
-            'INFRA 9065 MEETING',
-            'INFRA 9065 TRAINING'
-        ];
+        const DEFAULT_PROJECTS = [];
 
         // Domyślne typy zadań
-        const DEFAULT_TASK_TYPES = [
-            'CTASK',
-            'TASK',
-            'INC',
-            'SCTASK',
-            'CHG',
-            'PTASK',
-            'TRAINING',
-            'MEETING'
-        ];
+        const DEFAULT_TASK_TYPES = [];
 
         // Funkcje zarządzania widocznością sekcji
         function loadSectionVisibility() {
