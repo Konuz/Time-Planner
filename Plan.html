@@ -917,7 +917,7 @@
 
         .modal-close:hover,
         .modal-close:focus {
-            color: var(--error-color);
+            background-color: var(--error-color);
             opacity: 1;
         }
 
@@ -938,6 +938,17 @@
         .modal-footer button {
             flex: 0 0 auto;
             min-width: 100px;
+        }
+
+        .modal-footer button:disabled {
+            background-color: var(--bg-highlight);
+            color: #5a5a5a;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .modal-footer button:disabled:hover {
+            background-color: var(--bg-highlight);
         }
 
         .modal-section {
@@ -1370,6 +1381,7 @@
         let taskTypes = [];
         const TASK_TYPES_STORAGE_KEY = 'timesheet-task-types';
         let editingTaskTypeIndex = -1;
+        let hasUnsavedChanges = false;
 
         // Pomodoro Timer Variables
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
@@ -1752,6 +1764,7 @@
             updateTaskTypeSelect();
             renderTaskTypes();
             taskTypeNameInput.value = '';
+            markAsChanged();
         }
 
         function editTaskType(index) {
@@ -1768,6 +1781,7 @@
                 saveTaskTypes();
                 updateTaskTypeSelect();
                 renderTaskTypes();
+                markAsChanged();
             }
         }
 
@@ -1779,6 +1793,23 @@
         }
 
         // Funkcje zarządzania oknem modalnym
+        function updateApplyButtonState() {
+            const applyBtn = document.getElementById('modal-apply-btn');
+            if (applyBtn) {
+                applyBtn.disabled = !hasUnsavedChanges;
+            }
+        }
+
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+            updateApplyButtonState();
+        }
+
+        function markAsSaved() {
+            hasUnsavedChanges = false;
+            updateApplyButtonState();
+        }
+
         function switchTab(tabId) {
             // Ukryj wszystkie zakładki
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1810,6 +1841,8 @@
             switchTab('projects-tab');
             renderModalProjects();
             renderTaskTypes();
+            // Reset unsaved changes flag when opening
+            markAsSaved();
         }
 
         function closeSettingsModal() {
@@ -1818,11 +1851,15 @@
             // Reset editing states
             cancelModalProjectEdit();
             cancelTaskTypeEdit();
+            // Reset unsaved changes flag when closing
+            markAsSaved();
         }
 
         function applySettings() {
             // Settings are applied in real-time, so this just provides feedback
             showNotification('Ustawienia zostały zastosowane');
+            // Mark as saved after applying
+            markAsSaved();
         }
 
         function applyAndCloseSettings() {
@@ -1901,6 +1938,7 @@
             updateProjectSelect();
             renderModalProjects();
             projectNameInput.value = '';
+            markAsChanged();
         }
 
         function editModalProject(index) {
@@ -1917,6 +1955,7 @@
                 saveProjects();
                 updateProjectSelect();
                 renderModalProjects();
+                markAsChanged();
             }
         }
 
