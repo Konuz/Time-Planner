@@ -194,7 +194,7 @@
         }
 
         .action-btn:hover {
-            color: var(--primary-dark);
+            color: white;
         }
 
         .delete-btn {
@@ -202,7 +202,7 @@
         }
 
         .delete-btn:hover {
-            color: #c82333;
+            color: white;
         }
 
         .summary-info {
@@ -291,12 +291,12 @@
             padding: 4px 8px;
         }
 
-        .project-action-btn:hover {
-            color: var(--primary-dark);
+        .project-action-btn.delete-btn {
+            color: var(--error-color);
         }
 
-        .project-action-btn.delete {
-            color: var(--error-color);
+        .project-action-btn:hover {
+            color: white;
         }
 
         .task-type-dropdown {
@@ -1883,7 +1883,7 @@
                     <span>${project}</span>
                     <div class="project-actions">
                         <button class="project-action-btn edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete delete-project-btn" data-index="${index}">${t('action.delete')}</button>
+                        <button class="project-action-btn delete-btn delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 projectsContainer.appendChild(projectCard);
@@ -2013,7 +2013,7 @@
                     <span>${taskType}</span>
                     <div class="project-actions">
                         <button class="project-action-btn edit-task-type-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
+                        <button class="project-action-btn delete-btn delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 taskTypesContainer.appendChild(taskTypeCard);
@@ -2289,7 +2289,7 @@
                     <span>${project}</span>
                     <div class="project-actions">
                         <button class="project-action-btn modal-edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
+                        <button class="project-action-btn delete-btn modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                     </div>
                 `;
                 projectsContainer.appendChild(projectCard);
