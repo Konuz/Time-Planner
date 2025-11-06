@@ -1431,6 +1431,349 @@
             autoStartBreak: true
         };
 
+        // ============================
+        // Internationalization (i18n)
+        // ============================
+
+        let currentLanguage = localStorage.getItem('app-language') || 'pl';
+
+        const translations = {
+            pl: {
+                // Header
+                'app.title': 'GODZINY PRACY',
+                'app.settings': 'Ustawienia',
+                'app.language': 'Zmień język / Change language',
+
+                // Section visibility
+                'section.visibility': 'Widoczność sekcji:',
+                'section.addEntry': 'Dodaj nowy wpis',
+                'section.entriesList': 'Lista wpisów',
+                'section.summary': 'Podsumowanie',
+
+                // Form labels
+                'form.addEntry': 'Dodaj nowy wpis',
+                'form.editEntry': 'Edytuj wpis',
+                'form.date': 'Data:',
+                'form.taskType': 'Rodzaj zadania:',
+                'form.selectTaskType': '-- Wybierz rodzaj zadania --',
+                'form.project': 'Projekt:',
+                'form.selectProject': '-- Wybierz projekt --',
+                'form.hours': 'Liczba przepracowanych godzin (max 8):',
+                'form.taskNumber': 'Numer zadania:',
+                'form.taskNumberPlaceholder': 'Np. CTASK1234567',
+                'form.addButton': 'Dodaj wpis',
+                'form.updateButton': 'Aktualizuj wpis',
+                'form.clearButton': 'Wyczyść',
+
+                // Entries list
+                'entries.title': 'Lista wpisów',
+                'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
+                'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
+                'entries.taskTypeFilter': 'Rodzaj zadania',
+                'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
+                'entries.showAll': 'Pokaż wszystkie wpisy',
+
+                // Table headers
+                'table.date': 'Data',
+                'table.taskType': 'Rodzaj zadania',
+                'table.project': 'Projekt',
+                'table.hours': 'Godziny',
+                'table.number': 'Numer',
+                'table.actions': 'Akcje',
+
+                // Summary
+                'summary.title': 'Podsumowanie',
+                'summary.currentMonth': 'Aktualny miesiąc:',
+                'summary.totalHours': 'Całkowita liczba godzin:',
+                'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
+
+                // Settings modal
+                'settings.title': 'Ustawienia',
+                'settings.projects': 'Projekty',
+                'settings.tasks': 'Zadania',
+                'settings.projectName': 'Nazwa projektu:',
+                'settings.projectPlaceholder': 'Np. INFRA 9065 PROJECT',
+                'settings.addProject': 'Dodaj projekt',
+                'settings.cancel': 'Anuluj',
+                'settings.taskType': 'Rodzaj zadania:',
+                'settings.taskTypePlaceholder': 'Np. CTASK',
+                'settings.addTask': 'Dodaj zadanie',
+                'settings.apply': 'Zastosuj',
+                'settings.ok': 'OK',
+
+                // Pomodoro
+                'pomodoro.title': 'POMODORO',
+                'pomodoro.workTime': 'Czas pracy',
+                'pomodoro.shortBreak': 'Krótka przerwa',
+                'pomodoro.longBreak': 'Długa przerwa',
+                'pomodoro.start': 'Start',
+                'pomodoro.pause': 'Przerwanie',
+                'pomodoro.reset': 'Reset',
+                'pomodoro.taskNumber': 'Numer zadania:',
+                'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
+                'pomodoro.addEntry': 'Dodaj wpis',
+                'pomodoro.newTask': 'Nowe',
+                'pomodoro.session': 'Sesja:',
+                'pomodoro.shortBreaks': 'Przerwy krótkie:',
+                'pomodoro.longBreaks': 'Przerwy długie:',
+                'pomodoro.today': 'Dziś:',
+                'pomodoro.currentTime': 'Aktualny czas:',
+                'pomodoro.settings': '⚙️ Ustawienia',
+                'pomodoro.workDuration': 'min - Praca',
+                'pomodoro.shortBreakDuration': 'min - Krótka przerwa',
+                'pomodoro.longBreakDuration': 'min - Długa przerwa',
+                'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
+                'pomodoro.autoStartBreak': 'Auto-start przerwy',
+
+                // Messages
+                'msg.enterProjectName': 'Podaj nazwę projektu',
+                'msg.projectExists': 'Ten projekt już istnieje',
+                'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
+                'msg.enterTaskType': 'Podaj rodzaj zadania',
+                'msg.taskTypeExists': 'Ten typ zadania już istnieje',
+                'msg.confirmDeleteTaskType': 'Czy na pewno chcesz usunąć typ zadania',
+                'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
+                'msg.noDataToExport': 'Brak danych do eksportu',
+                'msg.confirmTaskChange': 'Zmiana zadania spowoduje reset naliczonego czasu',
+                'msg.continue': 'Kontynuować?',
+
+                // Validation messages
+                'validation.selectDate': 'Wybierz datę',
+                'validation.selectTaskType': 'Wybierz rodzaj zadania',
+                'validation.selectProject': 'Wybierz projekt',
+                'validation.enterHours': 'Podaj liczbę godzin',
+                'validation.hoursGreaterThanZero': 'Liczba godzin musi być większa od 0',
+                'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
+                'validation.enterTaskNumber': 'Podaj numer zadania',
+
+                // Months
+                'month.january': 'Styczeń',
+                'month.february': 'Luty',
+                'month.march': 'Marzec',
+                'month.april': 'Kwiecień',
+                'month.may': 'Maj',
+                'month.june': 'Czerwiec',
+                'month.july': 'Lipiec',
+                'month.august': 'Sierpień',
+                'month.september': 'Wrzesień',
+                'month.october': 'Październik',
+                'month.november': 'Listopad',
+                'month.december': 'Grudzień',
+
+                // Actions
+                'action.edit': 'Edytuj',
+                'action.delete': 'Usuń'
+            },
+            en: {
+                // Header
+                'app.title': 'WORK HOURS',
+                'app.settings': 'Settings',
+                'app.language': 'Change language / Zmień język',
+
+                // Section visibility
+                'section.visibility': 'Section visibility:',
+                'section.addEntry': 'Add new entry',
+                'section.entriesList': 'Entries list',
+                'section.summary': 'Summary',
+
+                // Form labels
+                'form.addEntry': 'Add new entry',
+                'form.editEntry': 'Edit entry',
+                'form.date': 'Date:',
+                'form.taskType': 'Task type:',
+                'form.selectTaskType': '-- Select task type --',
+                'form.project': 'Project:',
+                'form.selectProject': '-- Select project --',
+                'form.hours': 'Number of hours worked (max 8):',
+                'form.taskNumber': 'Task number:',
+                'form.taskNumberPlaceholder': 'E.g. CTASK1234567',
+                'form.addButton': 'Add entry',
+                'form.updateButton': 'Update entry',
+                'form.clearButton': 'Clear',
+
+                // Entries list
+                'entries.title': 'Entries list',
+                'entries.filterCurrentMonth': 'Show only entries from current month',
+                'entries.filterCurrentWeek': 'Show only entries from current week',
+                'entries.taskTypeFilter': 'Task type',
+                'entries.selectDeselectAll': 'Select/Deselect all',
+                'entries.showAll': 'Show all entries',
+
+                // Table headers
+                'table.date': 'Date',
+                'table.taskType': 'Task type',
+                'table.project': 'Project',
+                'table.hours': 'Hours',
+                'table.number': 'Number',
+                'table.actions': 'Actions',
+
+                // Summary
+                'summary.title': 'Summary',
+                'summary.currentMonth': 'Current month:',
+                'summary.totalHours': 'Total hours:',
+                'summary.export': 'Export current month data (CSV)',
+
+                // Settings modal
+                'settings.title': 'Settings',
+                'settings.projects': 'Projects',
+                'settings.tasks': 'Tasks',
+                'settings.projectName': 'Project name:',
+                'settings.projectPlaceholder': 'E.g. INFRA 9065 PROJECT',
+                'settings.addProject': 'Add project',
+                'settings.cancel': 'Cancel',
+                'settings.taskType': 'Task type:',
+                'settings.taskTypePlaceholder': 'E.g. CTASK',
+                'settings.addTask': 'Add task',
+                'settings.apply': 'Apply',
+                'settings.ok': 'OK',
+
+                // Pomodoro
+                'pomodoro.title': 'POMODORO',
+                'pomodoro.workTime': 'Work time',
+                'pomodoro.shortBreak': 'Short break',
+                'pomodoro.longBreak': 'Long break',
+                'pomodoro.start': 'Start',
+                'pomodoro.pause': 'Pause',
+                'pomodoro.reset': 'Reset',
+                'pomodoro.taskNumber': 'Task number:',
+                'pomodoro.completeTask': 'Complete task, start new (session continuity)',
+                'pomodoro.addEntry': 'Add entry',
+                'pomodoro.newTask': 'New',
+                'pomodoro.session': 'Session:',
+                'pomodoro.shortBreaks': 'Short breaks:',
+                'pomodoro.longBreaks': 'Long breaks:',
+                'pomodoro.today': 'Today:',
+                'pomodoro.currentTime': 'Current time:',
+                'pomodoro.settings': '⚙️ Settings',
+                'pomodoro.workDuration': 'min - Work',
+                'pomodoro.shortBreakDuration': 'min - Short break',
+                'pomodoro.longBreakDuration': 'min - Long break',
+                'pomodoro.soundEnabled': 'Notification sound',
+                'pomodoro.autoStartBreak': 'Auto-start break',
+
+                // Messages
+                'msg.enterProjectName': 'Enter project name',
+                'msg.projectExists': 'This project already exists',
+                'msg.confirmDeleteProject': 'Are you sure you want to delete project',
+                'msg.enterTaskType': 'Enter task type',
+                'msg.taskTypeExists': 'This task type already exists',
+                'msg.confirmDeleteTaskType': 'Are you sure you want to delete task type',
+                'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
+                'msg.noDataToExport': 'No data to export',
+                'msg.confirmTaskChange': 'Changing task will reset accumulated time',
+                'msg.continue': 'Continue?',
+
+                // Validation messages
+                'validation.selectDate': 'Select date',
+                'validation.selectTaskType': 'Select task type',
+                'validation.selectProject': 'Select project',
+                'validation.enterHours': 'Enter number of hours',
+                'validation.hoursGreaterThanZero': 'Number of hours must be greater than 0',
+                'validation.hoursMaxEight': 'Maximum number of hours is 8',
+                'validation.enterTaskNumber': 'Enter task number',
+
+                // Months
+                'month.january': 'January',
+                'month.february': 'February',
+                'month.march': 'March',
+                'month.april': 'April',
+                'month.may': 'May',
+                'month.june': 'June',
+                'month.july': 'July',
+                'month.august': 'August',
+                'month.september': 'September',
+                'month.october': 'October',
+                'month.november': 'November',
+                'month.december': 'December',
+
+                // Actions
+                'action.edit': 'Edit',
+                'action.delete': 'Delete'
+            }
+        };
+
+        // Translation function
+        function t(key, params = {}) {
+            let text = translations[currentLanguage][key] || translations['pl'][key] || key;
+
+            // Replace parameters in the text
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+
+            return text;
+        }
+
+        // Update UI with current language
+        function updateUILanguage() {
+            // Update document language
+            document.documentElement.lang = currentLanguage;
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = t(key);
+
+                if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
+                    if (element.hasAttribute('placeholder')) {
+                        element.placeholder = translation;
+                    }
+                } else if (element.tagName === 'INPUT' && element.type === 'button') {
+                    element.value = translation;
+                } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
+                    element.textContent = translation;
+                } else {
+                    element.textContent = translation;
+                }
+            });
+
+            // Update title attribute for buttons
+            document.querySelectorAll('[data-i18n-title]').forEach(element => {
+                const key = element.getAttribute('data-i18n-title');
+                element.title = t(key);
+            });
+
+            // Refresh displays that depend on language
+            if (typeof displayEntries === 'function') {
+                displayEntries();
+            }
+            if (typeof updatePomodoroDisplay === 'function') {
+                updatePomodoroDisplay();
+            }
+            if (typeof updateSummary === 'function') {
+                updateSummary();
+            }
+
+            // Update validation messages if they are currently displayed
+            const validationElements = [
+                'date-feedback',
+                'task-type-feedback',
+                'client-feedback',
+                'hours-feedback',
+                'task-number-feedback'
+            ];
+
+            let hasValidationErrors = false;
+            validationElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element && element.textContent.trim() !== '') {
+                    hasValidationErrors = true;
+                }
+            });
+
+            // If there are validation messages displayed, re-validate to update them
+            if (hasValidationErrors && typeof validateForm === 'function') {
+                validateForm();
+            }
+        }
+
+        // Change language
+        function changeLanguage() {
+            currentLanguage = currentLanguage === 'pl' ? 'en' : 'pl';
+            localStorage.setItem('app-language', currentLanguage);
+            updateUILanguage();
+        }
+
         // Domyślne projekty
         const DEFAULT_PROJECTS = [
             'TKV',
@@ -3382,349 +3725,6 @@
             updateSummary();
 
             // Inicjalizacja języka
-            updateUILanguage();
-        }
-
-        // ============================
-        // Internationalization (i18n)
-        // ============================
-
-        let currentLanguage = localStorage.getItem('app-language') || 'pl';
-
-        const translations = {
-            pl: {
-                // Header
-                'app.title': 'GODZINY PRACY',
-                'app.settings': 'Ustawienia',
-                'app.language': 'Zmień język / Change language',
-
-                // Section visibility
-                'section.visibility': 'Widoczność sekcji:',
-                'section.addEntry': 'Dodaj nowy wpis',
-                'section.entriesList': 'Lista wpisów',
-                'section.summary': 'Podsumowanie',
-
-                // Form labels
-                'form.addEntry': 'Dodaj nowy wpis',
-                'form.editEntry': 'Edytuj wpis',
-                'form.date': 'Data:',
-                'form.taskType': 'Rodzaj zadania:',
-                'form.selectTaskType': '-- Wybierz rodzaj zadania --',
-                'form.project': 'Projekt:',
-                'form.selectProject': '-- Wybierz projekt --',
-                'form.hours': 'Liczba przepracowanych godzin (max 8):',
-                'form.taskNumber': 'Numer zadania:',
-                'form.taskNumberPlaceholder': 'Np. CTASK1234567',
-                'form.addButton': 'Dodaj wpis',
-                'form.updateButton': 'Aktualizuj wpis',
-                'form.clearButton': 'Wyczyść',
-
-                // Entries list
-                'entries.title': 'Lista wpisów',
-                'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
-                'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
-                'entries.taskTypeFilter': 'Rodzaj zadania',
-                'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
-                'entries.showAll': 'Pokaż wszystkie wpisy',
-
-                // Table headers
-                'table.date': 'Data',
-                'table.taskType': 'Rodzaj zadania',
-                'table.project': 'Projekt',
-                'table.hours': 'Godziny',
-                'table.number': 'Numer',
-                'table.actions': 'Akcje',
-
-                // Summary
-                'summary.title': 'Podsumowanie',
-                'summary.currentMonth': 'Aktualny miesiąc:',
-                'summary.totalHours': 'Całkowita liczba godzin:',
-                'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
-
-                // Settings modal
-                'settings.title': 'Ustawienia',
-                'settings.projects': 'Projekty',
-                'settings.tasks': 'Zadania',
-                'settings.projectName': 'Nazwa projektu:',
-                'settings.projectPlaceholder': 'Np. INFRA 9065 PROJECT',
-                'settings.addProject': 'Dodaj projekt',
-                'settings.cancel': 'Anuluj',
-                'settings.taskType': 'Rodzaj zadania:',
-                'settings.taskTypePlaceholder': 'Np. CTASK',
-                'settings.addTask': 'Dodaj zadanie',
-                'settings.apply': 'Zastosuj',
-                'settings.ok': 'OK',
-
-                // Pomodoro
-                'pomodoro.title': 'POMODORO',
-                'pomodoro.workTime': 'Czas pracy',
-                'pomodoro.shortBreak': 'Krótka przerwa',
-                'pomodoro.longBreak': 'Długa przerwa',
-                'pomodoro.start': 'Start',
-                'pomodoro.pause': 'Przerwanie',
-                'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Numer zadania:',
-                'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
-                'pomodoro.addEntry': 'Dodaj wpis',
-                'pomodoro.newTask': 'Nowe',
-                'pomodoro.session': 'Sesja:',
-                'pomodoro.shortBreaks': 'Przerwy krótkie:',
-                'pomodoro.longBreaks': 'Przerwy długie:',
-                'pomodoro.today': 'Dziś:',
-                'pomodoro.currentTime': 'Aktualny czas:',
-                'pomodoro.settings': '⚙️ Ustawienia',
-                'pomodoro.workDuration': 'min - Praca',
-                'pomodoro.shortBreakDuration': 'min - Krótka przerwa',
-                'pomodoro.longBreakDuration': 'min - Długa przerwa',
-                'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
-                'pomodoro.autoStartBreak': 'Auto-start przerwy',
-
-                // Messages
-                'msg.enterProjectName': 'Podaj nazwę projektu',
-                'msg.projectExists': 'Ten projekt już istnieje',
-                'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
-                'msg.enterTaskType': 'Podaj rodzaj zadania',
-                'msg.taskTypeExists': 'Ten typ zadania już istnieje',
-                'msg.confirmDeleteTaskType': 'Czy na pewno chcesz usunąć typ zadania',
-                'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
-                'msg.noDataToExport': 'Brak danych do eksportu',
-                'msg.confirmTaskChange': 'Zmiana zadania spowoduje reset naliczonego czasu',
-                'msg.continue': 'Kontynuować?',
-
-                // Validation messages
-                'validation.selectDate': 'Wybierz datę',
-                'validation.selectTaskType': 'Wybierz rodzaj zadania',
-                'validation.selectProject': 'Wybierz projekt',
-                'validation.enterHours': 'Podaj liczbę godzin',
-                'validation.hoursGreaterThanZero': 'Liczba godzin musi być większa od 0',
-                'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
-                'validation.enterTaskNumber': 'Podaj numer zadania',
-
-                // Months
-                'month.january': 'Styczeń',
-                'month.february': 'Luty',
-                'month.march': 'Marzec',
-                'month.april': 'Kwiecień',
-                'month.may': 'Maj',
-                'month.june': 'Czerwiec',
-                'month.july': 'Lipiec',
-                'month.august': 'Sierpień',
-                'month.september': 'Wrzesień',
-                'month.october': 'Październik',
-                'month.november': 'Listopad',
-                'month.december': 'Grudzień',
-
-                // Actions
-                'action.edit': 'Edytuj',
-                'action.delete': 'Usuń'
-            },
-            en: {
-                // Header
-                'app.title': 'WORK HOURS',
-                'app.settings': 'Settings',
-                'app.language': 'Change language / Zmień język',
-
-                // Section visibility
-                'section.visibility': 'Section visibility:',
-                'section.addEntry': 'Add new entry',
-                'section.entriesList': 'Entries list',
-                'section.summary': 'Summary',
-
-                // Form labels
-                'form.addEntry': 'Add new entry',
-                'form.editEntry': 'Edit entry',
-                'form.date': 'Date:',
-                'form.taskType': 'Task type:',
-                'form.selectTaskType': '-- Select task type --',
-                'form.project': 'Project:',
-                'form.selectProject': '-- Select project --',
-                'form.hours': 'Number of hours worked (max 8):',
-                'form.taskNumber': 'Task number:',
-                'form.taskNumberPlaceholder': 'E.g. CTASK1234567',
-                'form.addButton': 'Add entry',
-                'form.updateButton': 'Update entry',
-                'form.clearButton': 'Clear',
-
-                // Entries list
-                'entries.title': 'Entries list',
-                'entries.filterCurrentMonth': 'Show only entries from current month',
-                'entries.filterCurrentWeek': 'Show only entries from current week',
-                'entries.taskTypeFilter': 'Task type',
-                'entries.selectDeselectAll': 'Select/Deselect all',
-                'entries.showAll': 'Show all entries',
-
-                // Table headers
-                'table.date': 'Date',
-                'table.taskType': 'Task type',
-                'table.project': 'Project',
-                'table.hours': 'Hours',
-                'table.number': 'Number',
-                'table.actions': 'Actions',
-
-                // Summary
-                'summary.title': 'Summary',
-                'summary.currentMonth': 'Current month:',
-                'summary.totalHours': 'Total hours:',
-                'summary.export': 'Export current month data (CSV)',
-
-                // Settings modal
-                'settings.title': 'Settings',
-                'settings.projects': 'Projects',
-                'settings.tasks': 'Tasks',
-                'settings.projectName': 'Project name:',
-                'settings.projectPlaceholder': 'E.g. INFRA 9065 PROJECT',
-                'settings.addProject': 'Add project',
-                'settings.cancel': 'Cancel',
-                'settings.taskType': 'Task type:',
-                'settings.taskTypePlaceholder': 'E.g. CTASK',
-                'settings.addTask': 'Add task',
-                'settings.apply': 'Apply',
-                'settings.ok': 'OK',
-
-                // Pomodoro
-                'pomodoro.title': 'POMODORO',
-                'pomodoro.workTime': 'Work time',
-                'pomodoro.shortBreak': 'Short break',
-                'pomodoro.longBreak': 'Long break',
-                'pomodoro.start': 'Start',
-                'pomodoro.pause': 'Pause',
-                'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Task number:',
-                'pomodoro.completeTask': 'Complete task, start new (session continuity)',
-                'pomodoro.addEntry': 'Add entry',
-                'pomodoro.newTask': 'New',
-                'pomodoro.session': 'Session:',
-                'pomodoro.shortBreaks': 'Short breaks:',
-                'pomodoro.longBreaks': 'Long breaks:',
-                'pomodoro.today': 'Today:',
-                'pomodoro.currentTime': 'Current time:',
-                'pomodoro.settings': '⚙️ Settings',
-                'pomodoro.workDuration': 'min - Work',
-                'pomodoro.shortBreakDuration': 'min - Short break',
-                'pomodoro.longBreakDuration': 'min - Long break',
-                'pomodoro.soundEnabled': 'Notification sound',
-                'pomodoro.autoStartBreak': 'Auto-start break',
-
-                // Messages
-                'msg.enterProjectName': 'Enter project name',
-                'msg.projectExists': 'This project already exists',
-                'msg.confirmDeleteProject': 'Are you sure you want to delete project',
-                'msg.enterTaskType': 'Enter task type',
-                'msg.taskTypeExists': 'This task type already exists',
-                'msg.confirmDeleteTaskType': 'Are you sure you want to delete task type',
-                'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
-                'msg.noDataToExport': 'No data to export',
-                'msg.confirmTaskChange': 'Changing task will reset accumulated time',
-                'msg.continue': 'Continue?',
-
-                // Validation messages
-                'validation.selectDate': 'Select date',
-                'validation.selectTaskType': 'Select task type',
-                'validation.selectProject': 'Select project',
-                'validation.enterHours': 'Enter number of hours',
-                'validation.hoursGreaterThanZero': 'Number of hours must be greater than 0',
-                'validation.hoursMaxEight': 'Maximum number of hours is 8',
-                'validation.enterTaskNumber': 'Enter task number',
-
-                // Months
-                'month.january': 'January',
-                'month.february': 'February',
-                'month.march': 'March',
-                'month.april': 'April',
-                'month.may': 'May',
-                'month.june': 'June',
-                'month.july': 'July',
-                'month.august': 'August',
-                'month.september': 'September',
-                'month.october': 'October',
-                'month.november': 'November',
-                'month.december': 'December',
-
-                // Actions
-                'action.edit': 'Edit',
-                'action.delete': 'Delete'
-            }
-        };
-
-        // Translation function
-        function t(key, params = {}) {
-            let text = translations[currentLanguage][key] || translations['pl'][key] || key;
-
-            // Replace parameters in the text
-            Object.keys(params).forEach(param => {
-                text = text.replace(`{${param}}`, params[param]);
-            });
-
-            return text;
-        }
-
-        // Update UI with current language
-        function updateUILanguage() {
-            // Update document language
-            document.documentElement.lang = currentLanguage;
-
-            // Update all elements with data-i18n attribute
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                const translation = t(key);
-
-                if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
-                    if (element.hasAttribute('placeholder')) {
-                        element.placeholder = translation;
-                    }
-                } else if (element.tagName === 'INPUT' && element.type === 'button') {
-                    element.value = translation;
-                } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
-                    element.textContent = translation;
-                } else {
-                    element.textContent = translation;
-                }
-            });
-
-            // Update title attribute for buttons
-            document.querySelectorAll('[data-i18n-title]').forEach(element => {
-                const key = element.getAttribute('data-i18n-title');
-                element.title = t(key);
-            });
-
-            // Refresh displays that depend on language
-            if (typeof displayEntries === 'function') {
-                displayEntries();
-            }
-            if (typeof updatePomodoroDisplay === 'function') {
-                updatePomodoroDisplay();
-            }
-            if (typeof updateSummary === 'function') {
-                updateSummary();
-            }
-
-            // Update validation messages if they are currently displayed
-            const validationElements = [
-                'date-feedback',
-                'task-type-feedback',
-                'client-feedback',
-                'hours-feedback',
-                'task-number-feedback'
-            ];
-
-            let hasValidationErrors = false;
-            validationElements.forEach(id => {
-                const element = document.getElementById(id);
-                if (element && element.textContent.trim() !== '') {
-                    hasValidationErrors = true;
-                }
-            });
-
-            // If there are validation messages displayed, re-validate to update them
-            if (hasValidationErrors && typeof validateForm === 'function') {
-                validateForm();
-            }
-        }
-
-        // Change language
-        function changeLanguage() {
-            currentLanguage = currentLanguage === 'pl' ? 'en' : 'pl';
-            localStorage.setItem('app-language', currentLanguage);
             updateUILanguage();
         }
 
