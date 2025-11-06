@@ -1743,6 +1743,12 @@
             if (typeof updateSummary === 'function') {
                 updateSummary();
             }
+            if (typeof updateProjectSelect === 'function') {
+                updateProjectSelect();
+            }
+            if (typeof updateTaskTypeSelect === 'function') {
+                updateTaskTypeSelect();
+            }
 
             // Update validation messages if they are currently displayed
             const validationMapping = {
