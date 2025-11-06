@@ -828,6 +828,189 @@
                 font-size: 20px;
             }
         }
+
+        /* Settings Button */
+        .settings-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #303030;
+            margin: 3% auto;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .modal-close {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 24px;
+            min-width: 24px;
+            max-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+            line-height: 1;
+            margin-left: auto;
+            margin-right: 8px;
+            overflow: hidden;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            background-color: var(--error-color);
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-footer button {
+            flex: 0 0 auto;
+            min-width: 100px;
+        }
+
+        .modal-footer button:disabled {
+            background-color: var(--bg-highlight);
+            color: #5a5a5a;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .modal-footer button:disabled:hover {
+            background-color: var(--bg-highlight);
+        }
+
+        .modal-section {
+            margin-bottom: 30px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        /* Make header relative for positioning the settings button */
+        header {
+            position: relative;
+        }
+
+        /* Tabs Styles */
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin: 0;
+            padding: 0 25px;
+            background-color: var(--bg-light);
+        }
+
+        .modal-tab {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            margin-bottom: -1px;
+        }
+
+        .modal-tab:hover {
+            color: var(--primary-color);
+            background-color: rgba(25, 118, 210, 0.05);
+        }
+
+        .modal-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="preload">
@@ -837,6 +1020,7 @@
     <div class="container">
         <header>
             <h1>GODZINY PRACY</h1>
+            <button class="settings-button" id="settings-btn" title="Ustawienia">⚙️</button>
         </header>
 
         <section class="section-toggles" style="margin-bottom: 30px;">
@@ -850,10 +1034,6 @@
                     <label style="display: flex; align-items: center; justify-content: center;">
                         <input type="checkbox" id="toggle-entries-list" checked>
                         <span style="margin-left: 8px;">Lista wpisów</span>
-                    </label>
-                    <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-project-management" checked>
-                        <span style="margin-left: 8px;">Zarządzanie projektami</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
                         <input type="checkbox" id="toggle-summary" checked>
@@ -876,14 +1056,7 @@
                     <label for="task-type">Rodzaj zadania:</label>
                     <select id="task-type" name="task-type" required>
                         <option value="">-- Wybierz rodzaj zadania --</option>
-                        <option value="CTASK">CTASK</option>
-                        <option value="TASK">TASK</option>
-                        <option value="INC">INC</option>
-                        <option value="SCTASK">SCTASK</option>
-                        <option value="CHG">CHG</option>
-                        <option value="PTASK">PTASK</option>
-                        <option value="TRAINING">TRAINING</option>
-                        <option value="MEETING">MEETING</option>
+                        <!-- Opcje będą dynamicznie ładowane -->
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback"></div>
                 </div>
@@ -1014,25 +1187,10 @@
             </div>
         </section>
 
-        <section class="project-management" id="section-project-management" style="margin-top: 40px;">
-            <h2>Zarządzanie projektami</h2>
-            <div class="entry-form">
-                <div class="form-group">
-                    <label for="project-name">Nazwa projektu:</label>
-                    <input type="text" id="project-name" placeholder="Np. INFRA 9065 PROJECT">
-                </div>
-                <div class="form-group btn-group">
-                    <button type="button" id="add-project-btn">Dodaj projekt</button>
-                    <button type="button" class="reset-btn" id="cancel-project-btn" style="display: none;">Anuluj</button>
-                </div>
-            </div>
-            <div class="project-list" style="margin-top: 20px;">
-                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Lista projektów:</h3>
-                <div id="projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                    <!-- Projects will be listed here -->
-                </div>
-            </div>
-        </section>
+        <!-- Project management moved to settings modal -->
+        <div id="projects-container" style="display: none;">
+            <!-- Hidden - used for backward compatibility -->
+        </div>
 
         <section class="summary" id="section-summary" style="margin-top: 40px;">
             <h2>Podsumowanie</h2>
@@ -1042,6 +1200,71 @@
             </div>
             <button class="export-btn" id="export-button">Eksportuj dane z bieżącego miesiąca (CSV)</button>
         </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ustawienia</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="projects-tab">Projekty</button>
+                <button class="modal-tab" data-tab="tasks-tab">Zadania</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Projects Tab -->
+                <div id="projects-tab" class="tab-content active">
+                    <div class="modal-section">
+                        <div class="entry-form">
+                            <div class="form-group">
+                                <label for="modal-project-name">Nazwa projektu:</label>
+                                <input type="text" id="modal-project-name" placeholder="Np. INFRA 9065 PROJECT">
+                            </div>
+                            <div class="form-group btn-group">
+                                <button type="button" id="modal-add-project-btn">Dodaj projekt</button>
+                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;">Anuluj</button>
+                            </div>
+                        </div>
+                        <div class="project-list" style="margin-top: 20px;">
+                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                                <!-- Projects will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Tab -->
+                <div id="tasks-tab" class="tab-content">
+                    <div class="modal-section">
+                        <div class="entry-form">
+                            <div class="form-group">
+                                <label for="task-type-name">Rodzaj zadania:</label>
+                                <input type="text" id="task-type-name" placeholder="Np. CTASK">
+                            </div>
+                            <div class="form-group btn-group">
+                                <button type="button" id="add-task-type-btn">Dodaj zadanie</button>
+                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;">Anuluj</button>
+                            </div>
+                        </div>
+                        <div class="project-list" style="margin-top: 20px;">
+                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                                <!-- Task types will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="modal-apply-btn">Zastosuj</button>
+                <button type="button" id="modal-ok-btn">OK</button>
+            </div>
+        </div>
     </div>
 
     <!-- Pomodoro Timer Widget -->
@@ -1155,6 +1378,10 @@
         const PROJECTS_STORAGE_KEY = 'timesheet-projects';
         let editingProjectIndex = -1;
         const SECTION_VISIBILITY_KEY = 'section-visibility';
+        let taskTypes = [];
+        const TASK_TYPES_STORAGE_KEY = 'timesheet-task-types';
+        let editingTaskTypeIndex = -1;
+        let hasUnsavedChanges = false;
 
         // Pomodoro Timer Variables
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
@@ -1197,6 +1424,18 @@
             'INFRA 0020 STOCKHOLM',
             'INFRA 9065 MEETING',
             'INFRA 9065 TRAINING'
+        ];
+
+        // Domyślne typy zadań
+        const DEFAULT_TASK_TYPES = [
+            'CTASK',
+            'TASK',
+            'INC',
+            'SCTASK',
+            'CHG',
+            'PTASK',
+            'TRAINING',
+            'MEETING'
         ];
 
         // Funkcje zarządzania widocznością sekcji
@@ -1420,6 +1659,311 @@
             editingProjectIndex = -1;
             document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
             document.getElementById('cancel-project-btn').style.display = 'none';
+        }
+
+        // Funkcje zarządzania typami zadań
+        function loadTaskTypes() {
+            const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
+            if (storedTaskTypes) {
+                taskTypes = JSON.parse(storedTaskTypes);
+            } else {
+                taskTypes = [...DEFAULT_TASK_TYPES];
+                saveTaskTypes();
+            }
+        }
+
+        function saveTaskTypes() {
+            localStorage.setItem(TASK_TYPES_STORAGE_KEY, JSON.stringify(taskTypes));
+        }
+
+        function updateTaskTypeSelect() {
+            const taskTypeSelect = document.getElementById('task-type');
+            const currentValue = taskTypeSelect.value;
+
+            taskTypeSelect.innerHTML = '<option value="">-- Wybierz rodzaj zadania --</option>';
+            taskTypes.forEach(taskType => {
+                const option = document.createElement('option');
+                option.value = taskType;
+                option.textContent = taskType;
+                taskTypeSelect.appendChild(option);
+            });
+
+            // Przywróć poprzednią wartość jeśli nadal istnieje
+            if (taskTypes.includes(currentValue)) {
+                taskTypeSelect.value = currentValue;
+            }
+        }
+
+        function renderTaskTypes() {
+            const taskTypesContainer = document.getElementById('task-types-container');
+            taskTypesContainer.innerHTML = '';
+
+            if (taskTypes.length === 0) {
+                taskTypesContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak typów zadań</p>';
+                return;
+            }
+
+            taskTypes.forEach((taskType, index) => {
+                const taskTypeCard = document.createElement('div');
+                taskTypeCard.className = 'project-card';
+                taskTypeCard.innerHTML = `
+                    <span>${taskType}</span>
+                    <div class="project-actions">
+                        <button class="project-action-btn edit-task-type-btn" data-index="${index}">Edytuj</button>
+                        <button class="project-action-btn delete delete-task-type-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
+                taskTypesContainer.appendChild(taskTypeCard);
+            });
+
+            // Dodaj event listenery dla przycisków
+            document.querySelectorAll('.edit-task-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    editTaskType(index);
+                });
+            });
+
+            document.querySelectorAll('.delete-task-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteTaskType(index);
+                });
+            });
+        }
+
+        function addTaskType() {
+            const taskTypeNameInput = document.getElementById('task-type-name');
+            const taskTypeName = taskTypeNameInput.value.trim();
+
+            if (!taskTypeName) {
+                alert('Podaj rodzaj zadania');
+                return;
+            }
+
+            if (editingTaskTypeIndex === -1) {
+                // Dodawanie nowego typu zadania
+                if (taskTypes.includes(taskTypeName)) {
+                    alert('Ten typ zadania już istnieje');
+                    return;
+                }
+                taskTypes.push(taskTypeName);
+            } else {
+                // Edycja istniejącego typu zadania
+                if (taskTypes.includes(taskTypeName) && taskTypes[editingTaskTypeIndex] !== taskTypeName) {
+                    alert('Ten typ zadania już istnieje');
+                    return;
+                }
+                taskTypes[editingTaskTypeIndex] = taskTypeName;
+                editingTaskTypeIndex = -1;
+                document.getElementById('add-task-type-btn').textContent = 'Dodaj zadanie';
+                document.getElementById('cancel-task-type-btn').style.display = 'none';
+            }
+
+            saveTaskTypes();
+            updateTaskTypeSelect();
+            renderTaskTypes();
+            taskTypeNameInput.value = '';
+            markAsChanged();
+        }
+
+        function editTaskType(index) {
+            const taskTypeName = taskTypes[index];
+            document.getElementById('task-type-name').value = taskTypeName;
+            editingTaskTypeIndex = index;
+            document.getElementById('add-task-type-btn').textContent = 'Zapisz zmiany';
+            document.getElementById('cancel-task-type-btn').style.display = 'inline-block';
+        }
+
+        function deleteTaskType(index) {
+            if (confirm(`Czy na pewno chcesz usunąć typ zadania "${taskTypes[index]}"?`)) {
+                taskTypes.splice(index, 1);
+                saveTaskTypes();
+                updateTaskTypeSelect();
+                renderTaskTypes();
+                markAsChanged();
+            }
+        }
+
+        function cancelTaskTypeEdit() {
+            document.getElementById('task-type-name').value = '';
+            editingTaskTypeIndex = -1;
+            document.getElementById('add-task-type-btn').textContent = 'Dodaj zadanie';
+            document.getElementById('cancel-task-type-btn').style.display = 'none';
+        }
+
+        // Funkcje zarządzania oknem modalnym
+        function updateApplyButtonState() {
+            const applyBtn = document.getElementById('modal-apply-btn');
+            if (applyBtn) {
+                applyBtn.disabled = !hasUnsavedChanges;
+            }
+        }
+
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+            updateApplyButtonState();
+        }
+
+        function markAsSaved() {
+            hasUnsavedChanges = false;
+            updateApplyButtonState();
+        }
+
+        function switchTab(tabId) {
+            // Ukryj wszystkie zakładki
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Usuń aktywny stan ze wszystkich przycisków zakładek
+            document.querySelectorAll('.modal-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Pokaż wybraną zakładkę
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Zaznacz aktywny przycisk zakładki
+            const activeButton = document.querySelector(`.modal-tab[data-tab="${tabId}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
+        function openSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'block';
+            // Upewnij się, że pierwsza zakładka jest aktywna
+            switchTab('projects-tab');
+            renderModalProjects();
+            renderTaskTypes();
+            // Reset unsaved changes flag when opening
+            markAsSaved();
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'none';
+            // Reset editing states
+            cancelModalProjectEdit();
+            cancelTaskTypeEdit();
+            // Reset unsaved changes flag when closing
+            markAsSaved();
+        }
+
+        function applySettings() {
+            // Settings are applied in real-time, so this just provides feedback
+            showNotification('Ustawienia zostały zastosowane');
+            // Mark as saved after applying
+            markAsSaved();
+        }
+
+        function applyAndCloseSettings() {
+            applySettings();
+            closeSettingsModal();
+        }
+
+        // Funkcje zarządzania projektami w modalu
+        function renderModalProjects() {
+            const projectsContainer = document.getElementById('modal-projects-container');
+            projectsContainer.innerHTML = '';
+
+            if (projects.length === 0) {
+                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+                return;
+            }
+
+            projects.forEach((project, index) => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card';
+                projectCard.innerHTML = `
+                    <span>${project}</span>
+                    <div class="project-actions">
+                        <button class="project-action-btn modal-edit-project-btn" data-index="${index}">Edytuj</button>
+                        <button class="project-action-btn delete modal-delete-project-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
+                projectsContainer.appendChild(projectCard);
+            });
+
+            // Dodaj event listenery dla przycisków
+            document.querySelectorAll('.modal-edit-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    editModalProject(index);
+                });
+            });
+
+            document.querySelectorAll('.modal-delete-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteModalProject(index);
+                });
+            });
+        }
+
+        function addModalProject() {
+            const projectNameInput = document.getElementById('modal-project-name');
+            const projectName = projectNameInput.value.trim();
+
+            if (!projectName) {
+                alert('Podaj nazwę projektu');
+                return;
+            }
+
+            if (editingProjectIndex === -1) {
+                // Dodawanie nowego projektu
+                if (projects.includes(projectName)) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects.push(projectName);
+            } else {
+                // Edycja istniejącego projektu
+                if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
+                    alert('Ten projekt już istnieje');
+                    return;
+                }
+                projects[editingProjectIndex] = projectName;
+                editingProjectIndex = -1;
+                document.getElementById('modal-add-project-btn').textContent = 'Dodaj projekt';
+                document.getElementById('modal-cancel-project-btn').style.display = 'none';
+            }
+
+            saveProjects();
+            updateProjectSelect();
+            renderModalProjects();
+            projectNameInput.value = '';
+            markAsChanged();
+        }
+
+        function editModalProject(index) {
+            const projectName = projects[index];
+            document.getElementById('modal-project-name').value = projectName;
+            editingProjectIndex = index;
+            document.getElementById('modal-add-project-btn').textContent = 'Zapisz zmiany';
+            document.getElementById('modal-cancel-project-btn').style.display = 'inline-block';
+        }
+
+        function deleteModalProject(index) {
+            if (confirm(`Czy na pewno chcesz usunąć projekt "${projects[index]}"?`)) {
+                projects.splice(index, 1);
+                saveProjects();
+                updateProjectSelect();
+                renderModalProjects();
+                markAsChanged();
+            }
+        }
+
+        function cancelModalProjectEdit() {
+            document.getElementById('modal-project-name').value = '';
+            editingProjectIndex = -1;
+            document.getElementById('modal-add-project-btn').textContent = 'Dodaj projekt';
+            document.getElementById('modal-cancel-project-btn').style.display = 'none';
         }
 
         // Dodanie nowego wpisu
@@ -2659,6 +3203,8 @@
             loadProjects();
             updateProjectSelect();
             renderProjects();
+            loadTaskTypes();
+            updateTaskTypeSelect();
             initSectionToggles();
             initPomodoroTimer();
 
@@ -2755,14 +3301,51 @@
             // Obsługa przycisku eksportu
             document.getElementById('export-button').addEventListener('click', exportData);
 
-            // Obsługa zarządzania projektami
-            document.getElementById('add-project-btn').addEventListener('click', addProject);
-            document.getElementById('cancel-project-btn').addEventListener('click', cancelProjectEdit);
+            // Obsługa zarządzania projektami (stara sekcja - dla kompatybilności)
+            // document.getElementById('add-project-btn').addEventListener('click', addProject);
+            // document.getElementById('cancel-project-btn').addEventListener('click', cancelProjectEdit);
 
-            // Obsługa Enter w polu nazwy projektu
-            document.getElementById('project-name').addEventListener('keypress', function(e) {
+            // Obsługa okna modalnego ustawień
+            document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+            document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
+            document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
+            document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
+
+            // Obsługa zakładek w oknie modalnym
+            document.querySelectorAll('.modal-tab').forEach(tabButton => {
+                tabButton.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Zamykanie modalnego po kliknięciu poza nim
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('settings-modal');
+                if (event.target === modal) {
+                    closeSettingsModal();
+                }
+            });
+
+            // Obsługa zarządzania projektami w modalu
+            document.getElementById('modal-add-project-btn').addEventListener('click', addModalProject);
+            document.getElementById('modal-cancel-project-btn').addEventListener('click', cancelModalProjectEdit);
+
+            // Obsługa Enter w polu nazwy projektu w modalu
+            document.getElementById('modal-project-name').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    addProject();
+                    addModalProject();
+                }
+            });
+
+            // Obsługa zarządzania typami zadań
+            document.getElementById('add-task-type-btn').addEventListener('click', addTaskType);
+            document.getElementById('cancel-task-type-btn').addEventListener('click', cancelTaskTypeEdit);
+
+            // Obsługa Enter w polu typu zadania
+            document.getElementById('task-type-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTaskType();
                 }
             });
 
