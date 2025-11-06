@@ -1745,26 +1745,32 @@
             }
 
             // Update validation messages if they are currently displayed
-            const validationElements = [
-                'date-feedback',
-                'task-type-feedback',
-                'client-feedback',
-                'hours-feedback',
-                'task-number-feedback'
-            ];
+            const validationMapping = {
+                'date-feedback': 'validation.selectDate',
+                'task-type-feedback': 'validation.selectTaskType',
+                'client-feedback': 'validation.selectProject',
+                'hours-feedback': ['validation.enterHours', 'validation.hoursGreaterThanZero', 'validation.hoursMaxEight'],
+                'task-number-feedback': 'validation.enterTaskNumber'
+            };
 
-            let hasValidationErrors = false;
-            validationElements.forEach(id => {
-                const element = document.getElementById(id);
+            Object.keys(validationMapping).forEach(elementId => {
+                const element = document.getElementById(elementId);
                 if (element && element.textContent.trim() !== '') {
-                    hasValidationErrors = true;
+                    const currentText = element.textContent.trim();
+                    const keys = Array.isArray(validationMapping[elementId]) ? validationMapping[elementId] : [validationMapping[elementId]];
+
+                    // Try to match which validation message is currently displayed
+                    for (const key of keys) {
+                        const plText = translations['pl'][key];
+                        const enText = translations['en'][key];
+
+                        if (currentText === plText || currentText === enText) {
+                            element.textContent = t(key);
+                            break;
+                        }
+                    }
                 }
             });
-
-            // If there are validation messages displayed, re-validate to update them
-            if (hasValidationErrors && typeof validateForm === 'function') {
-                validateForm();
-            }
         }
 
         // Change language
