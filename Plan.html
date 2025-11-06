@@ -896,24 +896,30 @@
         }
 
         .modal-close {
-            color: var(--text-color);
-            font-size: 28px;
+            color: white;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             background: none;
             border: none;
             padding: 0;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            min-width: 24px;
+            max-width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
+            transition: opacity 0.2s ease;
+            line-height: 1;
+            margin-left: auto;
+            margin-right: 8px;
+            overflow: hidden;
         }
 
         .modal-close:hover,
         .modal-close:focus {
-            color: var(--primary-color);
+            opacity: 0.7;
         }
 
         .modal-body {
@@ -954,6 +960,46 @@
         /* Make header relative for positioning the settings button */
         header {
             position: relative;
+        }
+
+        /* Tabs Styles */
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin: 0;
+            padding: 0 25px;
+            background-color: var(--bg-light);
+        }
+
+        .modal-tab {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            margin-bottom: -1px;
+        }
+
+        .modal-tab:hover {
+            color: var(--primary-color);
+            background-color: rgba(25, 118, 210, 0.05);
+        }
+
+        .modal-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -1153,47 +1199,59 @@
                 <h2>Ustawienia</h2>
                 <button class="modal-close" id="modal-close">&times;</button>
             </div>
+
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="projects-tab">Projekty</button>
+                <button class="modal-tab" data-tab="tasks-tab">Zadania</button>
+            </div>
+
             <div class="modal-body">
-                <!-- Project Management Section -->
-                <div class="modal-section">
-                    <h3>Zarządzanie projektami</h3>
-                    <div class="entry-form">
-                        <div class="form-group">
-                            <label for="modal-project-name">Nazwa projektu:</label>
-                            <input type="text" id="modal-project-name" placeholder="Np. INFRA 9065 PROJECT">
+                <!-- Projects Tab -->
+                <div id="projects-tab" class="tab-content active">
+                    <div class="modal-section">
+                        <h3>Zarządzanie projektami</h3>
+                        <div class="entry-form">
+                            <div class="form-group">
+                                <label for="modal-project-name">Nazwa projektu:</label>
+                                <input type="text" id="modal-project-name" placeholder="Np. INFRA 9065 PROJECT">
+                            </div>
+                            <div class="form-group btn-group">
+                                <button type="button" id="modal-add-project-btn">Dodaj projekt</button>
+                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;">Anuluj</button>
+                            </div>
                         </div>
-                        <div class="form-group btn-group">
-                            <button type="button" id="modal-add-project-btn">Dodaj projekt</button>
-                            <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;">Anuluj</button>
-                        </div>
-                    </div>
-                    <div class="project-list" style="margin-top: 20px;">
-                        <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                            <!-- Projects will be listed here -->
+                        <div class="project-list" style="margin-top: 20px;">
+                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                                <!-- Projects will be listed here -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Task Types Management Section -->
-                <div class="modal-section">
-                    <h3>Zarządzanie zadaniami</h3>
-                    <div class="entry-form">
-                        <div class="form-group">
-                            <label for="task-type-name">Rodzaj zadania:</label>
-                            <input type="text" id="task-type-name" placeholder="Np. CTASK">
+                <!-- Tasks Tab -->
+                <div id="tasks-tab" class="tab-content">
+                    <div class="modal-section">
+                        <h3>Zarządzanie zadaniami</h3>
+                        <div class="entry-form">
+                            <div class="form-group">
+                                <label for="task-type-name">Rodzaj zadania:</label>
+                                <input type="text" id="task-type-name" placeholder="Np. CTASK">
+                            </div>
+                            <div class="form-group btn-group">
+                                <button type="button" id="add-task-type-btn">Dodaj zadanie</button>
+                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;">Anuluj</button>
+                            </div>
                         </div>
-                        <div class="form-group btn-group">
-                            <button type="button" id="add-task-type-btn">Dodaj zadanie</button>
-                            <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;">Anuluj</button>
-                        </div>
-                    </div>
-                    <div class="project-list" style="margin-top: 20px;">
-                        <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                            <!-- Task types will be listed here -->
+                        <div class="project-list" style="margin-top: 20px;">
+                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                                <!-- Task types will be listed here -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" id="modal-apply-btn">Zastosuj</button>
                 <button type="button" id="modal-ok-btn">OK</button>
@@ -1724,9 +1782,35 @@
         }
 
         // Funkcje zarządzania oknem modalnym
+        function switchTab(tabId) {
+            // Ukryj wszystkie zakładki
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Usuń aktywny stan ze wszystkich przycisków zakładek
+            document.querySelectorAll('.modal-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Pokaż wybraną zakładkę
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Zaznacz aktywny przycisk zakładki
+            const activeButton = document.querySelector(`.modal-tab[data-tab="${tabId}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
         function openSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = 'block';
+            // Upewnij się, że pierwsza zakładka jest aktywna
+            switchTab('projects-tab');
             renderModalProjects();
             renderTaskTypes();
         }
@@ -3190,6 +3274,14 @@
             document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
             document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
             document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
+
+            // Obsługa zakładek w oknie modalnym
+            document.querySelectorAll('.modal-tab').forEach(tabButton => {
+                tabButton.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
 
             // Zamykanie modalnego po kliknięciu poza nim
             window.addEventListener('click', function(event) {
