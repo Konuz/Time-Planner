@@ -837,7 +837,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 4px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -845,13 +845,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .settings-button:hover {
             background-color: var(--primary-dark);
-            transform: rotate(45deg);
         }
 
         /* Modal Styles */
@@ -919,7 +917,8 @@
 
         .modal-close:hover,
         .modal-close:focus {
-            opacity: 0.7;
+            color: var(--error-color);
+            opacity: 1;
         }
 
         .modal-body {
@@ -978,7 +977,7 @@
             padding: 15px 20px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 700;
             border-bottom: 3px solid transparent;
             transition: var(--transition);
             margin-bottom: -1px;
@@ -1210,7 +1209,6 @@
                 <!-- Projects Tab -->
                 <div id="projects-tab" class="tab-content active">
                     <div class="modal-section">
-                        <h3>Zarządzanie projektami</h3>
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="modal-project-name">Nazwa projektu:</label>
@@ -1232,7 +1230,6 @@
                 <!-- Tasks Tab -->
                 <div id="tasks-tab" class="tab-content">
                     <div class="modal-section">
-                        <h3>Zarządzanie zadaniami</h3>
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="task-type-name">Rodzaj zadania:</label>
