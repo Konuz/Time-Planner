@@ -10,15 +10,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Primary Colors */
             --primary-color: #1976d2;
             --primary-dark: #1565c0;
+            --primary-light: #2196F3;
+
+            /* Status Colors */
             --error-color: #dc3545;
             --success-color: #28a745;
-            --border-color: #5f5f5f;
-            --bg-light: rgb(34, 34, 34);
+            --success-dark: #218838;
+            --success-light: #51cf66;
+            --success-lighter: #37b24d;
+            --warning-color: #fab005;
+            --warning-light: #ffd43b;
+
+            /* Secondary Colors */
+            --secondary-color: #6c757d;
+            --secondary-dark: #5a6268;
+
+            /* Background Colors */
+            --bg-dark: #1e1e1e;
+            --bg-medium: #2d2d2d;
+            --bg-light: #222222;
+            --bg-lighter: #303030;
             --bg-highlight: #292929;
+
+            /* Text Colors */
             --text-color: #797979;
+            --text-light: #fff;
+
+            /* Border */
+            --border-color: #5f5f5f;
             --border-radius: 4px;
+
+            /* Effects */
             --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
@@ -50,7 +75,7 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background-color: #303030;
+            background-color: var(--bg-lighter);
             padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
@@ -126,7 +151,7 @@
 
         button {
             background-color: var(--primary-color);
-            color: #fff;
+            color: var(--text-light);
             border: none;
             padding: 12px 20px;
             border-radius: var(--border-radius);
@@ -235,20 +260,20 @@
         }
 
         .export-btn:hover {
-            background-color: #218838;
+            background-color: var(--success-dark);
         }
 
         .reset-btn {
-            background-color: #6c757d;
+            background-color: var(--secondary-color);
         }
 
         .reset-btn:hover {
-            background-color: #5a6268;
+            background-color: var(--secondary-dark);
         }
 
         .show-more-btn {
             background-color: var(--primary-color);
-            color: #fff;
+            color: var(--text-light);
             border: none;
             padding: 10px 30px;
             border-radius: var(--border-radius);
@@ -319,6 +344,7 @@
         .task-type-dropdown .dropdown-arrow {
             transition: transform 0.3s ease;
             font-size: 12px;
+            will-change: transform;
         }
 
         .task-type-dropdown[open] .dropdown-arrow {
@@ -356,7 +382,7 @@
             min-width: 280px;
             max-width: 640px;
             min-height: 400px;
-            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 9999;
@@ -365,6 +391,7 @@
             display: flex;
             flex-direction: column;
             max-height: calc(100vh - 40px);
+            will-change: transform;
         }
 
         .pomodoro-widget.no-transition {
@@ -376,7 +403,7 @@
         }
 
         .pomodoro-header {
-            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
             padding: 8px 16px;
             border-radius: 16px 16px 0 0;
             display: flex;
@@ -486,17 +513,19 @@
             stroke-dasharray: 565.48;
             stroke-dashoffset: 0;
             transition: stroke-dashoffset 0.5s linear, stroke 0.5s ease;
+            will-change: stroke-dashoffset, stroke;
         }
 
         .timer-display {
             font-size: 48px;
             font-weight: 700;
-            color: #2196F3;
+            color: var(--primary-light);
             font-family: 'Roboto', sans-serif;
             text-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
             position: relative;
             z-index: 1;
             transition: color 0.5s ease, text-shadow 0.5s ease;
+            will-change: color, text-shadow;
         }
 
         .timer-mode {
@@ -507,12 +536,18 @@
 
         .pomodoro-controls {
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            gap: 12px;
             margin-bottom: 16px;
         }
 
+        .timer-primary-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .timer-btn {
-            flex: 1;
             padding: 10px;
             border: none;
             border-radius: 8px;
@@ -521,6 +556,7 @@
             cursor: pointer;
             background-color: var(--bg-highlight);
             color: var(--text-color);
+            flex: 1;
         }
 
         .timer-btn:hover {
@@ -532,18 +568,23 @@
         }
 
         .timer-btn-primary {
-            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
             color: white;
         }
 
         .timer-btn-warning {
-            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
-            color: #1e1e1e;
+            background: linear-gradient(135deg, var(--warning-light) 0%, var(--warning-color) 100%);
+            color: var(--bg-dark);
         }
 
         .timer-btn-secondary {
             background: linear-gradient(135deg, #868e96 0%, #495057 100%);
             color: white;
+        }
+
+        .timer-new-task-btn {
+            width: 100%;
+            flex: none;
         }
 
         .timer-btn-success {
@@ -582,6 +623,7 @@
             text-align: center;
             font-size: 14px;
             border: 2px solid var(--primary-color);
+            will-change: transform, opacity;
         }
 
         .pomodoro-notification.show {
@@ -637,7 +679,7 @@
 
         .stat-row span:last-child {
             font-weight: 600;
-            color: #2196F3;
+            color: var(--primary-light);
         }
 
         .pomodoro-settings details {
@@ -695,7 +737,7 @@
             right: 20px;
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             z-index: 9999;
@@ -704,6 +746,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            will-change: transform;
         }
 
         .pomodoro-minimized:hover {
@@ -724,6 +767,7 @@
         /* Running Animation */
         .timer-running .timer-display {
             animation: pulse 2s ease-in-out infinite;
+            will-change: opacity;
         }
 
         @keyframes pulse {
@@ -888,7 +932,7 @@
         }
 
         .modal-content {
-            background-color: #303030;
+            background-color: var(--bg-lighter);
             margin: 3% auto;
             padding: 0;
             border: 1px solid var(--border-color);
@@ -899,6 +943,11 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-modal .modal-content {
+            max-width: 420px;
+            width: 90%;
         }
 
         .modal-header {
@@ -957,9 +1006,23 @@
             gap: 10px;
         }
 
+        .confirm-modal .modal-header,
+        .confirm-modal .modal-footer {
+            border: none;
+        }
+
         .modal-footer button {
             flex: 0 0 auto;
             min-width: 100px;
+        }
+
+        .primary-action {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .primary-action:hover {
+            background-color: var(--primary-dark);
         }
 
         .modal-footer button:disabled {
@@ -1037,29 +1100,31 @@
 </head>
 <body class="preload">
     <!-- Non-blocking notification for Pomodoro timer -->
-    <div id="pomodoro-notification" class="pomodoro-notification"></div>
+    <div id="pomodoro-notification" class="pomodoro-notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <div class="container">
         <header>
             <h1 data-i18n="app.title">GODZINY PRACY</h1>
-            <button class="language-button" id="language-btn" data-i18n-title="app.language" title="Zmień język / Change language">🌐</button>
-            <button class="settings-button" id="settings-btn" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">🌐</button>
+            <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
+
+        <main role="main">
 
         <section class="section-toggles" style="margin-bottom: 30px;">
             <div style="background-color: var(--bg-light); padding: 15px; border-radius: var(--border-radius);">
                 <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;" data-i18n="section.visibility">Widoczność sekcji:</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;" role="group" aria-label="Przełączniki widoczności sekcji">
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entry-form" checked>
+                        <input type="checkbox" id="toggle-entry-form" checked aria-label="Pokaż/ukryj sekcję dodawania wpisu">
                         <span style="margin-left: 8px;" data-i18n="section.addEntry">Dodaj nowy wpis</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entries-list" checked>
+                        <input type="checkbox" id="toggle-entries-list" checked aria-label="Pokaż/ukryj listę wpisów">
                         <span style="margin-left: 8px;" data-i18n="section.entriesList">Lista wpisów</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-summary" checked>
+                        <input type="checkbox" id="toggle-summary" checked aria-label="Pokaż/ukryj podsumowanie">
                         <span style="margin-left: 8px;" data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
@@ -1068,40 +1133,40 @@
 
         <section class="entry-form" id="section-entry-form">
             <h2 data-i18n="form.addEntry">Dodaj nowy wpis</h2>
-            <form id="timesheet-form">
+            <form id="timesheet-form" novalidate>
                 <div class="form-group">
                     <label for="date" data-i18n="form.date">Data:</label>
-                    <input type="date" id="date" name="date" required>
-                    <div class="invalid-feedback" id="date-feedback"></div>
+                    <input type="date" id="date" name="date" required aria-describedby="date-feedback" aria-required="true">
+                    <div class="invalid-feedback" id="date-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="task-type" data-i18n="form.taskType">Rodzaj zadania:</label>
-                    <select id="task-type" name="task-type" required>
+                    <select id="task-type" name="task-type" required aria-describedby="task-type-feedback" aria-required="true">
                         <option value="" data-i18n="form.selectTaskType">-- Wybierz rodzaj zadania --</option>
                         <!-- Opcje będą dynamicznie ładowane -->
                     </select>
-                    <div class="invalid-feedback" id="task-type-feedback"></div>
+                    <div class="invalid-feedback" id="task-type-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="client" data-i18n="form.project">Projekt:</label>
-                    <select id="client" name="client" required>
+                    <select id="client" name="client" required aria-describedby="client-feedback" aria-required="true">
                         <option value="" data-i18n="form.selectProject">-- Wybierz projekt --</option>
                     </select>
-                    <div class="invalid-feedback" id="client-feedback"></div>
+                    <div class="invalid-feedback" id="client-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="hours" data-i18n="form.hours">Liczba przepracowanych godzin (max 8):</label>
-                    <input type="number" id="hours" name="hours" min="0.25" max="8" step="0.25" required>
-                    <div class="invalid-feedback" id="hours-feedback"></div>
+                    <input type="number" id="hours" name="hours" min="0.25" max="8" step="0.25" required aria-describedby="hours-feedback" aria-required="true">
+                    <div class="invalid-feedback" id="hours-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="task-number" data-i18n="form.taskNumber">Numer zadania:</label>
-                    <input type="text" id="task-number" name="task-number" required>
-                    <div class="invalid-feedback" id="task-number-feedback"></div>
+                    <input type="text" id="task-number" name="task-number" required aria-describedby="task-number-feedback" aria-required="true">
+                    <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group btn-group">
@@ -1143,7 +1208,7 @@
                 </details>
             </div>
 
-            <table class="task-table">
+            <table class="task-table" role="table" aria-label="Lista wpisów czasu pracy">
                 <thead>
                     <tr>
                         <th data-i18n="table.date">Data</th>
@@ -1154,7 +1219,7 @@
                         <th data-i18n="table.actions">Akcje</th>
                     </tr>
                 </thead>
-                <tbody id="entries-body">
+                <tbody id="entries-body" aria-live="polite" aria-relevant="additions removals">
                     <!-- All entries -->
                 </tbody>
             </table>
@@ -1170,40 +1235,40 @@
 
         <section class="summary" id="section-summary" style="margin-top: 40px;">
             <h2 data-i18n="summary.title">Podsumowanie</h2>
-            <div class="summary-info">
+            <div class="summary-info" aria-live="polite" aria-atomic="true">
                 <p><span data-i18n="summary.currentMonth">Aktualny miesiąc:</span> <span id="current-month">Maj 2025</span></p>
                 <p><span data-i18n="summary.totalHours">Całkowita liczba godzin:</span> <span id="total-hours">0</span></p>
             </div>
-            <button class="export-btn" id="export-button" data-i18n="summary.export">Eksportuj dane z bieżącego miesiąca (CSV)</button>
+            <button class="export-btn" id="export-button" data-i18n="summary.export" aria-label="Eksportuj dane z bieżącego miesiąca do pliku CSV">Eksportuj dane z bieżącego miesiąca (CSV)</button>
         </section>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
+    <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 data-i18n="settings.title">Ustawienia</h2>
-                <button class="modal-close" id="modal-close">&times;</button>
+                <h2 id="settings-modal-title" data-i18n="settings.title">Ustawienia</h2>
+                <button class="modal-close" id="modal-close" aria-label="Zamknij okno ustawień">&times;</button>
             </div>
 
             <!-- Tabs Navigation -->
-            <div class="modal-tabs">
-                <button class="modal-tab active" data-tab="projects-tab" data-i18n="settings.projects">Projekty</button>
-                <button class="modal-tab" data-tab="tasks-tab" data-i18n="settings.tasks">Zadania</button>
+            <div class="modal-tabs" role="tablist">
+                <button class="modal-tab active" role="tab" data-tab="projects-tab" aria-selected="true" aria-controls="projects-tab" data-i18n="settings.projects">Projekty</button>
+                <button class="modal-tab" role="tab" data-tab="tasks-tab" aria-selected="false" aria-controls="tasks-tab" data-i18n="settings.tasks">Zadania</button>
             </div>
 
             <div class="modal-body">
                 <!-- Projects Tab -->
-                <div id="projects-tab" class="tab-content active">
+                <div id="projects-tab" class="tab-content active" role="tabpanel" aria-labelledby="projects-tab-button">
                     <div class="modal-section">
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="modal-project-name" data-i18n="settings.projectName">Nazwa projektu:</label>
-                                <input type="text" id="modal-project-name">
+                                <input type="text" id="modal-project-name" aria-label="Nazwa projektu">
                             </div>
                             <div class="form-group btn-group">
-                                <button type="button" id="modal-add-project-btn" data-i18n="settings.addProject">Dodaj projekt</button>
-                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;" data-i18n="settings.cancel">Anuluj</button>
+                                <button type="button" id="modal-add-project-btn" data-i18n="settings.addProject" aria-label="Dodaj nowy projekt">Dodaj projekt</button>
+                                <button type="button" class="reset-btn" id="modal-cancel-project-btn" style="display: none;" data-i18n="settings.cancel" aria-label="Anuluj edycję projektu">Anuluj</button>
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
@@ -1215,16 +1280,16 @@
                 </div>
 
                 <!-- Tasks Tab -->
-                <div id="tasks-tab" class="tab-content">
+                <div id="tasks-tab" class="tab-content" role="tabpanel" aria-labelledby="tasks-tab-button">
                     <div class="modal-section">
                         <div class="entry-form">
                             <div class="form-group">
                                 <label for="task-type-name" data-i18n="settings.taskType">Rodzaj zadania:</label>
-                                <input type="text" id="task-type-name">
+                                <input type="text" id="task-type-name" aria-label="Nazwa rodzaju zadania">
                             </div>
                             <div class="form-group btn-group">
-                                <button type="button" id="add-task-type-btn" data-i18n="settings.addTask">Dodaj zadanie</button>
-                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;" data-i18n="settings.cancel">Anuluj</button>
+                                <button type="button" id="add-task-type-btn" data-i18n="settings.addTask" aria-label="Dodaj nowy rodzaj zadania">Dodaj zadanie</button>
+                                <button type="button" class="reset-btn" id="cancel-task-type-btn" style="display: none;" data-i18n="settings.cancel" aria-label="Anuluj edycję rodzaju zadania">Anuluj</button>
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
@@ -1237,60 +1302,77 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" id="modal-cancel-btn" data-i18n="settings.discard">Anuluj</button>
                 <button type="button" id="modal-apply-btn" data-i18n="settings.apply">Zastosuj</button>
                 <button type="button" id="modal-ok-btn" data-i18n="settings.ok">OK</button>
             </div>
         </div>
     </div>
+    
+    <!-- Confirm Dialog Modal -->
+    <div id="confirm-modal" class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="confirm-modal-title" data-i18n="confirm.title">Potwierdzenie</h2>
+                <button class="modal-close" id="confirm-close" aria-label="Zamknij okno potwierdzenia">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirm-cancel" data-i18n="confirm.cancel">Anuluj</button>
+                <button type="button" id="confirm-accept" class="primary-action" data-i18n="confirm.confirm">OK</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Pomodoro Timer Widget -->
-    <div id="pomodoro-widget" class="pomodoro-widget">
+    <div id="pomodoro-widget" class="pomodoro-widget" role="region" aria-label="Timer Pomodoro">
         <!-- Resize Handles -->
-        <div class="resize-handle resize-handle-n" data-direction="n"></div>
-        <div class="resize-handle resize-handle-s" data-direction="s"></div>
-        <div class="resize-handle resize-handle-e" data-direction="e"></div>
-        <div class="resize-handle resize-handle-w" data-direction="w"></div>
-        <div class="resize-handle resize-handle-ne" data-direction="ne"></div>
-        <div class="resize-handle resize-handle-nw" data-direction="nw"></div>
-        <div class="resize-handle resize-handle-se" data-direction="se"></div>
-        <div class="resize-handle resize-handle-sw" data-direction="sw"></div>
+        <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-e" data-direction="e" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-w" data-direction="w" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-ne" data-direction="ne" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-nw" data-direction="nw" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-se" data-direction="se" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-sw" data-direction="sw" aria-hidden="true"></div>
 
         <div id="pomodoro-header" class="pomodoro-header">
-            <span class="pomodoro-icon">🍅</span>
+            <span class="pomodoro-icon" aria-hidden="true">🍅</span>
             <span class="pomodoro-title" data-i18n="pomodoro.title">POMODORO</span>
-            <button id="pomodoro-minimize" class="pomodoro-minimize-btn">−</button>
+            <button id="pomodoro-minimize" class="pomodoro-minimize-btn" aria-label="Minimalizuj timer Pomodoro">−</button>
         </div>
         <div id="pomodoro-content" class="pomodoro-content">
             <div class="pomodoro-display">
                 <div class="timer-circle-container">
-                    <svg class="timer-circle" viewBox="0 0 200 200">
+                    <svg class="timer-circle" viewBox="0 0 200 200" aria-hidden="true">
                         <circle class="timer-circle-bg" cx="100" cy="100" r="90"></circle>
                         <circle class="timer-circle-progress" cx="100" cy="100" r="90" id="timer-circle-progress"></circle>
                     </svg>
-                    <div class="timer-display" id="timer-display">30:00</div>
+                    <div class="timer-display" id="timer-display" role="timer" aria-live="off" aria-atomic="true">30:00</div>
                 </div>
-                <div class="timer-mode" id="timer-mode" data-i18n="pomodoro.workTime">Czas pracy</div>
+                <div class="timer-mode" id="timer-mode" data-i18n="pomodoro.workTime" aria-live="polite">Czas pracy</div>
             </div>
 
-            <div class="pomodoro-controls">
-                <button id="timer-start" class="timer-btn timer-btn-primary" data-i18n="pomodoro.start">Start</button>
-                <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;" data-i18n="pomodoro.pause">Przerwanie</button>
-                <button id="timer-reset" class="timer-btn timer-btn-secondary" data-i18n="pomodoro.reset">Reset</button>
+            <div class="pomodoro-controls" role="group" aria-label="Kontrola timera">
+                <div class="timer-primary-controls">
+                    <button id="timer-start" class="timer-btn timer-btn-primary" data-i18n="pomodoro.start" aria-label="Rozpocznij timer">Start</button>
+                    <button id="timer-pause" class="timer-btn timer-btn-warning" style="display: none;" data-i18n="pomodoro.pause" aria-label="Wstrzymaj timer">Przerwanie</button>
+                    <button id="timer-reset" class="timer-btn timer-btn-secondary" data-i18n="pomodoro.reset" aria-label="Zresetuj timer">Reset</button>
+                </div>
+                <button id="timer-new-task" class="timer-btn timer-btn-secondary timer-new-task-btn" data-i18n="pomodoro.newTask" aria-label="Rozpocznij nowe zadanie">Nowe</button>
             </div>
 
             <div class="timer-task-input">
                 <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" style="flex: 1;">
-                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)">✅</button>
-                </div>
-                <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button id="timer-quick-add" class="timer-btn timer-btn-success" style="flex: 1; margin-top: 0;" data-i18n="pomodoro.addEntry">Dodaj wpis</button>
-                    <button id="timer-new-task" class="timer-btn timer-btn-secondary" style="flex: 1; margin-top: 0;" data-i18n="pomodoro.newTask">Nowe</button>
+                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer zadania">
+                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✅</button>
                 </div>
             </div>
 
-            <div class="pomodoro-stats">
+            <div class="pomodoro-stats" role="status" aria-live="polite" aria-atomic="false">
                 <div class="stat-row">
                     <span data-i18n="pomodoro.session">Sesja:</span>
                     <span id="pomodoro-session">🍅○○○ (1/4)</span>
@@ -1336,18 +1418,29 @@
                 </details>
             </div>
         </div>
+
+        </main>
     </div>
 
     <!-- Minimized Pomodoro Icon -->
-    <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;">
-        <span class="minimized-timer" id="minimized-timer">30:00</span>
-        <span class="minimized-icon">🍅</span>
+    <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;" role="button" aria-label="Przywróć timer Pomodoro" tabindex="0">
+        <span class="minimized-timer" id="minimized-timer" aria-live="off">30:00</span>
+        <span class="minimized-icon" aria-hidden="true">🍅</span>
     </div>
 
     <script>
         // Zmienne globalne
         let entries = [];
+        const entriesMap = new Map(); // O(1) lookup by entry ID
         const STORAGE_KEY = 'timesheet-entries';
+
+        // Helper function to rebuild Map from entries array (O(n) operation)
+        function rebuildEntriesMap() {
+            entriesMap.clear();
+            entries.forEach(entry => {
+                entriesMap.set(entry.id, entry);
+            });
+        }
         let showAllEntries = false;
         const ENTRIES_LIMIT = 20;
         let projects = [];
@@ -1358,6 +1451,12 @@
         const TASK_TYPES_STORAGE_KEY = 'timesheet-task-types';
         let editingTaskTypeIndex = -1;
         let hasUnsavedChanges = false;
+        let modalOriginalProjects = [];
+        let modalOriginalTaskTypes = [];
+        const confirmDialogState = {
+            onConfirm: null,
+            onCancel: null
+        };
 
         // Pomodoro Timer Variables
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
@@ -1383,6 +1482,124 @@
             soundEnabled: true,
             autoStartBreak: true
         };
+
+        // ============================
+        // DOM CACHE for Performance
+        // ============================
+        // Cache frequently accessed DOM elements to reduce querySelector overhead
+        // Initialized in initDOMCache() called from initApp()
+        const domCache = {
+            // Form elements
+            date: null,
+            taskType: null,
+            client: null,
+            hours: null,
+            taskNumber: null,
+
+            // Filter elements
+            filterCurrentMonth: null,
+            filterCurrentWeek: null,
+
+            // Container elements
+            entriesBody: null,
+            projectsContainer: null,
+            taskTypesContainer: null,
+            modalProjectsContainer: null,
+
+            // Button elements
+            showMoreBtn: null,
+            resetForm: null,
+            exportButton: null,
+
+            // Pomodoro elements
+            timerDisplay: null,
+            timerTaskNumber: null,
+            timerStart: null,
+            timerPause: null,
+            timerReset: null,
+            timerCircleProgress: null,
+            pomodoroMinimized: null,
+
+            // Modal elements
+            settingsModal: null,
+            modalClose: null,
+            modalProjectName: null,
+            modalAddProjectBtn: null,
+            modalCancelProjectBtn: null,
+            confirmModal: null,
+            confirmMessage: null,
+            confirmAccept: null,
+            confirmCancel: null,
+            confirmClose: null,
+            confirmTitle: null,
+
+            // Project management
+            projectName: null,
+            addProjectBtn: null,
+            cancelProjectBtn: null,
+
+            // Task type management
+            taskTypeName: null,
+            addTaskTypeBtn: null,
+            cancelTaskTypeBtn: null
+        };
+
+        // Initialize DOM cache - called once in initApp()
+        function initDOMCache() {
+            // Form elements
+            domCache.date = document.getElementById('date');
+            domCache.taskType = document.getElementById('task-type');
+            domCache.client = document.getElementById('client');
+            domCache.hours = document.getElementById('hours');
+            domCache.taskNumber = document.getElementById('task-number');
+
+            // Filter elements
+            domCache.filterCurrentMonth = document.getElementById('filter-current-month');
+            domCache.filterCurrentWeek = document.getElementById('filter-current-week');
+
+            // Container elements
+            domCache.entriesBody = document.getElementById('entries-body');
+            domCache.projectsContainer = document.getElementById('projects-container');
+            domCache.taskTypesContainer = document.getElementById('task-types-container');
+            domCache.modalProjectsContainer = document.getElementById('modal-projects-container');
+
+            // Button elements
+            domCache.showMoreBtn = document.getElementById('show-more-btn');
+            domCache.resetForm = document.getElementById('reset-form');
+            domCache.exportButton = document.getElementById('export-button');
+
+            // Pomodoro elements
+            domCache.timerDisplay = document.getElementById('timer-display');
+            domCache.timerTaskNumber = document.getElementById('timer-task-number');
+            domCache.timerStart = document.getElementById('timer-start');
+            domCache.timerPause = document.getElementById('timer-pause');
+            domCache.timerReset = document.getElementById('timer-reset');
+            domCache.timerCircleProgress = document.getElementById('timer-circle-progress');
+            domCache.pomodoroMinimized = document.getElementById('pomodoro-minimized');
+
+            // Modal elements
+            domCache.settingsModal = document.getElementById('settings-modal');
+            domCache.modalClose = document.getElementById('modal-close');
+            domCache.modalProjectName = document.getElementById('modal-project-name');
+            domCache.modalAddProjectBtn = document.getElementById('modal-add-project-btn');
+            domCache.modalCancelProjectBtn = document.getElementById('modal-cancel-project-btn');
+            domCache.confirmModal = document.getElementById('confirm-modal');
+            domCache.confirmMessage = document.getElementById('confirm-modal-message');
+            domCache.confirmAccept = document.getElementById('confirm-accept');
+            domCache.confirmCancel = document.getElementById('confirm-cancel');
+            domCache.confirmClose = document.getElementById('confirm-close');
+            domCache.confirmTitle = document.getElementById('confirm-modal-title');
+
+            // Project management
+            domCache.projectName = document.getElementById('project-name');
+            domCache.addProjectBtn = document.getElementById('add-project-btn');
+            domCache.cancelProjectBtn = document.getElementById('cancel-project-btn');
+
+            // Task type management
+            domCache.taskTypeName = document.getElementById('task-type-name');
+            domCache.addTaskTypeBtn = document.getElementById('add-task-type-btn');
+            domCache.cancelTaskTypeBtn = document.getElementById('cancel-task-type-btn');
+        }
 
         // ============================
         // Internationalization (i18n)
@@ -1446,10 +1663,14 @@
                 'settings.projectName': 'Nazwa projektu:',
                 'settings.addProject': 'Dodaj projekt',
                 'settings.cancel': 'Anuluj',
+                'settings.discard': 'Anuluj',
                 'settings.taskType': 'Rodzaj zadania:',
                 'settings.addTask': 'Dodaj zadanie',
                 'settings.apply': 'Zastosuj',
                 'settings.ok': 'OK',
+                'confirm.title': 'Potwierdzenie',
+                'confirm.confirm': 'OK',
+                'confirm.cancel': 'Anuluj',
 
                 // Pomodoro
                 'pomodoro.title': 'POMODORO',
@@ -1457,11 +1678,10 @@
                 'pomodoro.shortBreak': 'Krótka przerwa',
                 'pomodoro.longBreak': 'Długa przerwa',
                 'pomodoro.start': 'Start',
-                'pomodoro.pause': 'Przerwanie',
+                'pomodoro.pause': 'Pauza',
                 'pomodoro.reset': 'Reset',
                 'pomodoro.taskNumber': 'Numer zadania:',
                 'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
-                'pomodoro.addEntry': 'Dodaj wpis',
                 'pomodoro.newTask': 'Nowe',
                 'pomodoro.session': 'Sesja:',
                 'pomodoro.shortBreaks': 'Przerwy krótkie:',
@@ -1475,6 +1695,22 @@
                 'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
                 'pomodoro.autoStartBreak': 'Auto-start przerwy',
 
+                // Pomodoro notifications
+                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer zadania',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer zadania aby zapisać czas pracy',
+                'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
+                'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.',
+                'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
+                'pomodoro.notif.timeAdded': '✅ Czas dodany: {task} (+{hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
+                'pomodoro.notif.timeAddedContinue': '✅ Czas dodany: {task} (+{time}). Możesz kontynuować pracę!',
+                'pomodoro.notif.entryAdded': '✅ Wpis dodany: {task} ({hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
+                'pomodoro.notif.entryAddedContinue': '✅ Wpis dodany: {task} ({time}). Możesz kontynuować pracę!',
+                'pomodoro.notif.taskCompleted': '✅ Zadanie zakończone: {task} (+{hours}h). Timer nadal liczy!',
+                'pomodoro.notif.taskCompletedNew': '✅ Zadanie zakończone: {task} ({hours}h). Timer nadal liczy!',
+                'pomodoro.notif.newTaskConfirm': 'Masz naliczony czas {time} dla zadania "{task}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?',
+                'pomodoro.notif.workComplete': 'Czas pracy zakończony! Czas na przerwę.',
+                'pomodoro.notif.breakComplete': 'Przerwa zakończona! Wracaj do pracy.',
+
                 // Messages
                 'msg.enterProjectName': 'Podaj nazwę projektu',
                 'msg.projectExists': 'Ten projekt już istnieje',
@@ -1486,13 +1722,17 @@
                 'msg.noDataToExport': 'Brak danych do eksportu',
                 'msg.confirmTaskChange': 'Zmiana zadania spowoduje reset naliczonego czasu',
                 'msg.continue': 'Kontynuować?',
+                'msg.settingsApplied': 'Ustawienia zostały zastosowane',
+                'msg.settingsCancelled': 'Zmiany anulowane',
+                'msg.storageQuotaExceeded': 'Pamięć przeglądarki jest pełna. Wyeksportuj dane i usuń starsze wpisy.',
+                'msg.storageSaveFailed': 'Nie można zapisać danych. Sprawdź ustawienia przeglądarki.',
 
                 // Validation messages
                 'validation.selectDate': 'Wybierz datę',
                 'validation.selectTaskType': 'Wybierz rodzaj zadania',
                 'validation.selectProject': 'Wybierz projekt',
                 'validation.enterHours': 'Podaj liczbę godzin',
-                'validation.hoursGreaterThanZero': 'Liczba godzin musi być większa od 0',
+                'validation.hoursGreaterThanZero': 'Liczba godzin musi być co najmniej 0,25',
                 'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
                 'validation.enterTaskNumber': 'Podaj numer zadania',
 
@@ -1571,8 +1811,12 @@
                 'settings.cancel': 'Cancel',
                 'settings.taskType': 'Task type:',
                 'settings.addTask': 'Add task',
+                'settings.discard': 'Cancel',
                 'settings.apply': 'Apply',
                 'settings.ok': 'OK',
+                'confirm.title': 'Confirmation',
+                'confirm.confirm': 'OK',
+                'confirm.cancel': 'Cancel',
 
                 // Pomodoro
                 'pomodoro.title': 'POMODORO',
@@ -1584,7 +1828,6 @@
                 'pomodoro.reset': 'Reset',
                 'pomodoro.taskNumber': 'Task number:',
                 'pomodoro.completeTask': 'Complete task, start new (session continuity)',
-                'pomodoro.addEntry': 'Add entry',
                 'pomodoro.newTask': 'New',
                 'pomodoro.session': 'Session:',
                 'pomodoro.shortBreaks': 'Short breaks:',
@@ -1598,6 +1841,22 @@
                 'pomodoro.soundEnabled': 'Notification sound',
                 'pomodoro.autoStartBreak': 'Auto-start break',
 
+                // Pomodoro notifications
+                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number to save work time',
+                'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
+                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 15 min). Entry not added.',
+                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 15 min). Timer still running - continue working or enter new task!',
+                'pomodoro.notif.timeAdded': '✅ Time added: {task} (+{hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
+                'pomodoro.notif.timeAddedContinue': '✅ Time added: {task} (+{time}). You can continue working!',
+                'pomodoro.notif.entryAdded': '✅ Entry added: {task} ({hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
+                'pomodoro.notif.entryAddedContinue': '✅ Entry added: {task} ({time}). You can continue working!',
+                'pomodoro.notif.taskCompleted': '✅ Task completed: {task} (+{hours}h). Timer still running!',
+                'pomodoro.notif.taskCompletedNew': '✅ Task completed: {task} ({hours}h). Timer still running!',
+                'pomodoro.notif.newTaskConfirm': 'You have accumulated {time} for task "{task}". Do you want to add it before starting a new task?',
+                'pomodoro.notif.workComplete': 'Work time complete! Time for a break.',
+                'pomodoro.notif.breakComplete': 'Break complete! Back to work.',
+
                 // Messages
                 'msg.enterProjectName': 'Enter project name',
                 'msg.projectExists': 'This project already exists',
@@ -1609,13 +1868,17 @@
                 'msg.noDataToExport': 'No data to export',
                 'msg.confirmTaskChange': 'Changing task will reset accumulated time',
                 'msg.continue': 'Continue?',
+                'msg.settingsApplied': 'Settings applied',
+                'msg.settingsCancelled': 'Changes cancelled',
+                'msg.storageQuotaExceeded': 'Storage is full. Please export your data and remove old entries.',
+                'msg.storageSaveFailed': 'Unable to save data. Please check your browser settings.',
 
                 // Validation messages
                 'validation.selectDate': 'Select date',
                 'validation.selectTaskType': 'Select task type',
                 'validation.selectProject': 'Select project',
                 'validation.enterHours': 'Enter number of hours',
-                'validation.hoursGreaterThanZero': 'Number of hours must be greater than 0',
+                'validation.hoursGreaterThanZero': 'Number of hours must be at least 0.25',
                 'validation.hoursMaxEight': 'Maximum number of hours is 8',
                 'validation.enterTaskNumber': 'Enter task number',
 
@@ -1697,33 +1960,7 @@
                 updateTaskTypeSelect();
             }
 
-            // Update validation messages if they are currently displayed
-            const validationMapping = {
-                'date-feedback': 'validation.selectDate',
-                'task-type-feedback': 'validation.selectTaskType',
-                'client-feedback': 'validation.selectProject',
-                'hours-feedback': ['validation.enterHours', 'validation.hoursGreaterThanZero', 'validation.hoursMaxEight'],
-                'task-number-feedback': 'validation.enterTaskNumber'
-            };
-
-            Object.keys(validationMapping).forEach(elementId => {
-                const element = document.getElementById(elementId);
-                if (element && element.textContent.trim() !== '') {
-                    const currentText = element.textContent.trim();
-                    const keys = Array.isArray(validationMapping[elementId]) ? validationMapping[elementId] : [validationMapping[elementId]];
-
-                    // Try to match which validation message is currently displayed
-                    for (const key of keys) {
-                        const plText = translations['pl'][key];
-                        const enText = translations['en'][key];
-
-                        if (currentText === plText || currentText === enText) {
-                            element.textContent = t(key);
-                            break;
-                        }
-                    }
-                }
-            });
+            refreshValidationMessages();
         }
 
         // Change language
@@ -1754,7 +1991,7 @@
         }
 
         function saveSectionVisibility(visibility) {
-            localStorage.setItem(SECTION_VISIBILITY_KEY, JSON.stringify(visibility));
+            safeLocalStorageSave(SECTION_VISIBILITY_KEY, visibility, 300);
         }
 
         function toggleSectionVisibility(sectionName, isVisible) {
@@ -1820,6 +2057,54 @@
             return week1.getTime() === week2.getTime();
         }
 
+        // ============ LOCALSTORAGE MANAGEMENT WITH ERROR HANDLING ============
+
+        // Debounce timers for batch saves
+        const saveTimers = {};
+
+        // Safe localStorage save with error handling and debouncing
+        function safeLocalStorageSave(key, data, debounceMs = 300) {
+            // Clear existing timer for this key
+            if (saveTimers[key]) {
+                clearTimeout(saveTimers[key]);
+            }
+
+            // Set new debounced save
+            saveTimers[key] = setTimeout(() => {
+                try {
+                    const serialized = JSON.stringify(data);
+                    localStorage.setItem(key, serialized);
+                    delete saveTimers[key];
+                } catch (e) {
+                    console.error(`LocalStorage save failed for ${key}:`, e);
+
+                    if (e.name === 'QuotaExceededError' || e.code === 22) {
+                        // Handle quota exceeded
+                        handleStorageQuotaExceeded(key, data);
+                    } else {
+                        // Other errors (e.g., private browsing mode)
+                        showStorageError(t('msg.storageSaveFailed'));
+                    }
+                }
+            }, debounceMs);
+        }
+
+        // Handle storage quota exceeded
+        function handleStorageQuotaExceeded(key, data) {
+            console.warn('LocalStorage quota exceeded. Attempting cleanup...');
+
+            // Try to free up space by removing old data
+            // (In this case, we won't remove user data, just alert)
+            showStorageError(t('msg.storageQuotaExceeded'));
+        }
+
+        // Show storage error to user
+        function showStorageError(message) {
+            showNotification(`⚠️ ${message}`, 5000);
+        }
+
+        // ============ END LOCALSTORAGE MANAGEMENT ============
+
         // Załadowanie wpisów
         function loadEntries() {
             const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -1827,26 +2112,29 @@
                 ...entry,
                 date: new Date(entry.date)
             }));
+            rebuildEntriesMap(); // Rebuild Map for O(1) lookups
         }
 
         // Zapisanie wpisów
         function saveEntries() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            safeLocalStorageSave(STORAGE_KEY, entries, 300);
         }
 
         // Funkcje zarządzania projektami
         function loadProjects() {
             const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
-            if (storedProjects) {
-                projects = JSON.parse(storedProjects);
-            } else {
-                projects = [...DEFAULT_PROJECTS];
+            const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [...DEFAULT_PROJECTS];
+
+            projects.length = 0; // Preserve reference for managers relying on the original array
+            projects.push(...loadedProjects);
+
+            if (!storedProjects) {
                 saveProjects();
             }
         }
 
         function saveProjects() {
-            localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+            safeLocalStorageSave(PROJECTS_STORAGE_KEY, projects, 300);
         }
 
         function updateProjectSelect() {
@@ -1868,115 +2156,163 @@
         }
 
         function renderProjects() {
-            const projectsContainer = document.getElementById('projects-container');
-            projectsContainer.innerHTML = '';
+            // Use cached DOM reference for better performance
+            domCache.projectsContainer.innerHTML = '';
 
             if (projects.length === 0) {
-                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+                domCache.projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
                 return;
             }
 
             projects.forEach((project, index) => {
                 const projectCard = document.createElement('div');
                 projectCard.className = 'project-card';
-                projectCard.innerHTML = `
-                    <span>${project}</span>
-                    <div class="project-actions">
-                        <button class="project-action-btn edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete-btn delete-project-btn" data-index="${index}">${t('action.delete')}</button>
-                    </div>
+
+                // Safe: Use textContent for user data to prevent XSS
+                const projectSpan = document.createElement('span');
+                projectSpan.textContent = project;
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'project-actions';
+                actionsDiv.innerHTML = `
+                    <button class="project-action-btn edit-project-btn" data-index="${index}">${t('action.edit')}</button>
+                    <button class="project-action-btn delete-btn delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                 `;
-                projectsContainer.appendChild(projectCard);
+
+                projectCard.appendChild(projectSpan);
+                projectCard.appendChild(actionsDiv);
+                domCache.projectsContainer.appendChild(projectCard);
             });
 
-            // Dodaj event listenery dla przycisków
-            document.querySelectorAll('.edit-project-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    editProject(index);
-                });
-            });
-
-            document.querySelectorAll('.delete-project-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    deleteProject(index);
-                });
-            });
+            // Event listeners are now delegated via projects-container (see initApp)
         }
 
-        function addProject() {
-            const projectNameInput = document.getElementById('project-name');
-            const projectName = projectNameInput.value.trim();
+        // Generic management system to eliminate DRY violations
+        function createItemManager(config) {
+            return {
+                add: function() {
+                    const inputElement = document.getElementById(config.inputId);
+                    const itemName = inputElement.value.trim();
 
-            if (!projectName) {
-                alert(t('msg.enterProjectName'));
-                return;
-            }
+                    if (!itemName) {
+                        showNotification(t(config.emptyMsg), 4000);
+                        return;
+                    }
 
-            if (editingProjectIndex === -1) {
-                // Dodawanie nowego projektu
-                if (projects.includes(projectName)) {
-                    alert(t('msg.projectExists'));
-                    return;
+                    if (config.editingIndex === -1) {
+                        if (config.items.includes(itemName)) {
+                            showNotification(t(config.existsMsg), 4000);
+                            return;
+                        }
+                        config.items.push(itemName);
+                    } else {
+                        if (config.items.includes(itemName) && config.items[config.editingIndex] !== itemName) {
+                            showNotification(t(config.existsMsg), 4000);
+                            return;
+                        }
+                        config.items[config.editingIndex] = itemName;
+                        config.editingIndex = -1;
+                        document.getElementById(config.addBtnId).textContent = config.addBtnText;
+                        document.getElementById(config.cancelBtnId).style.display = 'none';
+                    }
+
+                    config.save();
+                    config.update();
+                    config.render();
+                    if (config.extraRender) config.extraRender();
+                    inputElement.value = '';
+                    if (config.onChange) config.onChange();
+                },
+
+                edit: function(index) {
+                    document.getElementById(config.inputId).value = config.items[index];
+                    config.editingIndex = index;
+                    document.getElementById(config.addBtnId).textContent = config.editBtnText;
+                    document.getElementById(config.cancelBtnId).style.display = 'inline-block';
+                    if (config.scrollTo) {
+                        document.querySelector(config.scrollTo).scrollIntoView({ behavior: 'smooth' });
+                    }
+                },
+
+                delete: function(index) {
+                    const itemLabel = config.items[index];
+                    const message = `${t(config.deleteMsg)} "${itemLabel}"?`;
+
+                    openConfirmDialog(message, () => {
+                        config.items.splice(index, 1);
+                        config.save();
+                        config.update();
+                        config.render();
+                        if (config.extraRender) config.extraRender();
+                        if (config.onChange) config.onChange();
+                    });
+                },
+
+                cancel: function() {
+                    document.getElementById(config.inputId).value = '';
+                    config.editingIndex = -1;
+                    document.getElementById(config.addBtnId).textContent = config.addBtnText;
+                    document.getElementById(config.cancelBtnId).style.display = 'none';
                 }
-                projects.push(projectName);
-            } else {
-                // Edycja istniejącego projektu
-                if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
-                    alert(t('msg.projectExists'));
-                    return;
-                }
-                projects[editingProjectIndex] = projectName;
-                editingProjectIndex = -1;
-                document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
-                document.getElementById('cancel-project-btn').style.display = 'none';
-            }
-
-            saveProjects();
-            updateProjectSelect();
-            renderProjects();
-            projectNameInput.value = '';
+            };
         }
 
-        function editProject(index) {
-            const projectName = projects[index];
-            document.getElementById('project-name').value = projectName;
-            editingProjectIndex = index;
-            document.getElementById('add-project-btn').textContent = 'Zapisz zmiany';
-            document.getElementById('cancel-project-btn').style.display = 'inline-block';
-            document.querySelector('.project-management').scrollIntoView({ behavior: 'smooth' });
-        }
+        // Project management instances
+        const projectManager = createItemManager({
+            items: projects,
+            editingIndex: editingProjectIndex,
+            inputId: 'project-name',
+            addBtnId: 'add-project-btn',
+            cancelBtnId: 'cancel-project-btn',
+            addBtnText: 'Dodaj projekt',
+            editBtnText: 'Zapisz zmiany',
+            emptyMsg: 'msg.enterProjectName',
+            existsMsg: 'msg.projectExists',
+            deleteMsg: 'msg.confirmDeleteProject',
+            save: saveProjects,
+            update: updateProjectSelect,
+            render: renderProjects,
+            scrollTo: '.project-management'
+        });
 
-        function deleteProject(index) {
-            if (confirm(`${t('msg.confirmDeleteProject')} "${projects[index]}"?`)) {
-                projects.splice(index, 1);
-                saveProjects();
-                updateProjectSelect();
-                renderProjects();
-            }
-        }
+        const modalProjectManager = createItemManager({
+            items: projects,
+            editingIndex: editingProjectIndex,
+            inputId: 'modal-project-name',
+            addBtnId: 'modal-add-project-btn',
+            cancelBtnId: 'modal-cancel-project-btn',
+            addBtnText: 'Dodaj projekt',
+            editBtnText: 'Zapisz zmiany',
+            emptyMsg: 'msg.enterProjectName',
+            existsMsg: 'msg.projectExists',
+            deleteMsg: 'msg.confirmDeleteProject',
+            save: saveProjects,
+            update: updateProjectSelect,
+            render: renderModalProjects,
+            onChange: markAsChanged
+        });
 
-        function cancelProjectEdit() {
-            document.getElementById('project-name').value = '';
-            editingProjectIndex = -1;
-            document.getElementById('add-project-btn').textContent = 'Dodaj projekt';
-            document.getElementById('cancel-project-btn').style.display = 'none';
-        }
+        // Wrapper functions for backward compatibility
+        function addProject() { projectManager.add(); }
+        function editProject(index) { projectManager.edit(index); }
+        function deleteProject(index) { projectManager.delete(index); }
+        function cancelProjectEdit() { projectManager.cancel(); }
 
         // Funkcje zarządzania typami zadań
         function loadTaskTypes() {
             const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
-            if (storedTaskTypes) {
-                taskTypes = JSON.parse(storedTaskTypes);
-            } else {
-                taskTypes = [...DEFAULT_TASK_TYPES];
+            const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [...DEFAULT_TASK_TYPES];
+
+            taskTypes.length = 0; // Preserve reference shared with task type manager
+            taskTypes.push(...loadedTaskTypes);
+
+            if (!storedTaskTypes) {
                 saveTaskTypes();
             }
         }
 
         function saveTaskTypes() {
-            localStorage.setItem(TASK_TYPES_STORAGE_KEY, JSON.stringify(taskTypes));
+            safeLocalStorageSave(TASK_TYPES_STORAGE_KEY, taskTypes, 300);
         }
 
         function updateTaskTypeSelect() {
@@ -1998,41 +2334,35 @@
         }
 
         function renderTaskTypes() {
-            const taskTypesContainer = document.getElementById('task-types-container');
-            taskTypesContainer.innerHTML = '';
+            // Use cached DOM reference for better performance
+            domCache.taskTypesContainer.innerHTML = '';
 
             if (taskTypes.length === 0) {
-                taskTypesContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak typów zadań</p>';
+                domCache.taskTypesContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak typów zadań</p>';
                 return;
             }
 
             taskTypes.forEach((taskType, index) => {
                 const taskTypeCard = document.createElement('div');
                 taskTypeCard.className = 'project-card';
-                taskTypeCard.innerHTML = `
-                    <span>${taskType}</span>
-                    <div class="project-actions">
-                        <button class="project-action-btn edit-task-type-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete-btn delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
-                    </div>
+
+                // Safe: Use textContent for user data to prevent XSS
+                const taskTypeSpan = document.createElement('span');
+                taskTypeSpan.textContent = taskType;
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'project-actions';
+                actionsDiv.innerHTML = `
+                    <button class="project-action-btn edit-task-type-btn" data-index="${index}">${t('action.edit')}</button>
+                    <button class="project-action-btn delete-btn delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
                 `;
-                taskTypesContainer.appendChild(taskTypeCard);
+
+                taskTypeCard.appendChild(taskTypeSpan);
+                taskTypeCard.appendChild(actionsDiv);
+                domCache.taskTypesContainer.appendChild(taskTypeCard);
             });
 
-            // Dodaj event listenery dla przycisków
-            document.querySelectorAll('.edit-task-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    editTaskType(index);
-                });
-            });
-
-            document.querySelectorAll('.delete-task-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    deleteTaskType(index);
-                });
-            });
+            // Event listeners are now delegated via task-types-container (see initApp)
         }
 
         function renderTaskTypeFilters() {
@@ -2062,7 +2392,7 @@
             // Generuj filtry dla każdego typu zadania
             taskTypes.forEach(taskType => {
                 const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
-                const isChecked = filterStates[taskType] !== undefined ? filterStates[taskType] : true;
+                const isChecked = filterStates[taskType] ?? true; // ES6+: nullish coalescing
 
                 const filterDiv = document.createElement('div');
                 filterDiv.className = 'filter-option';
@@ -2135,67 +2465,30 @@
             });
         }
 
-        function addTaskType() {
-            const taskTypeNameInput = document.getElementById('task-type-name');
-            const taskTypeName = taskTypeNameInput.value.trim();
+        // Task type management instance (unified via createItemManager)
+        const taskTypeManager = createItemManager({
+            items: taskTypes,
+            editingIndex: editingTaskTypeIndex,
+            inputId: 'task-type-name',
+            addBtnId: 'add-task-type-btn',
+            cancelBtnId: 'cancel-task-type-btn',
+            addBtnText: 'Dodaj zadanie',
+            editBtnText: 'Zapisz zmiany',
+            emptyMsg: 'msg.enterTaskType',
+            existsMsg: 'msg.taskTypeExists',
+            deleteMsg: 'msg.confirmDeleteTaskType',
+            save: saveTaskTypes,
+            update: updateTaskTypeSelect,
+            render: renderTaskTypes,
+            extraRender: renderTaskTypeFilters,
+            onChange: markAsChanged
+        });
 
-            if (!taskTypeName) {
-                alert(t('msg.enterTaskType'));
-                return;
-            }
-
-            if (editingTaskTypeIndex === -1) {
-                // Dodawanie nowego typu zadania
-                if (taskTypes.includes(taskTypeName)) {
-                    alert(t('msg.taskTypeExists'));
-                    return;
-                }
-                taskTypes.push(taskTypeName);
-            } else {
-                // Edycja istniejącego typu zadania
-                if (taskTypes.includes(taskTypeName) && taskTypes[editingTaskTypeIndex] !== taskTypeName) {
-                    alert(t('msg.taskTypeExists'));
-                    return;
-                }
-                taskTypes[editingTaskTypeIndex] = taskTypeName;
-                editingTaskTypeIndex = -1;
-                document.getElementById('add-task-type-btn').textContent = 'Dodaj zadanie';
-                document.getElementById('cancel-task-type-btn').style.display = 'none';
-            }
-
-            saveTaskTypes();
-            updateTaskTypeSelect();
-            renderTaskTypes();
-            renderTaskTypeFilters(); // Odśwież filtry po zmianie typów zadań
-            taskTypeNameInput.value = '';
-            markAsChanged();
-        }
-
-        function editTaskType(index) {
-            const taskTypeName = taskTypes[index];
-            document.getElementById('task-type-name').value = taskTypeName;
-            editingTaskTypeIndex = index;
-            document.getElementById('add-task-type-btn').textContent = 'Zapisz zmiany';
-            document.getElementById('cancel-task-type-btn').style.display = 'inline-block';
-        }
-
-        function deleteTaskType(index) {
-            if (confirm(`${t('msg.confirmDeleteTaskType')} "${taskTypes[index]}"?`)) {
-                taskTypes.splice(index, 1);
-                saveTaskTypes();
-                updateTaskTypeSelect();
-                renderTaskTypes();
-                renderTaskTypeFilters(); // Odśwież filtry po usunięciu typu zadania
-                markAsChanged();
-            }
-        }
-
-        function cancelTaskTypeEdit() {
-            document.getElementById('task-type-name').value = '';
-            editingTaskTypeIndex = -1;
-            document.getElementById('add-task-type-btn').textContent = 'Dodaj zadanie';
-            document.getElementById('cancel-task-type-btn').style.display = 'none';
-        }
+        // Task type wrapper functions for backward compatibility
+        function addTaskType() { taskTypeManager.add(); }
+        function editTaskType(index) { taskTypeManager.edit(index); }
+        function deleteTaskType(index) { taskTypeManager.delete(index); }
+        function cancelTaskTypeEdit() { taskTypeManager.cancel(); }
 
         // Funkcje zarządzania oknem modalnym
         function updateApplyButtonState() {
@@ -2246,6 +2539,8 @@
             switchTab('projects-tab');
             renderModalProjects();
             renderTaskTypes();
+            modalOriginalProjects = projects.slice();
+            modalOriginalTaskTypes = taskTypes.slice();
             // Reset unsaved changes flag when opening
             markAsSaved();
         }
@@ -2262,9 +2557,37 @@
 
         function applySettings() {
             // Settings are applied in real-time, so this just provides feedback
-            showNotification('Ustawienia zostały zastosowane');
+            showNotification(t('msg.settingsApplied'));
+            modalOriginalProjects = projects.slice();
+            modalOriginalTaskTypes = taskTypes.slice();
             // Mark as saved after applying
             markAsSaved();
+        }
+
+        function cancelSettingsChanges() {
+            if (hasUnsavedChanges) {
+                projects.length = 0;
+                projects.push(...modalOriginalProjects);
+                taskTypes.length = 0;
+                taskTypes.push(...modalOriginalTaskTypes);
+
+                saveProjects();
+                updateProjectSelect();
+                renderProjects();
+                renderModalProjects();
+
+                saveTaskTypes();
+                updateTaskTypeSelect();
+                renderTaskTypes();
+                renderTaskTypeFilters();
+
+                modalOriginalProjects = projects.slice();
+                modalOriginalTaskTypes = taskTypes.slice();
+                showNotification(t('msg.settingsCancelled'));
+                markAsSaved();
+            }
+
+            closeSettingsModal();
         }
 
         function applyAndCloseSettings() {
@@ -2274,102 +2597,42 @@
 
         // Funkcje zarządzania projektami w modalu
         function renderModalProjects() {
-            const projectsContainer = document.getElementById('modal-projects-container');
-            projectsContainer.innerHTML = '';
+            // Use cached DOM reference for better performance
+            domCache.modalProjectsContainer.innerHTML = '';
 
             if (projects.length === 0) {
-                projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+                domCache.modalProjectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
                 return;
             }
 
             projects.forEach((project, index) => {
                 const projectCard = document.createElement('div');
                 projectCard.className = 'project-card';
-                projectCard.innerHTML = `
-                    <span>${project}</span>
-                    <div class="project-actions">
-                        <button class="project-action-btn modal-edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                        <button class="project-action-btn delete-btn modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
-                    </div>
+
+                // Safe: Use textContent for user data to prevent XSS
+                const projectSpan = document.createElement('span');
+                projectSpan.textContent = project;
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'project-actions';
+                actionsDiv.innerHTML = `
+                    <button class="project-action-btn modal-edit-project-btn" data-index="${index}">${t('action.edit')}</button>
+                    <button class="project-action-btn delete-btn modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
                 `;
-                projectsContainer.appendChild(projectCard);
+
+                projectCard.appendChild(projectSpan);
+                projectCard.appendChild(actionsDiv);
+                domCache.modalProjectsContainer.appendChild(projectCard);
             });
 
-            // Dodaj event listenery dla przycisków
-            document.querySelectorAll('.modal-edit-project-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    editModalProject(index);
-                });
-            });
-
-            document.querySelectorAll('.modal-delete-project-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    deleteModalProject(index);
-                });
-            });
+            // Event listeners are now delegated via modal-projects-container (see initApp)
         }
 
-        function addModalProject() {
-            const projectNameInput = document.getElementById('modal-project-name');
-            const projectName = projectNameInput.value.trim();
-
-            if (!projectName) {
-                alert(t('msg.enterProjectName'));
-                return;
-            }
-
-            if (editingProjectIndex === -1) {
-                // Dodawanie nowego projektu
-                if (projects.includes(projectName)) {
-                    alert(t('msg.projectExists'));
-                    return;
-                }
-                projects.push(projectName);
-            } else {
-                // Edycja istniejącego projektu
-                if (projects.includes(projectName) && projects[editingProjectIndex] !== projectName) {
-                    alert(t('msg.projectExists'));
-                    return;
-                }
-                projects[editingProjectIndex] = projectName;
-                editingProjectIndex = -1;
-                document.getElementById('modal-add-project-btn').textContent = 'Dodaj projekt';
-                document.getElementById('modal-cancel-project-btn').style.display = 'none';
-            }
-
-            saveProjects();
-            updateProjectSelect();
-            renderModalProjects();
-            projectNameInput.value = '';
-            markAsChanged();
-        }
-
-        function editModalProject(index) {
-            const projectName = projects[index];
-            document.getElementById('modal-project-name').value = projectName;
-            editingProjectIndex = index;
-            document.getElementById('modal-add-project-btn').textContent = 'Zapisz zmiany';
-            document.getElementById('modal-cancel-project-btn').style.display = 'inline-block';
-        }
-
-        function deleteModalProject(index) {
-            if (confirm(`${t('msg.confirmDeleteProject')} "${projects[index]}"?`)) {
-                projects.splice(index, 1);
-                saveProjects();
-                updateProjectSelect();
-                renderModalProjects();
-                markAsChanged();
-            }
-        }
-
-        function cancelModalProjectEdit() {
-            document.getElementById('modal-project-name').value = '';
-            editingProjectIndex = -1;
-            document.getElementById('modal-add-project-btn').textContent = 'Dodaj projekt';
-            document.getElementById('modal-cancel-project-btn').style.display = 'none';
-        }
+        // Modal project wrapper functions (unified via createItemManager)
+        function addModalProject() { modalProjectManager.add(); }
+        function editModalProject(index) { modalProjectManager.edit(index); }
+        function deleteModalProject(index) { modalProjectManager.delete(index); }
+        function cancelModalProjectEdit() { modalProjectManager.cancel(); }
 
         // Dodanie nowego wpisu
         function addEntry(entry) {
@@ -2379,6 +2642,7 @@
                 date: new Date(entry.date)
             };
             entries.push(newEntry);
+            entriesMap.set(newEntry.id, newEntry); // Update Map for O(1) lookups
             saveEntries();
             renderEntries();
             updateSummary();
@@ -2386,7 +2650,12 @@
 
         // Usunięcie wpisu
         function deleteEntry(id) {
+            // O(1) Map lookup instead of O(n) filter
+            if (!entriesMap.has(id)) return;
+
             entries = entries.filter(entry => entry.id !== id);
+            entriesMap.delete(id); // O(1) removal from Map
+
             saveEntries();
             renderEntries();
             updateSummary();
@@ -2394,111 +2663,127 @@
 
         // Edytowanie wpisu
         function editEntry(id, updatedEntry) {
-            const index = entries.findIndex(entry => entry.id === id);
+            // O(1) Map lookup instead of O(n) findIndex
+            const existingEntry = entriesMap.get(id);
+            if (!existingEntry) return;
+
+            const index = entries.findIndex(entry => entry.id === id); // Still need index for array update
             if (index !== -1) {
-                entries[index] = {
-                    ...entries[index],
+                const newEntry = {
+                    ...existingEntry,
                     ...updatedEntry,
                     date: new Date(updatedEntry.date + 'T00:00:00') // Dodaj czas aby uniknąć problemów z timezone
                 };
+                entries[index] = newEntry;
+                entriesMap.set(id, newEntry); // Update Map
+
                 saveEntries();
                 renderEntries();
                 updateSummary();
             }
         }
 
-        // Renderowanie listy wpisów
-        function renderEntries() {
-            const filterCurrentMonth = document.getElementById('filter-current-month').checked;
-            const filterCurrentWeek = document.getElementById('filter-current-week').checked;
-            const currentDate = new Date();
+        // Helper: Filter entries by date range
+        function filterEntriesByDate(entries, currentDate) {
+            const filterCurrentMonth = domCache.filterCurrentMonth.checked;
+            const filterCurrentWeek = domCache.filterCurrentWeek.checked;
 
-            const entriesBody = document.getElementById('entries-body');
-            entriesBody.innerHTML = '';
-
-            let filteredEntries = [...entries];
-
-            // Filtrowanie według daty
             if (filterCurrentWeek) {
-                filteredEntries = filteredEntries.filter(entry => isSameWeek(entry.date, currentDate));
+                return entries.filter(entry => isSameWeek(entry.date, currentDate));
             } else if (filterCurrentMonth) {
-                filteredEntries = filteredEntries.filter(entry => isSameMonth(entry.date, currentDate));
+                return entries.filter(entry => isSameMonth(entry.date, currentDate));
             }
+            return entries;
+        }
 
-            // Filtrowanie według rodzaju zadania - dynamicznie na podstawie taskTypes
-            filteredEntries = filteredEntries.filter(entry => {
-                // Znajdź odpowiedni checkbox dla tego typu zadania
+        // Helper: Filter entries by task type
+        function filterEntriesByTaskType(entries) {
+            return entries.filter(entry => {
                 const filterId = `filter-${entry.taskType.toLowerCase().replace(/\s+/g, '-')}`;
                 const filterElement = document.getElementById(filterId);
-
-                // Jeśli filtr istnieje, sprawdź czy jest zaznaczony
-                // Jeśli filtr nie istnieje (stary typ zadania), pokaż wpis
                 return filterElement ? filterElement.checked : true;
             });
+        }
 
+        // Helper: Create table row for single entry
+        function createEntryRow(entry) {
+            const row = document.createElement('tr');
+
+            // Safe: Use textContent for user data to prevent XSS
+            const dateCell = document.createElement('td');
+            dateCell.textContent = formatDate(entry.date);
+
+            const taskTypeCell = document.createElement('td');
+            taskTypeCell.textContent = entry.taskType;
+
+            const clientCell = document.createElement('td');
+            clientCell.textContent = entry.client || '-';
+
+            const hoursCell = document.createElement('td');
+            hoursCell.textContent = entry.hours;
+
+            const taskNumberCell = document.createElement('td');
+            taskNumberCell.textContent = entry.taskNumber;
+
+            const actionsCell = document.createElement('td');
+            actionsCell.innerHTML = `
+                <button class="action-btn edit-btn" data-id="${entry.id}">${t('action.edit')}</button>
+                <button class="action-btn delete-btn" data-id="${entry.id}">${t('action.delete')}</button>
+            `;
+
+            row.appendChild(dateCell);
+            row.appendChild(taskTypeCell);
+            row.appendChild(clientCell);
+            row.appendChild(hoursCell);
+            row.appendChild(taskNumberCell);
+            row.appendChild(actionsCell);
+
+            return row;
+        }
+
+        // Renderowanie listy wpisów
+        function renderEntries() {
+            const currentDate = new Date();
+            domCache.entriesBody.innerHTML = '';
+
+            // Apply filters
+            let filteredEntries = filterEntriesByDate([...entries], currentDate);
+            filteredEntries = filterEntriesByTaskType(filteredEntries);
             filteredEntries.sort((a, b) => b.date - a.date);
 
             const totalEntries = filteredEntries.length;
-            const showMoreBtn = document.getElementById('show-more-btn');
-
-            // Określ ile wpisów pokazać
             const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
 
-            // Pokaż/ukryj przycisk "Pokaż więcej"
+            // Update "Show more" button
             if (totalEntries > ENTRIES_LIMIT) {
-                showMoreBtn.style.display = 'inline-block';
-                showMoreBtn.textContent = showAllEntries ?
+                domCache.showMoreBtn.style.display = 'inline-block';
+                domCache.showMoreBtn.textContent = showAllEntries ?
                     `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
                     `Pokaż wszystkie wpisy (${totalEntries})`;
             } else {
-                showMoreBtn.style.display = 'none';
+                domCache.showMoreBtn.style.display = 'none';
             }
 
+            // Render entries or empty state
             if (totalEntries === 0) {
-                entriesBody.innerHTML = `
+                domCache.entriesBody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 20px;">Brak wpisów spełniających kryteria filtrowania</td>
                     </tr>
                 `;
             } else {
                 entriesToShow.forEach(entry => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${formatDate(entry.date)}</td>
-                        <td>${entry.taskType}</td>
-                        <td>${entry.client || '-'}</td>
-                        <td>${entry.hours}</td>
-                        <td>${entry.taskNumber}</td>
-                        <td>
-                            <button class="action-btn edit-btn" data-id="${entry.id}">${t('action.edit')}</button>
-                            <button class="action-btn delete-btn" data-id="${entry.id}">${t('action.delete')}</button>
-                        </td>
-                    `;
-                    entriesBody.appendChild(row);
+                    domCache.entriesBody.appendChild(createEntryRow(entry));
                 });
             }
 
-            // Dodanie obsługi zdarzeń dla przycisków
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    showEditForm(id);
-                });
-            });
-
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    if (confirm(t('msg.confirmDeleteEntry'))) {
-                        deleteEntry(id);
-                    }
-                });
-            });
+            // Event listeners are now delegated via entries-body (see initApp)
         }
 
         // Wyświetlenie formularza edycji
         function showEditForm(id) {
-            const entry = entries.find(entry => entry.id === id);
+            // O(1) Map lookup instead of O(n) find
+            const entry = entriesMap.get(id);
             if (!entry) return;
 
             document.getElementById('date').value = entry.date.toISOString().split('T')[0];
@@ -2525,9 +2810,11 @@
             document.querySelector('.entry-form h2').textContent = t('form.addEntry');
             
             // Czyszczenie komunikatów walidacji
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.textContent = '';
-            });
+            setFieldError(document.getElementById('date'), document.getElementById('date-feedback'));
+            setFieldError(document.getElementById('task-type'), document.getElementById('task-type-feedback'));
+            setFieldError(document.getElementById('client'), document.getElementById('client-feedback'));
+            setFieldError(document.getElementById('hours'), document.getElementById('hours-feedback'));
+            setFieldError(document.getElementById('task-number'), document.getElementById('task-number-feedback'));
             
             // Ustawienie dzisiejszej daty
             const today = new Date();
@@ -2550,7 +2837,7 @@
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
             
             if (currentMonthEntries.length === 0) {
-                alert(t('msg.noDataToExport'));
+                showNotification(t('msg.noDataToExport'), 3000);
                 return;
             }
             
@@ -2571,6 +2858,51 @@
             link.click();
         }
 
+        function setFieldError(input, feedbackElement, messageKey) {
+            const message = messageKey ? t(messageKey) : '';
+
+            if (feedbackElement) {
+                feedbackElement.textContent = message;
+                if (messageKey) {
+                    feedbackElement.dataset.i18nKey = messageKey;
+                } else {
+                    delete feedbackElement.dataset.i18nKey;
+                }
+            }
+
+            if (input) {
+                input.setCustomValidity(message);
+                if (messageKey) {
+                    input.dataset.errorKey = messageKey;
+                } else {
+                    delete input.dataset.errorKey;
+                }
+            }
+        }
+
+        function refreshValidationMessages() {
+            const fields = [
+                { inputId: 'date', feedbackId: 'date-feedback' },
+                { inputId: 'task-type', feedbackId: 'task-type-feedback' },
+                { inputId: 'client', feedbackId: 'client-feedback' },
+                { inputId: 'hours', feedbackId: 'hours-feedback' },
+                { inputId: 'task-number', feedbackId: 'task-number-feedback' }
+            ];
+
+            fields.forEach(({ inputId, feedbackId }) => {
+                const input = document.getElementById(inputId);
+                const feedback = document.getElementById(feedbackId);
+                if (!input || !feedback) return;
+                const key = input.dataset.errorKey;
+                if (key) {
+                    const message = t(key);
+                    feedback.textContent = message;
+                    feedback.dataset.i18nKey = key;
+                    input.setCustomValidity(message);
+                }
+            });
+        }
+
         // Walidacja formularza
         function validateForm() {
             let isValid = true;
@@ -2579,30 +2911,30 @@
             const dateInput = document.getElementById('date');
             const dateFeedback = document.getElementById('date-feedback');
             if (!dateInput.value) {
-                dateFeedback.textContent = t('validation.selectDate');
+                setFieldError(dateInput, dateFeedback, 'validation.selectDate');
                 isValid = false;
             } else {
-                dateFeedback.textContent = '';
+                setFieldError(dateInput, dateFeedback);
             }
 
             // Walidacja rodzaju zadania
             const taskTypeInput = document.getElementById('task-type');
             const taskTypeFeedback = document.getElementById('task-type-feedback');
             if (!taskTypeInput.value) {
-                taskTypeFeedback.textContent = t('validation.selectTaskType');
+                setFieldError(taskTypeInput, taskTypeFeedback, 'validation.selectTaskType');
                 isValid = false;
             } else {
-                taskTypeFeedback.textContent = '';
+                setFieldError(taskTypeInput, taskTypeFeedback);
             }
 
             // Walidacja projektu
             const clientInput = document.getElementById('client');
             const clientFeedback = document.getElementById('client-feedback');
             if (!clientInput.value) {
-                clientFeedback.textContent = t('validation.selectProject');
+                setFieldError(clientInput, clientFeedback, 'validation.selectProject');
                 isValid = false;
             } else {
-                clientFeedback.textContent = '';
+                setFieldError(clientInput, clientFeedback);
             }
 
             // Walidacja liczby godzin
@@ -2611,26 +2943,26 @@
             const hoursValue = parseFloat(hoursInput.value);
 
             if (!hoursInput.value) {
-                hoursFeedback.textContent = t('validation.enterHours');
+                setFieldError(hoursInput, hoursFeedback, 'validation.enterHours');
                 isValid = false;
-            } else if (isNaN(hoursValue) || hoursValue <= 0) {
-                hoursFeedback.textContent = t('validation.hoursGreaterThanZero');
+            } else if (isNaN(hoursValue) || hoursValue < 0.25) {
+                setFieldError(hoursInput, hoursFeedback, 'validation.hoursGreaterThanZero');
                 isValid = false;
             } else if (hoursValue > 8) {
-                hoursFeedback.textContent = t('validation.hoursMaxEight');
+                setFieldError(hoursInput, hoursFeedback, 'validation.hoursMaxEight');
                 isValid = false;
             } else {
-                hoursFeedback.textContent = '';
+                setFieldError(hoursInput, hoursFeedback);
             }
 
             // Walidacja numeru zadania
             const taskNumberInput = document.getElementById('task-number');
             const taskNumberFeedback = document.getElementById('task-number-feedback');
             if (!taskNumberInput.value) {
-                taskNumberFeedback.textContent = t('validation.enterTaskNumber');
+                setFieldError(taskNumberInput, taskNumberFeedback, 'validation.enterTaskNumber');
                 isValid = false;
             } else {
-                taskNumberFeedback.textContent = '';
+                setFieldError(taskNumberInput, taskNumberFeedback);
             }
             
             return isValid;
@@ -2685,7 +3017,7 @@
                 sessionCount: pomodoroState.sessionCount,
                 lastDate: today
             };
-            localStorage.setItem(POMODORO_STORAGE_KEY, JSON.stringify(data));
+            safeLocalStorageSave(POMODORO_STORAGE_KEY, data, 500);
         }
 
         // Save Pomodoro settings
@@ -2695,7 +3027,7 @@
             pomodoroSettings.longBreakDuration = parseInt(document.getElementById('long-break-duration').value);
             pomodoroSettings.soundEnabled = document.getElementById('sound-enabled').checked;
             pomodoroSettings.autoStartBreak = document.getElementById('auto-start-break').checked;
-            localStorage.setItem(POMODORO_SETTINGS_KEY, JSON.stringify(pomodoroSettings));
+            safeLocalStorageSave(POMODORO_SETTINGS_KEY, pomodoroSettings, 300);
         }
 
         // Format time as MM:SS
@@ -2711,6 +3043,13 @@
             const mins = Math.floor((seconds % 3600) / 60);
             const secs = Math.floor(seconds % 60);
             return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Format seconds to HH:MM (used for confirmations)
+        function formatSecondsToHM(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
         }
 
         // Interpolate between colors based on progress
@@ -2916,8 +3255,12 @@
 
             // Show notification
             if (Notification.permission === 'granted') {
+                const notificationBody = pomodoroState.mode === 'work'
+                    ? t('pomodoro.notif.workComplete')
+                    : t('pomodoro.notif.breakComplete');
+
                 new Notification('Pomodoro Timer', {
-                    body: pomodoroState.mode === 'work' ? 'Czas pracy zakończony! Czas na przerwę.' : 'Przerwa zakończona! Wracaj do pracy.',
+                    body: notificationBody,
                     icon: '🍅'
                 });
             }
@@ -2925,17 +3268,21 @@
             if (pomodoroState.mode === 'work') {
                 // Work session completed
                 // Only count as full pomodoro if at least 90% of work duration elapsed
+                const elapsedSeconds = pomodoroState.elapsedTime;
                 const requiredTime = pomodoroSettings.workDuration * 60 * 0.9; // 90% of work duration
-                const isFullPomodoro = pomodoroState.elapsedTime >= requiredTime;
+                const isFullPomodoro = elapsedSeconds >= requiredTime;
 
-                console.log('Timer completed - elapsedTime:', pomodoroState.elapsedTime, 'requiredTime:', requiredTime, 'isFullPomodoro:', isFullPomodoro);
+                console.log('Timer completed - elapsedTime:', elapsedSeconds, 'requiredTime:', requiredTime, 'isFullPomodoro:', isFullPomodoro);
+
+                if (elapsedSeconds > 0) {
+                    recordPomodoroWork({ elapsedSecondsOverride: elapsedSeconds });
+                    pomodoroState.todayHours += elapsedSeconds / 3600;
+                }
 
                 if (isFullPomodoro) {
                     pomodoroState.sessionCount++;
                     pomodoroState.todayPomodoros++;
                 }
-
-                pomodoroState.todayHours += pomodoroState.elapsedTime / 3600;
 
                 // Reset elapsed time since it's now counted in todayHours
                 pomodoroState.elapsedTime = 0;
@@ -3027,73 +3374,13 @@
             }
         }
 
-        // Interrupt timer (Pomodoro philosophy: interruption voids the Pomodoro but tracks time)
+        // Pause timer (preserves state for resume)
         function pauseTimer() {
             if (!pomodoroState.isRunning) return;
 
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
-
-            // Handle work time tracking
-            if (pomodoroState.mode === 'work' && pomodoroState.elapsedTime > 0) {
-                const taskNumber = document.getElementById('timer-task-number').value.trim();
-
-                if (!taskNumber) {
-                    showNotification('⚠️ Podaj numer zadania aby zapisać czas pracy');
-                    // Reset and return to work mode
-                    pomodoroState.elapsedTime = 0;
-                    switchMode('work');
-                    document.getElementById('timer-start').style.display = 'inline-block';
-                    document.getElementById('timer-pause').style.display = 'none';
-                    updatePomodoroDisplay();
-                    return;
-                }
-
-                const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
-
-                if (roundedHours === 0) {
-                    // Less than 15 minutes - don't add entry
-                    showNotification('⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.');
-                } else {
-                    // Add entry with rounded time
-                    const today = new Date().toISOString().split('T')[0];
-
-                    // Check if entry with same task number exists today
-                    const existingEntryIndex = entries.findIndex(entry => {
-                        const entryDate = entry.date.toISOString().split('T')[0];
-                        return entry.taskNumber === taskNumber && entryDate === today;
-                    });
-
-                    if (existingEntryIndex !== -1) {
-                        // Sum hours to existing entry
-                        entries[existingEntryIndex].hours += roundedHours;
-                        showNotification(`✅ Czas dodany: ${taskNumber} (+${roundedHours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.`, 4000);
-                    } else {
-                        // Create new entry
-                        const newEntry = {
-                            id: Date.now(),
-                            date: new Date(),
-                            taskType: '', // To be filled later
-                            client: '', // To be filled later
-                            hours: roundedHours,
-                            taskNumber: taskNumber
-                        };
-                        entries.push(newEntry);
-                        showNotification(`✅ Wpis dodany: ${taskNumber} (${roundedHours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.`, 4000);
-                    }
-
-                    saveEntries();
-                    renderEntries();
-                    updateSummary();
-                }
-            }
-
-            // Void the Pomodoro (don't count it) and reset
-            pomodoroState.elapsedTime = 0;
-            pomodoroState.currentTaskNumber = '';
-            document.getElementById('timer-task-number').value = '';
-            switchMode('work');
 
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
@@ -3127,76 +3414,119 @@
             document.getElementById('timer-pause').style.display = 'none';
         }
 
-        // Start new task (clear task number and reset elapsed time)
-        function startNewTask() {
-            if (pomodoroState.elapsedTime > 0) {
-                const currentHours = (pomodoroState.elapsedTime / 3600).toFixed(2);
-                const confirmMsg = `Masz naliczony czas ${currentHours}h dla zadania "${pomodoroState.currentTaskNumber}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?`;
-
-                if (window.confirm(confirmMsg)) {
-                    // Add current task before starting new one
-                    quickAddTask();
-                }
-            }
-
-            // Clear task number and reset time
-            document.getElementById('timer-task-number').value = '';
-            pomodoroState.currentTaskNumber = '';
-            pomodoroState.elapsedTime = 0;
-            updatePomodoroDisplay();
-        }
-
-        // Quick add task from timer
-        function quickAddTask() {
-            const taskNumber = document.getElementById('timer-task-number').value.trim();
+        function recordPomodoroWork({ clearTaskNumber = false, elapsedSecondsOverride = null, suppressNotification = false } = {}) {
+            const taskInput = document.getElementById('timer-task-number');
+            const inputValue = taskInput.value.trim();
+            const taskNumber = inputValue || pomodoroState.currentTaskNumber;
 
             if (!taskNumber) {
-                showNotification('⚠️ Podaj numer zadania');
-                return;
+                showNotification(t('pomodoro.notif.enterTaskNumber'));
+                return false;
             }
 
-            if (pomodoroState.elapsedTime === 0) {
-                showNotification('⚠️ Timer nie został jeszcze uruchomiony');
-                return;
+            const elapsedSeconds = elapsedSecondsOverride !== null ? elapsedSecondsOverride : pomodoroState.elapsedTime;
+
+            if (elapsedSeconds === 0) {
+                showNotification(t('pomodoro.notif.timerNotStarted'));
+                return false;
             }
 
-            const hours = pomodoroState.elapsedTime / 3600;
-            const today = new Date().toISOString().split('T')[0];
+            const roundedHours = roundWorkTime(elapsedSeconds);
 
-            // Check if entry with same task number exists today
+            if (roundedHours === 0) {
+                const messageKey = clearTaskNumber ? 'pomodoro.notif.insufficientTimeContinue' : 'pomodoro.notif.insufficientTime';
+                showNotification(t(messageKey), clearTaskNumber ? 4000 : 3000);
+                return false;
+            }
+
+            const today = new Date();
+            const todayISO = today.toISOString().split('T')[0];
+
             const existingEntryIndex = entries.findIndex(entry => {
                 const entryDate = entry.date.toISOString().split('T')[0];
-                return entry.taskNumber === taskNumber && entryDate === today;
+                return entry.taskNumber === taskNumber && entryDate === todayISO;
             });
 
+            const timeFormatted = formatSecondsToHMS(elapsedSeconds);
+            let notificationMessage;
+
             if (existingEntryIndex !== -1) {
-                // Sum hours to existing entry
-                entries[existingEntryIndex].hours += parseFloat(hours.toFixed(2));
-                const timeFormatted = formatSecondsToHMS(hours * 3600);
-                showNotification(`✅ Czas dodany: ${taskNumber} (+${timeFormatted}). Możesz kontynuować pracę!`, 3000);
+                entries[existingEntryIndex].hours += roundedHours;
+                entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
+                notificationMessage = clearTaskNumber
+                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: roundedHours })
+                    : t('pomodoro.notif.timeAddedContinue', { task: taskNumber, time: timeFormatted });
             } else {
-                // Create new entry
                 const newEntry = {
                     id: Date.now(),
                     date: new Date(),
-                    taskType: '', // To be filled later
-                    client: '', // To be filled later
-                    hours: parseFloat(hours.toFixed(2)),
+                    taskType: '',
+                    client: '',
+                    hours: roundedHours,
                     taskNumber: taskNumber
                 };
                 entries.push(newEntry);
-                const timeFormatted = formatSecondsToHMS(hours * 3600);
-                showNotification(`✅ Wpis dodany: ${taskNumber} (${timeFormatted}). Możesz kontynuować pracę!`, 3000);
+                entriesMap.set(newEntry.id, newEntry);
+                notificationMessage = clearTaskNumber
+                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: roundedHours })
+                    : t('pomodoro.notif.entryAddedContinue', { task: taskNumber, time: timeFormatted });
             }
 
             saveEntries();
             renderEntries();
             updateSummary();
 
-            // Reset elapsed time for this task but keep task number
+            if (clearTaskNumber) {
+                taskInput.value = '';
+                pomodoroState.currentTaskNumber = '';
+            } else {
+                pomodoroState.currentTaskNumber = taskNumber;
+                if (!inputValue) {
+                    taskInput.value = taskNumber;
+                }
+            }
+
             pomodoroState.elapsedTime = 0;
-            pomodoroState.currentTaskNumber = taskNumber;
             updatePomodoroDisplay();
+
+            if (!suppressNotification && notificationMessage) {
+                showNotification(notificationMessage, 3000);
+            }
+
+            return {
+                roundedHours,
+                elapsedSeconds,
+                taskNumber,
+                existingEntry: existingEntryIndex !== -1
+            };
+        }
+
+        // Start new task (clear task number and reset elapsed time)
+        function startNewTask() {
+            const resetForNewTask = () => {
+                document.getElementById('timer-task-number').value = '';
+                pomodoroState.currentTaskNumber = '';
+                pomodoroState.elapsedTime = 0;
+                updatePomodoroDisplay();
+            };
+
+            if (pomodoroState.elapsedTime > 0) {
+                const elapsedSeconds = pomodoroState.elapsedTime;
+                const formattedTime = formatSecondsToHM(elapsedSeconds);
+                const currentTaskNumber = document.getElementById('timer-task-number').value.trim() || pomodoroState.currentTaskNumber;
+                const confirmMsg = t('pomodoro.notif.newTaskConfirm', { time: formattedTime, task: currentTaskNumber });
+
+                openConfirmDialog(confirmMsg, () => {
+                    recordPomodoroWork();
+                    resetForNewTask();
+                }, () => {
+                    // User cancelled - keep current state
+                });
+                return;
+            }
+
+            // Clear task number and reset time
+            resetForNewTask();
         }
 
         // Non-blocking notification (doesn't pause timer like alert())
@@ -3211,69 +3541,62 @@
             }, duration);
         }
 
+        function openConfirmDialog(message, onConfirm, onCancel) {
+            if (!domCache.confirmModal) return;
+
+            confirmDialogState.onConfirm = onConfirm;
+            confirmDialogState.onCancel = onCancel;
+            if (domCache.confirmTitle) {
+                domCache.confirmTitle.textContent = t('confirm.title');
+            }
+            if (domCache.confirmAccept) {
+                domCache.confirmAccept.textContent = t('confirm.confirm');
+            }
+            if (domCache.confirmCancel) {
+                domCache.confirmCancel.textContent = t('confirm.cancel');
+            }
+            domCache.confirmMessage.textContent = message;
+            domCache.confirmModal.style.display = 'block';
+            domCache.confirmModal.setAttribute('aria-hidden', 'false');
+
+            // Focus primary action for accessibility
+            setTimeout(() => {
+                if (domCache.confirmAccept) {
+                    domCache.confirmAccept.focus();
+                }
+            }, 0);
+        }
+
+        function closeConfirmDialog() {
+            if (!domCache.confirmModal) return;
+
+            domCache.confirmModal.style.display = 'none';
+            domCache.confirmModal.setAttribute('aria-hidden', 'true');
+
+            confirmDialogState.onCancel = null;
+            confirmDialogState.onConfirm = null;
+        }
+
+        function triggerConfirmAccept() {
+            const handler = confirmDialogState.onConfirm;
+            closeConfirmDialog();
+            if (typeof handler === 'function') {
+                handler();
+            }
+        }
+
+        function triggerConfirmCancel() {
+            const handler = confirmDialogState.onCancel;
+            closeConfirmDialog();
+            if (typeof handler === 'function') {
+                handler();
+            }
+        }
+
         // Complete current task and start new one (Pomodoro overlearning/task grouping)
         // Timer continues running - maintains session continuity
         function completeCurrentTask() {
-            const taskNumber = document.getElementById('timer-task-number').value.trim();
-
-            if (!taskNumber) {
-                showNotification('⚠️ Podaj numer zadania');
-                return;
-            }
-
-            if (pomodoroState.elapsedTime === 0) {
-                showNotification('⚠️ Timer nie został jeszcze uruchomiony');
-                return;
-            }
-
-            // Round time according to Pomodoro philosophy
-            const roundedHours = roundWorkTime(pomodoroState.elapsedTime);
-
-            if (roundedHours === 0) {
-                // Less than 15 minutes - don't add entry, but keep timer running
-                showNotification('⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!', 4000);
-                // Don't reset elapsedTime or clear field - let user continue working
-                // Timer keeps running in the background
-                return;
-            }
-
-            // Add entry with rounded time
-            const today = new Date().toISOString().split('T')[0];
-
-            // Check if entry with same task number exists today
-            const existingEntryIndex = entries.findIndex(entry => {
-                const entryDate = entry.date.toISOString().split('T')[0];
-                return entry.taskNumber === taskNumber && entryDate === today;
-            });
-
-            if (existingEntryIndex !== -1) {
-                // Sum hours to existing entry
-                entries[existingEntryIndex].hours += roundedHours;
-                showNotification(`✅ Zadanie zakończone: ${taskNumber} (+${roundedHours}h). Timer nadal liczy!`, 3000);
-            } else {
-                // Create new entry
-                const newEntry = {
-                    id: Date.now(),
-                    date: new Date(),
-                    taskType: '', // To be filled later
-                    client: '', // To be filled later
-                    hours: roundedHours,
-                    taskNumber: taskNumber
-                };
-                entries.push(newEntry);
-                showNotification(`✅ Zadanie zakończone: ${taskNumber} (${roundedHours}h). Timer nadal liczy!`, 3000);
-            }
-
-            saveEntries();
-            renderEntries();
-            updateSummary();
-
-            // Clear task number and reset elapsed time for new task
-            // Timer keeps running (session continuity)
-            document.getElementById('timer-task-number').value = '';
-            pomodoroState.currentTaskNumber = '';
-            pomodoroState.elapsedTime = 0;
-            updatePomodoroDisplay();
+            recordPomodoroWork({ clearTaskNumber: true });
         }
 
         // Drag and resize functionality
@@ -3539,7 +3862,6 @@
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
             document.getElementById('timer-reset').addEventListener('click', resetTimer);
             document.getElementById('timer-complete-task').addEventListener('click', completeCurrentTask);
-            document.getElementById('timer-quick-add').addEventListener('click', quickAddTask);
             document.getElementById('timer-new-task').addEventListener('click', startNewTask);
 
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
@@ -3547,6 +3869,16 @@
                 // Only toggle if not dragged
                 if (!minimizedDragMoved) {
                     toggleMinimize();
+                }
+            });
+
+            // Keyboard support for minimized icon (Enter and Space)
+            document.getElementById('pomodoro-minimized').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Prevent scrolling on Space
+                    if (!minimizedDragMoved) {
+                        toggleMinimize();
+                    }
                 }
             });
 
@@ -3559,14 +3891,16 @@
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
                         const timeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
-                        const confirm = window.confirm(`${t('msg.confirmTaskChange')} (${timeFormatted}). ${t('msg.continue')}`);
-                        if (confirm) {
+                        const currentInput = this;
+                        const message = `${t('msg.confirmTaskChange')} (${timeFormatted}). ${t('msg.continue')}`;
+                        openConfirmDialog(message, () => {
                             pomodoroState.elapsedTime = 0;
                             pomodoroState.currentTaskNumber = newTaskNumber;
                             updatePomodoroDisplay();
-                        } else {
-                            this.value = pomodoroState.currentTaskNumber;
-                        }
+                        }, () => {
+                            currentInput.value = pomodoroState.currentTaskNumber;
+                        });
+                        return;
                     } else {
                         pomodoroState.currentTaskNumber = newTaskNumber;
                     }
@@ -3580,13 +3914,7 @@
                 document.getElementById(id).addEventListener('change', savePomodoroSettings);
             });
 
-            // Update minimized timer every second
-            setInterval(() => {
-                if (pomodoroState.isRunning) {
-                    const timeStr = formatTime(pomodoroState.timeRemaining);
-                    document.getElementById('minimized-timer').textContent = timeStr;
-                }
-            }, 1000);
+            // Minimized timer is updated by updatePomodoroDisplay() (called from timerTick)
 
             // Start minimized by default
             toggleMinimize();
@@ -3595,58 +3923,107 @@
 
         // ============ END POMODORO TIMER FUNCTIONS ============
 
-        // Inicjalizacja aplikacji
-        function initApp() {
-            loadEntries();
-            loadProjects();
-            updateProjectSelect();
-            renderProjects();
-            loadTaskTypes();
-            updateTaskTypeSelect();
-            renderTaskTypeFilters(); // Inicjalizuj dynamiczne filtry typów zadań
-            initSectionToggles();
-            initPomodoroTimer();
+        // Setup event delegation for memory leak prevention
+        // Uses cached DOM references for better performance
+        function setupEventDelegation() {
+            // Delegate project management events (main section)
+            if (domCache.projectsContainer) {
+                domCache.projectsContainer.addEventListener('click', function(e) {
+                    const target = e.target;
+                    if (target.classList.contains('edit-project-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        editProject(index);
+                    } else if (target.classList.contains('delete-project-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        deleteProject(index);
+                    }
+                });
+            }
 
-            // Ustawienie dzisiejszej daty w formularzu
+            // Delegate task type management events
+            if (domCache.taskTypesContainer) {
+                domCache.taskTypesContainer.addEventListener('click', function(e) {
+                    const target = e.target;
+                    if (target.classList.contains('edit-task-type-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        editTaskType(index);
+                    } else if (target.classList.contains('delete-task-type-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        deleteTaskType(index);
+                    }
+                });
+            }
+
+            // Delegate modal project management events
+            if (domCache.modalProjectsContainer) {
+                domCache.modalProjectsContainer.addEventListener('click', function(e) {
+                    const target = e.target;
+                    if (target.classList.contains('modal-edit-project-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        editModalProject(index);
+                    } else if (target.classList.contains('modal-delete-project-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        deleteModalProject(index);
+                    }
+                });
+            }
+
+            // Delegate entries table events
+            if (domCache.entriesBody) {
+                domCache.entriesBody.addEventListener('click', function(e) {
+                    const target = e.target;
+                    if (target.classList.contains('edit-btn')) {
+                        const id = parseInt(target.getAttribute('data-id'));
+                        showEditForm(id);
+                    } else if (target.classList.contains('delete-btn') && !target.classList.contains('delete-project-btn') && !target.classList.contains('delete-task-type-btn') && !target.classList.contains('modal-delete-project-btn')) {
+                        // Only handle entry delete buttons (not project/task type delete buttons)
+                        const id = parseInt(target.getAttribute('data-id'));
+                        openConfirmDialog(t('msg.confirmDeleteEntry'), () => deleteEntry(id));
+                    }
+                });
+            }
+        }
+
+        // Helper: Setup form event handlers
+        function setupFormHandlers() {
+            // Set today's date
             const today = new Date();
-            document.getElementById('date').value = today.toISOString().split('T')[0];
-            
-            // Obsługa formularza
+            domCache.date.value = today.toISOString().split('T')[0];
+
+            // Form submission
             document.getElementById('timesheet-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 if (!validateForm()) {
+                    this.reportValidity();
                     return;
                 }
-                
-                const date = document.getElementById('date').value;
-                const taskType = document.getElementById('task-type').value;
-                const client = document.getElementById('client').value;
-                const hours = document.getElementById('hours').value;
-                const taskNumber = document.getElementById('task-number').value;
 
                 const entry = {
-                    date,
-                    taskType,
-                    client,
-                    hours: parseFloat(hours),
-                    taskNumber
+                    date: document.getElementById('date').value,
+                    taskType: document.getElementById('task-type').value,
+                    client: document.getElementById('client').value,
+                    hours: parseFloat(document.getElementById('hours').value),
+                    taskNumber: document.getElementById('task-number').value
                 };
-                
+
                 const editId = this.querySelector('button[type="submit"]').dataset.editId;
                 if (editId) {
                     editEntry(parseInt(editId), entry);
                 } else {
                     addEntry(entry);
                 }
-                
+
                 resetForm();
             });
-            
-            // Obsługa przycisku resetowania
+
+            // Form reset
             document.getElementById('reset-form').addEventListener('click', resetForm);
-            
-            // Obsługa filtrowania
+        }
+
+        // Helper: Setup filter event handlers
+        function setupFilterHandlers() {
+            // Date filters
             document.getElementById('filter-current-month').addEventListener('change', function() {
                 if (this.checked) {
                     document.getElementById('filter-current-week').checked = false;
@@ -3661,31 +4038,29 @@
                 renderEntries();
             });
 
-            // Event listenery dla filtrów typów zadań są teraz inicjalizowane przez initTaskTypeFilterListeners()
-
-            // Obsługa przycisku "Pokaż więcej"
+            // Show more button
             document.getElementById('show-more-btn').addEventListener('click', function() {
                 showAllEntries = !showAllEntries;
                 renderEntries();
             });
+        }
 
-            // Obsługa przycisku eksportu
-            document.getElementById('export-button').addEventListener('click', exportData);
-
-            // Obsługa zarządzania projektami (stara sekcja - dla kompatybilności)
-            // document.getElementById('add-project-btn').addEventListener('click', addProject);
-            // document.getElementById('cancel-project-btn').addEventListener('click', cancelProjectEdit);
-
-            // Obsługa okna modalnego ustawień
+        // Helper: Setup modal event handlers
+        function setupModalHandlers() {
+            // Settings modal
             document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
             document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
-
-            // Obsługa przycisku zmiany języka
-            document.getElementById('language-btn').addEventListener('click', changeLanguage);
+            document.getElementById('modal-cancel-btn').addEventListener('click', cancelSettingsChanges);
             document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
             document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
+            document.getElementById('confirm-accept').addEventListener('click', triggerConfirmAccept);
+            document.getElementById('confirm-cancel').addEventListener('click', triggerConfirmCancel);
+            document.getElementById('confirm-close').addEventListener('click', triggerConfirmCancel);
 
-            // Obsługa zakładek w oknie modalnym
+            // Language button
+            document.getElementById('language-btn').addEventListener('click', changeLanguage);
+
+            // Modal tabs
             document.querySelectorAll('.modal-tab').forEach(tabButton => {
                 tabButton.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
@@ -3693,41 +4068,87 @@
                 });
             });
 
-            // Zamykanie modalnego po kliknięciu poza nim
+            // Close modal on outside click
             window.addEventListener('click', function(event) {
                 const modal = document.getElementById('settings-modal');
                 if (event.target === modal) {
                     closeSettingsModal();
                 }
+                const confirmModalElement = document.getElementById('confirm-modal');
+                if (event.target === confirmModalElement) {
+                    triggerConfirmCancel();
+                }
             });
 
-            // Obsługa zarządzania projektami w modalu
+            // Close modal on Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    const confirmModalElement = document.getElementById('confirm-modal');
+                    if (confirmModalElement.style.display === 'block') {
+                        triggerConfirmCancel();
+                        return;
+                    }
+                    const modal = document.getElementById('settings-modal');
+                    if (modal.style.display === 'block') {
+                        closeSettingsModal();
+                    }
+                }
+            });
+
+            // Project management in modal
             document.getElementById('modal-add-project-btn').addEventListener('click', addModalProject);
             document.getElementById('modal-cancel-project-btn').addEventListener('click', cancelModalProjectEdit);
-
-            // Obsługa Enter w polu nazwy projektu w modalu
             document.getElementById('modal-project-name').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     addModalProject();
                 }
             });
 
-            // Obsługa zarządzania typami zadań
+            // Task type management
             document.getElementById('add-task-type-btn').addEventListener('click', addTaskType);
             document.getElementById('cancel-task-type-btn').addEventListener('click', cancelTaskTypeEdit);
-
-            // Obsługa Enter w polu typu zadania
             document.getElementById('task-type-name').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     addTaskType();
                 }
             });
+        }
 
-            // Renderowanie początkowe
+        // Helper: Setup UI event handlers
+        function setupUIHandlers() {
+            document.getElementById('export-button').addEventListener('click', exportData);
+        }
+
+        // Inicjalizacja aplikacji
+        function initApp() {
+            // Initialize DOM cache first for performance
+            initDOMCache();
+
+            // Load data
+            loadEntries();
+            loadProjects();
+            updateProjectSelect();
+            renderProjects();
+            loadTaskTypes();
+            updateTaskTypeSelect();
+            renderTaskTypeFilters();
+
+            // Initialize components
+            initSectionToggles();
+            initPomodoroTimer();
+
+            // Setup event handlers (organized by responsibility)
+            setupEventDelegation(); // Memory leak prevention
+            setupFormHandlers();
+            setupFilterHandlers();
+            setupModalHandlers();
+            setupUIHandlers();
+
+            // Initial render
             renderEntries();
             updateSummary();
 
-            // Inicjalizacja języka
+            // Initialize language
             updateUILanguage();
         }
 
