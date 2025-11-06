@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GODZINY PRACY</title>
+    <title>Time Planner</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231976d2' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Primary Colors */
             --primary-color: #1976d2;
             --primary-dark: #1565c0;
             --primary-light: #2196F3;
-
-            /* Status Colors */
             --error-color: #dc3545;
             --success-color: #28a745;
             --success-dark: #218838;
@@ -23,27 +20,17 @@
             --success-lighter: #37b24d;
             --warning-color: #fab005;
             --warning-light: #ffd43b;
-
-            /* Secondary Colors */
             --secondary-color: #6c757d;
             --secondary-dark: #5a6268;
-
-            /* Background Colors */
             --bg-dark: #1e1e1e;
             --bg-medium: #2d2d2d;
             --bg-light: #222222;
             --bg-lighter: #303030;
             --bg-highlight: #292929;
-
-            /* Text Colors */
             --text-color: #797979;
             --text-light: #fff;
-
-            /* Border */
             --border-color: #5f5f5f;
             --border-radius: 4px;
-
-            /* Effects */
             --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
@@ -62,12 +49,10 @@
             padding: 20px;
         }
 
-        /* Prevent transitions on page load */
         .preload * {
             transition: none !important;
         }
 
-        /* Disable transitions temporarily for specific elements */
         .no-transition {
             transition: none !important;
         }
@@ -373,7 +358,6 @@
             }
         }
 
-        /* Pomodoro Timer Styles */
         .pomodoro-widget {
             position: fixed;
             top: 20px;
@@ -606,7 +590,6 @@
             font-weight: 600;
         }
 
-        /* Non-blocking notification */
         .pomodoro-notification {
             position: fixed;
             top: 20px;
@@ -730,7 +713,6 @@
             width: auto;
         }
 
-        /* Minimized State */
         .pomodoro-minimized {
             position: fixed;
             top: 20px;
@@ -764,7 +746,6 @@
             font-size: 24px;
         }
 
-        /* Running Animation */
         .timer-running .timer-display {
             animation: pulse 2s ease-in-out infinite;
             will-change: opacity;
@@ -775,7 +756,6 @@
             50% { opacity: 0.8; }
         }
 
-        /* Resize Handles */
         .resize-handle {
             position: absolute;
             z-index: 10;
@@ -845,7 +825,6 @@
             cursor: nesw-resize;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .pomodoro-widget {
                 width: 280px;
@@ -873,7 +852,6 @@
             }
         }
 
-        /* Settings Button */
         .settings-button {
             position: absolute;
             top: 15px;
@@ -918,7 +896,6 @@
             background-color: var(--primary-dark);
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -1011,6 +988,18 @@
             border: none;
         }
 
+        .confirm-modal .modal-header {
+            padding-bottom: 12px;
+        }
+
+        .confirm-modal .modal-body {
+            padding: 15px 25px 25px;
+        }
+
+        .confirm-modal .modal-body p:first-child {
+            margin-top: 0;
+        }
+
         .modal-footer button {
             flex: 0 0 auto;
             min-width: 100px;
@@ -1052,12 +1041,10 @@
             text-align: left;
         }
 
-        /* Make header relative for positioning the settings button */
         header {
             position: relative;
         }
 
-        /* Tabs Styles */
         .modal-tabs {
             display: flex;
             border-bottom: 1px solid var(--border-color);
@@ -1429,12 +1416,10 @@
     </div>
 
     <script>
-        // Zmienne globalne
         let entries = [];
-        const entriesMap = new Map(); // O(1) lookup by entry ID
+        const entriesMap = new Map();
         const STORAGE_KEY = 'timesheet-entries';
 
-        // Helper function to rebuild Map from entries array (O(n) operation)
         function rebuildEntriesMap() {
             entriesMap.clear();
             entries.forEach(entry => {
@@ -1483,11 +1468,19 @@
             autoStartBreak: true
         };
 
-        // ============================
-        // DOM CACHE for Performance
-        // ============================
-        // Cache frequently accessed DOM elements to reduce querySelector overhead
-        // Initialized in initDOMCache() called from initApp()
+        // Drag/resize runtime state for the Pomodoro widget
+        let isDragging = false;
+        let isDraggingMinimized = false;
+        let minimizedDragMoved = false;
+        let isResizing = false;
+        let resizeDirection = null;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+        let startWidth = 0;
+        let startHeight = 0;
+
         const domCache = {
             // Form elements
             date: null,
@@ -1544,31 +1537,21 @@
             cancelTaskTypeBtn: null
         };
 
-        // Initialize DOM cache - called once in initApp()
         function initDOMCache() {
-            // Form elements
             domCache.date = document.getElementById('date');
             domCache.taskType = document.getElementById('task-type');
             domCache.client = document.getElementById('client');
             domCache.hours = document.getElementById('hours');
             domCache.taskNumber = document.getElementById('task-number');
-
-            // Filter elements
             domCache.filterCurrentMonth = document.getElementById('filter-current-month');
             domCache.filterCurrentWeek = document.getElementById('filter-current-week');
-
-            // Container elements
             domCache.entriesBody = document.getElementById('entries-body');
             domCache.projectsContainer = document.getElementById('projects-container');
             domCache.taskTypesContainer = document.getElementById('task-types-container');
             domCache.modalProjectsContainer = document.getElementById('modal-projects-container');
-
-            // Button elements
             domCache.showMoreBtn = document.getElementById('show-more-btn');
             domCache.resetForm = document.getElementById('reset-form');
             domCache.exportButton = document.getElementById('export-button');
-
-            // Pomodoro elements
             domCache.timerDisplay = document.getElementById('timer-display');
             domCache.timerTaskNumber = document.getElementById('timer-task-number');
             domCache.timerStart = document.getElementById('timer-start');
@@ -1576,8 +1559,6 @@
             domCache.timerReset = document.getElementById('timer-reset');
             domCache.timerCircleProgress = document.getElementById('timer-circle-progress');
             domCache.pomodoroMinimized = document.getElementById('pomodoro-minimized');
-
-            // Modal elements
             domCache.settingsModal = document.getElementById('settings-modal');
             domCache.modalClose = document.getElementById('modal-close');
             domCache.modalProjectName = document.getElementById('modal-project-name');
@@ -1589,13 +1570,9 @@
             domCache.confirmCancel = document.getElementById('confirm-cancel');
             domCache.confirmClose = document.getElementById('confirm-close');
             domCache.confirmTitle = document.getElementById('confirm-modal-title');
-
-            // Project management
             domCache.projectName = document.getElementById('project-name');
             domCache.addProjectBtn = document.getElementById('add-project-btn');
             domCache.cancelProjectBtn = document.getElementById('cancel-project-btn');
-
-            // Task type management
             domCache.taskTypeName = document.getElementById('task-type-name');
             domCache.addTaskTypeBtn = document.getElementById('add-task-type-btn');
             domCache.cancelTaskTypeBtn = document.getElementById('cancel-task-type-btn');
@@ -1605,22 +1582,34 @@
         // Internationalization (i18n)
         // ============================
 
-        let currentLanguage = localStorage.getItem('app-language') || 'pl';
+        const SUPPORTED_LANGUAGES = ['pl', 'en'];
+        let storedLanguage = null;
+
+        try {
+            storedLanguage = localStorage.getItem('app-language');
+        } catch (error) {
+            console.warn('Unable to access localStorage for language settings:', error);
+        }
+
+        let currentLanguage = SUPPORTED_LANGUAGES.includes(storedLanguage) ? storedLanguage : 'pl';
+
+        if (storedLanguage && storedLanguage !== currentLanguage) {
+            try {
+                localStorage.setItem('app-language', currentLanguage);
+            } catch (error) {
+                console.warn('Unable to persist corrected language setting:', error);
+            }
+        }
 
         const translations = {
             pl: {
-                // Header
-                'app.title': 'GODZINY PRACY',
+                'app.title': 'TIME PLANNER',
                 'app.settings': 'Ustawienia',
                 'app.language': 'Zmień język / Change language',
-
-                // Section visibility
                 'section.visibility': 'Widoczność sekcji:',
                 'section.addEntry': 'Dodaj nowy wpis',
                 'section.entriesList': 'Lista wpisów',
                 'section.summary': 'Podsumowanie',
-
-                // Form labels
                 'form.addEntry': 'Dodaj nowy wpis',
                 'form.editEntry': 'Edytuj wpis',
                 'form.date': 'Data:',
@@ -1633,30 +1622,22 @@
                 'form.addButton': 'Dodaj wpis',
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
-
-                // Entries list
                 'entries.title': 'Lista wpisów',
                 'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
                 'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
                 'entries.taskTypeFilter': 'Rodzaj zadania',
                 'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
                 'entries.showAll': 'Pokaż wszystkie wpisy',
-
-                // Table headers
                 'table.date': 'Data',
                 'table.taskType': 'Rodzaj zadania',
                 'table.project': 'Projekt',
                 'table.hours': 'Godziny',
                 'table.number': 'Numer',
                 'table.actions': 'Akcje',
-
-                // Summary
                 'summary.title': 'Podsumowanie',
                 'summary.currentMonth': 'Aktualny miesiąc:',
                 'summary.totalHours': 'Całkowita liczba godzin:',
                 'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
-
-                // Settings modal
                 'settings.title': 'Ustawienia',
                 'settings.projects': 'Projekty',
                 'settings.tasks': 'Zadania',
@@ -1671,8 +1652,6 @@
                 'confirm.title': 'Potwierdzenie',
                 'confirm.confirm': 'OK',
                 'confirm.cancel': 'Anuluj',
-
-                // Pomodoro
                 'pomodoro.title': 'POMODORO',
                 'pomodoro.workTime': 'Czas pracy',
                 'pomodoro.shortBreak': 'Krótka przerwa',
@@ -1694,8 +1673,6 @@
                 'pomodoro.longBreakDuration': 'min - Długa przerwa',
                 'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
                 'pomodoro.autoStartBreak': 'Auto-start przerwy',
-
-                // Pomodoro notifications
                 'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer zadania',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer zadania aby zapisać czas pracy',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
@@ -1710,8 +1687,6 @@
                 'pomodoro.notif.newTaskConfirm': 'Masz naliczony czas {time} dla zadania "{task}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?',
                 'pomodoro.notif.workComplete': 'Czas pracy zakończony! Czas na przerwę.',
                 'pomodoro.notif.breakComplete': 'Przerwa zakończona! Wracaj do pracy.',
-
-                // Messages
                 'msg.enterProjectName': 'Podaj nazwę projektu',
                 'msg.projectExists': 'Ten projekt już istnieje',
                 'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
@@ -1726,8 +1701,6 @@
                 'msg.settingsCancelled': 'Zmiany anulowane',
                 'msg.storageQuotaExceeded': 'Pamięć przeglądarki jest pełna. Wyeksportuj dane i usuń starsze wpisy.',
                 'msg.storageSaveFailed': 'Nie można zapisać danych. Sprawdź ustawienia przeglądarki.',
-
-                // Validation messages
                 'validation.selectDate': 'Wybierz datę',
                 'validation.selectTaskType': 'Wybierz rodzaj zadania',
                 'validation.selectProject': 'Wybierz projekt',
@@ -1735,8 +1708,6 @@
                 'validation.hoursGreaterThanZero': 'Liczba godzin musi być co najmniej 0,25',
                 'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
                 'validation.enterTaskNumber': 'Podaj numer zadania',
-
-                // Months
                 'month.january': 'Styczeń',
                 'month.february': 'Luty',
                 'month.march': 'Marzec',
@@ -1749,14 +1720,11 @@
                 'month.october': 'Październik',
                 'month.november': 'Listopad',
                 'month.december': 'Grudzień',
-
-                // Actions
                 'action.edit': 'Edytuj',
                 'action.delete': 'Usuń'
             },
             en: {
-                // Header
-                'app.title': 'WORK HOURS',
+                'app.title': 'TIME PLANNER',
                 'app.settings': 'Settings',
                 'app.language': 'Change language / Zmień język',
 
@@ -1904,7 +1872,12 @@
 
         // Translation function
         function t(key, params = {}) {
-            let text = translations[currentLanguage][key] || translations['pl'][key] || key;
+            const languageData = translations[currentLanguage];
+            const fallbackData = translations['pl'];
+
+            let text = (languageData && languageData[key]) ||
+                (fallbackData && fallbackData[key]) ||
+                key;
 
             // Replace parameters in the text
             Object.keys(params).forEach(param => {
@@ -1963,7 +1936,6 @@
             refreshValidationMessages();
         }
 
-        // Change language
         function changeLanguage() {
             currentLanguage = currentLanguage === 'pl' ? 'en' : 'pl';
             localStorage.setItem('app-language', currentLanguage);
@@ -2105,7 +2077,6 @@
 
         // ============ END LOCALSTORAGE MANAGEMENT ============
 
-        // Załadowanie wpisów
         function loadEntries() {
             const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
             entries = storedEntries.map(entry => ({
@@ -2115,7 +2086,6 @@
             rebuildEntriesMap(); // Rebuild Map for O(1) lookups
         }
 
-        // Zapisanie wpisów
         function saveEntries() {
             safeLocalStorageSave(STORAGE_KEY, entries, 300);
         }
@@ -2634,7 +2604,6 @@
         function deleteModalProject(index) { modalProjectManager.delete(index); }
         function cancelModalProjectEdit() { modalProjectManager.cancel(); }
 
-        // Dodanie nowego wpisu
         function addEntry(entry) {
             const newEntry = {
                 ...entry,
@@ -2648,9 +2617,7 @@
             updateSummary();
         }
 
-        // Usunięcie wpisu
         function deleteEntry(id) {
-            // O(1) Map lookup instead of O(n) filter
             if (!entriesMap.has(id)) return;
 
             entries = entries.filter(entry => entry.id !== id);
@@ -2661,9 +2628,7 @@
             updateSummary();
         }
 
-        // Edytowanie wpisu
         function editEntry(id, updatedEntry) {
-            // O(1) Map lookup instead of O(n) findIndex
             const existingEntry = entriesMap.get(id);
             if (!existingEntry) return;
 
@@ -2683,7 +2648,6 @@
             }
         }
 
-        // Helper: Filter entries by date range
         function filterEntriesByDate(entries, currentDate) {
             const filterCurrentMonth = domCache.filterCurrentMonth.checked;
             const filterCurrentWeek = domCache.filterCurrentWeek.checked;
@@ -2696,7 +2660,6 @@
             return entries;
         }
 
-        // Helper: Filter entries by task type
         function filterEntriesByTaskType(entries) {
             return entries.filter(entry => {
                 const filterId = `filter-${entry.taskType.toLowerCase().replace(/\s+/g, '-')}`;
@@ -2705,11 +2668,8 @@
             });
         }
 
-        // Helper: Create table row for single entry
         function createEntryRow(entry) {
             const row = document.createElement('tr');
-
-            // Safe: Use textContent for user data to prevent XSS
             const dateCell = document.createElement('td');
             dateCell.textContent = formatDate(entry.date);
 
@@ -2741,20 +2701,14 @@
             return row;
         }
 
-        // Renderowanie listy wpisów
         function renderEntries() {
             const currentDate = new Date();
             domCache.entriesBody.innerHTML = '';
-
-            // Apply filters
             let filteredEntries = filterEntriesByDate([...entries], currentDate);
             filteredEntries = filterEntriesByTaskType(filteredEntries);
             filteredEntries.sort((a, b) => b.date - a.date);
-
             const totalEntries = filteredEntries.length;
             const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
-
-            // Update "Show more" button
             if (totalEntries > ENTRIES_LIMIT) {
                 domCache.showMoreBtn.style.display = 'inline-block';
                 domCache.showMoreBtn.textContent = showAllEntries ?
@@ -2763,8 +2717,6 @@
             } else {
                 domCache.showMoreBtn.style.display = 'none';
             }
-
-            // Render entries or empty state
             if (totalEntries === 0) {
                 domCache.entriesBody.innerHTML = `
                     <tr>
@@ -2776,13 +2728,9 @@
                     domCache.entriesBody.appendChild(createEntryRow(entry));
                 });
             }
-
-            // Event listeners are now delegated via entries-body (see initApp)
         }
 
-        // Wyświetlenie formularza edycji
         function showEditForm(id) {
-            // O(1) Map lookup instead of O(n) find
             const entry = entriesMap.get(id);
             if (!entry) return;
 
@@ -2797,31 +2745,23 @@
             submitButton.dataset.editId = id;
 
             document.querySelector('.entry-form h2').textContent = t('form.editEntry');
-
-            // Przewijanie do formularza
             document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Resetowanie formularza
         function resetForm() {
             document.getElementById('timesheet-form').reset();
             document.querySelector('#timesheet-form button[type="submit"]').textContent = t('form.addButton');
             document.querySelector('#timesheet-form button[type="submit"]').removeAttribute('data-edit-id');
             document.querySelector('.entry-form h2').textContent = t('form.addEntry');
-            
-            // Czyszczenie komunikatów walidacji
             setFieldError(document.getElementById('date'), document.getElementById('date-feedback'));
             setFieldError(document.getElementById('task-type'), document.getElementById('task-type-feedback'));
             setFieldError(document.getElementById('client'), document.getElementById('client-feedback'));
             setFieldError(document.getElementById('hours'), document.getElementById('hours-feedback'));
             setFieldError(document.getElementById('task-number'), document.getElementById('task-number-feedback'));
-            
-            // Ustawienie dzisiejszej daty
             const today = new Date();
             document.getElementById('date').value = today.toISOString().split('T')[0];
         }
 
-        // Aktualizacja podsumowania
         function updateSummary() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
@@ -2831,7 +2771,6 @@
             document.getElementById('total-hours').textContent = totalHours.toFixed(2);
         }
 
-        // Eksport danych
         function exportData() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
@@ -2843,14 +2782,10 @@
             
             const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
-            
-            // Utworzenie zawartości CSV
             let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
-            
-            // Utworzenie linku do pobrania
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -2903,7 +2838,6 @@
             });
         }
 
-        // Walidacja formularza
         function validateForm() {
             let isValid = true;
             
@@ -2970,13 +2904,11 @@
 
         // ============ POMODORO TIMER FUNCTIONS ============
 
-        // Load Pomodoro data from localStorage
         function loadPomodoroData() {
             const stored = localStorage.getItem(POMODORO_STORAGE_KEY);
             if (stored) {
                 const data = JSON.parse(stored);
                 const today = new Date().toDateString();
-                // Reset daily stats if it's a new day
                 if (data.lastDate !== today) {
                     pomodoroState.todayPomodoros = 0;
                     pomodoroState.shortBreaksToday = 0;
@@ -3006,7 +2938,6 @@
             updatePomodoroStats();
         }
 
-        // Save Pomodoro data to localStorage
         function savePomodoroData() {
             const today = new Date().toDateString();
             const data = {
@@ -3020,7 +2951,6 @@
             safeLocalStorageSave(POMODORO_STORAGE_KEY, data, 500);
         }
 
-        // Save Pomodoro settings
         function savePomodoroSettings() {
             pomodoroSettings.workDuration = parseInt(document.getElementById('work-duration').value);
             pomodoroSettings.shortBreakDuration = parseInt(document.getElementById('short-break-duration').value);
@@ -3030,14 +2960,12 @@
             safeLocalStorageSave(POMODORO_SETTINGS_KEY, pomodoroSettings, 300);
         }
 
-        // Format time as MM:SS
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Format seconds to HH:MM:SS
         function formatSecondsToHMS(seconds) {
             const hours = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
@@ -3045,34 +2973,25 @@
             return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        // Format seconds to HH:MM (used for confirmations)
         function formatSecondsToHM(seconds) {
             const hours = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
             return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
         }
 
-        // Interpolate between colors based on progress
         function getColorForProgress(progress) {
-            // progress: 1.0 = full time (blue), 0.0 = no time (red)
-            // Color stops: blue -> green -> yellow -> red
-
             let r, g, b;
-
             if (progress > 0.66) {
-                // Blue to Green (100% - 66%)
                 const localProgress = (progress - 0.66) / 0.34;
                 r = Math.round(33 + (76 - 33) * (1 - localProgress));
                 g = Math.round(150 + (175 - 150) * (1 - localProgress));
                 b = Math.round(243 + (80 - 243) * (1 - localProgress));
             } else if (progress > 0.33) {
-                // Green to Yellow (66% - 33%)
                 const localProgress = (progress - 0.33) / 0.33;
                 r = Math.round(76 + (255 - 76) * (1 - localProgress));
                 g = Math.round(175 + (193 - 175) * (1 - localProgress));
                 b = Math.round(80 + (7 - 80) * (1 - localProgress));
             } else {
-                // Yellow to Red (33% - 0%)
                 const localProgress = progress / 0.33;
                 r = 255;
                 g = Math.round(193 * localProgress);
@@ -3093,11 +3012,8 @@
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        // Play notification sound
         function playNotificationSound() {
             if (!pomodoroSettings.soundEnabled) return;
-
-            // Create a simple beep sound using Web Audio API
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -3113,8 +3029,6 @@
 
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.5);
-
-            // Play multiple beeps
             setTimeout(() => {
                 const osc2 = audioContext.createOscillator();
                 const gain2 = audioContext.createGain();
@@ -3129,7 +3043,6 @@
             }, 200);
         }
 
-        // Update timer display
         function updatePomodoroDisplay() {
             const timeStr = formatTime(pomodoroState.timeRemaining);
             document.getElementById('timer-display').textContent = timeStr;
@@ -3157,37 +3070,28 @@
             }
 
             const progress = pomodoroState.timeRemaining / totalTime;
-            const circumference = 2 * Math.PI * 90; // r=90
+            const circumference = 2 * Math.PI * 90;
             const offset = circumference * (1 - progress);
             document.getElementById('timer-circle-progress').style.strokeDashoffset = offset;
-
-            // Update color based on progress
             const timerDisplay = document.getElementById('timer-display');
             const minimizedTimer = document.getElementById('minimized-timer');
             const minimizedWidget = document.getElementById('pomodoro-minimized');
             const progressCircle = document.getElementById('timer-circle-progress');
-
             if (pomodoroState.mode === 'work') {
-                // Always apply inline styles for work mode (both running and stopped)
                 const color = getColorForProgress(progress);
                 const hexColor = colorToHex(color.r, color.g, color.b);
                 const glowColor = colorToRgba(color.r, color.g, color.b, 0.3);
 
                 timerDisplay.style.color = hexColor;
                 timerDisplay.style.textShadow = `0 2px 10px ${glowColor}`;
-                // Minimized timer stays white for contrast against colored background
                 minimizedWidget.style.background = `linear-gradient(135deg, ${hexColor} 0%, ${hexColor} 100%)`;
                 progressCircle.style.stroke = hexColor;
             } else {
-                // For breaks, always use blue color
                 timerDisplay.style.color = '#2196F3';
                 timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-                // Minimized timer stays white for contrast against colored background
                 minimizedWidget.style.background = 'linear-gradient(135deg, #2196F3 0%, #1976d2 100%)';
                 progressCircle.style.stroke = '#2196F3';
             }
-
-            // Update mode text
             let modeText = '';
             switch(pomodoroState.mode) {
                 case 'work':
@@ -3201,39 +3105,26 @@
                     break;
             }
             document.getElementById('timer-mode').textContent = modeText;
-
-            // Update current elapsed time
             if (pomodoroState.mode === 'work') {
                 const currentTimeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
                 document.getElementById('pomodoro-current-time').textContent = currentTimeFormatted;
             }
         }
 
-        // Update statistics
         function updatePomodoroStats() {
-            // Session progress (full session = 4 pomodoros per Pomodoro Technique)
             const completed = pomodoroState.sessionCount % 4;
             const sessionDisplay = '🍅'.repeat(completed) + '○'.repeat(4 - completed);
-
             document.getElementById('pomodoro-session').textContent = `${sessionDisplay} (${completed}/4)`;
-
-            // Break counters
             document.getElementById('pomodoro-short-breaks').textContent = pomodoroState.shortBreaksToday;
             document.getElementById('pomodoro-long-breaks').textContent = pomodoroState.longBreaksToday;
-
-            // Today stats
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
             const todayTimeFormatted = formatSecondsToHMS(todaySeconds);
             document.getElementById('pomodoro-today').textContent = `${todayTimeFormatted} (${pomodoroState.todayPomodoros} 🍅)`;
         }
 
-        // Timer countdown function
         function timerTick() {
             if (!pomodoroState.isRunning) return;
-
             pomodoroState.timeRemaining--;
-
-            // Track elapsed time for work mode
             if (pomodoroState.mode === 'work') {
                 pomodoroState.elapsedTime++;
             }
@@ -3245,15 +3136,12 @@
             }
         }
 
-        // Timer complete handler
         function timerComplete() {
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
 
             playNotificationSound();
-
-            // Show notification
             if (Notification.permission === 'granted') {
                 const notificationBody = pomodoroState.mode === 'work'
                     ? t('pomodoro.notif.workComplete')
@@ -3266,10 +3154,8 @@
             }
 
             if (pomodoroState.mode === 'work') {
-                // Work session completed
-                // Only count as full pomodoro if at least 90% of work duration elapsed
                 const elapsedSeconds = pomodoroState.elapsedTime;
-                const requiredTime = pomodoroSettings.workDuration * 60 * 0.9; // 90% of work duration
+                const requiredTime = pomodoroSettings.workDuration * 60 * 0.9;
                 const isFullPomodoro = elapsedSeconds >= requiredTime;
 
                 console.log('Timer completed - elapsedTime:', elapsedSeconds, 'requiredTime:', requiredTime, 'isFullPomodoro:', isFullPomodoro);
@@ -3283,34 +3169,23 @@
                     pomodoroState.sessionCount++;
                     pomodoroState.todayPomodoros++;
                 }
-
-                // Reset elapsed time since it's now counted in todayHours
                 pomodoroState.elapsedTime = 0;
-
-                // Increment break counters before saving
-                // Switch to break (full session = 4 pomodoros per Pomodoro Technique philosophy)
                 if (pomodoroState.sessionCount % 4 === 0) {
                     pomodoroState.longBreaksToday++;
                 } else {
                     pomodoroState.shortBreaksToday++;
                 }
-
                 savePomodoroData();
                 updatePomodoroStats();
-
-                // Switch to appropriate break mode
                 if (pomodoroState.sessionCount % 4 === 0) {
                     switchMode('longBreak');
                 } else {
                     switchMode('shortBreak');
                 }
-
-                // Auto-start break if enabled
                 if (pomodoroSettings.autoStartBreak) {
                     setTimeout(startTimer, 1000);
                 }
             } else {
-                // Break completed, switch back to work
                 switchMode('work');
             }
 
@@ -3319,7 +3194,6 @@
             document.getElementById('timer-pause').style.display = 'none';
         }
 
-        // Switch timer mode
         function switchMode(mode) {
             pomodoroState.mode = mode;
 
@@ -3338,7 +3212,6 @@
             updatePomodoroDisplay();
         }
 
-        // Start timer
         function startTimer() {
             if (pomodoroState.isRunning) return;
 
@@ -3352,29 +3225,21 @@
             updatePomodoroDisplay();
         }
 
-        // Round work time according to Pomodoro philosophy
-        // < 15 min → 0 (don't add)
-        // >= 15 min and < 45 min → 0.5h
-        // >= 45 min and < 1h 15min → 1h
-        // Pattern repeats for each hour
         function roundWorkTime(seconds) {
-            if (seconds < 900) { // < 15 min
+            if (seconds < 900) {
                 return 0;
             }
-
             const hours = Math.floor(seconds / 3600);
             const remainingSeconds = seconds % 3600;
-
-            if (remainingSeconds < 900) { // < 15 min
+            if (remainingSeconds < 900) {
                 return hours;
-            } else if (remainingSeconds < 2700) { // >= 15 min and < 45 min
+            } else if (remainingSeconds < 2700) {
                 return hours + 0.5;
-            } else { // >= 45 min
+            } else {
                 return hours + 1;
             }
         }
 
-        // Pause timer (preserves state for resume)
         function pauseTimer() {
             if (!pomodoroState.isRunning) return;
 
@@ -3387,24 +3252,16 @@
             updatePomodoroDisplay();
         }
 
-        // Reset timer
         function resetTimer() {
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
-
             pomodoroState.elapsedTime = 0;
-
-            // Temporarily disable transitions to prevent glitching
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
-
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
-
             switchMode('work');
-
-            // Re-enable transitions after DOM updates
             setTimeout(() => {
                 timerDisplay.classList.remove('no-transition');
                 progressCircle.classList.remove('no-transition');
@@ -3529,13 +3386,10 @@
             resetForNewTask();
         }
 
-        // Non-blocking notification (doesn't pause timer like alert())
         function showNotification(message, duration = 3000) {
             const notification = document.getElementById('pomodoro-notification');
             notification.textContent = message;
             notification.classList.add('show');
-
-            // Auto-hide after duration
             setTimeout(() => {
                 notification.classList.remove('show');
             }, duration);
@@ -3558,8 +3412,6 @@
             domCache.confirmMessage.textContent = message;
             domCache.confirmModal.style.display = 'block';
             domCache.confirmModal.setAttribute('aria-hidden', 'false');
-
-            // Focus primary action for accessibility
             setTimeout(() => {
                 if (domCache.confirmAccept) {
                     domCache.confirmAccept.focus();
@@ -3593,30 +3445,15 @@
             }
         }
 
-        // Complete current task and start new one (Pomodoro overlearning/task grouping)
-        // Timer continues running - maintains session continuity
         function completeCurrentTask() {
             recordPomodoroWork({ clearTaskNumber: true });
         }
-
-        // Drag and resize functionality
-        let isDragging = false;
-        let isDraggingMinimized = false;
-        let minimizedDragMoved = false;
-        let isResizing = false;
-        let resizeDirection = null;
-        let startX, startY;
-        let startWidth, startHeight;
-        let startLeft, startTop;
 
         function initDragAndResize() {
             const widget = document.getElementById('pomodoro-widget');
             const header = document.getElementById('pomodoro-header');
             const resizeHandles = document.querySelectorAll('.resize-handle');
-
-            // Drag functionality
             header.addEventListener('mousedown', function(e) {
-                // Ignore if clicking on minimize button
                 if (e.target.classList.contains('pomodoro-minimize-btn')) {
                     return;
                 }
@@ -3632,8 +3469,6 @@
                 widget.classList.add('no-transition');
                 e.preventDefault();
             });
-
-            // Resize functionality
             resizeHandles.forEach(handle => {
                 handle.addEventListener('mousedown', function(e) {
                     isResizing = true;
@@ -3652,10 +3487,7 @@
                     e.stopPropagation();
                 });
             });
-
-            // Drag functionality for minimized window
             const minimizedWidget = document.getElementById('pomodoro-minimized');
-
             minimizedWidget.addEventListener('mousedown', function(e) {
                 isDraggingMinimized = true;
                 minimizedDragMoved = false;
@@ -3669,8 +3501,6 @@
                 minimizedWidget.classList.add('no-transition');
                 e.preventDefault();
             });
-
-            // Mouse move
             document.addEventListener('mousemove', function(e) {
                 if (isDragging) {
                     const deltaX = e.clientX - startX;
@@ -3695,20 +3525,16 @@
                 } else if (isResizing) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
-
                     let newWidth = startWidth;
                     let newHeight = startHeight;
                     let newLeft = startLeft;
                     let newTop = startTop;
-
-                    // Handle different resize directions
                     if (resizeDirection.includes('e')) {
                         newWidth = Math.max(280, Math.min(640, startWidth + deltaX));
                     }
                     if (resizeDirection.includes('w')) {
                         const proposedWidth = startWidth - deltaX;
                         newWidth = Math.max(280, Math.min(640, proposedWidth));
-                        // Only adjust left position if width actually changed
                         const widthDiff = startWidth - newWidth;
                         newLeft = startLeft + widthDiff;
                     }
@@ -3718,7 +3544,6 @@
                     if (resizeDirection.includes('n')) {
                         const proposedHeight = startHeight - deltaY;
                         newHeight = Math.max(400, proposedHeight);
-                        // Only adjust top position if height actually changed
                         const heightDiff = startHeight - newHeight;
                         newTop = startTop + heightDiff;
                     }
@@ -3731,8 +3556,6 @@
                     widget.style.bottom = 'auto';
                 }
             });
-
-            // Mouse up
             document.addEventListener('mouseup', function() {
                 if (isDragging || isResizing) {
                     widget.classList.remove('no-transition');
@@ -3745,8 +3568,6 @@
                 isResizing = false;
                 resizeDirection = null;
             });
-
-            // Touch support for mobile
             header.addEventListener('touchstart', function(e) {
                 if (e.target.classList.contains('pomodoro-minimize-btn')) {
                     return;
@@ -3763,8 +3584,6 @@
 
                 widget.classList.add('no-transition');
             });
-
-            // Touch support for minimized window
             minimizedWidget.addEventListener('touchstart', function(e) {
                 isDraggingMinimized = true;
                 minimizedDragMoved = false;
@@ -3817,7 +3636,6 @@
             });
         }
 
-        // Toggle minimize
         function toggleMinimize() {
             const widget = document.getElementById('pomodoro-widget');
             const minimized = document.getElementById('pomodoro-minimized');
@@ -3831,61 +3649,40 @@
             }
         }
 
-        // Initialize Pomodoro Timer
         function initPomodoroTimer() {
-            // Load data first (loads settings from localStorage)
             loadPomodoroData();
-
-            // Use same pattern as resetTimer() - temporarily disable transitions
             const timerDisplay = document.getElementById('timer-display');
             const progressCircle = document.getElementById('timer-circle-progress');
-
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
-
-            // Synchronize timeRemaining with workDuration from settings (same as Reset does)
             switchMode('work');
-
-            // Re-enable transitions after DOM updates
             setTimeout(() => {
                 timerDisplay.classList.remove('no-transition');
                 progressCircle.classList.remove('no-transition');
             }, 50);
-
-            // Request notification permission
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
-
-            // Event listeners
             document.getElementById('timer-start').addEventListener('click', startTimer);
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
             document.getElementById('timer-reset').addEventListener('click', resetTimer);
             document.getElementById('timer-complete-task').addEventListener('click', completeCurrentTask);
             document.getElementById('timer-new-task').addEventListener('click', startNewTask);
-
             document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
             document.getElementById('pomodoro-minimized').addEventListener('click', function(e) {
-                // Only toggle if not dragged
                 if (!minimizedDragMoved) {
                     toggleMinimize();
                 }
             });
-
-            // Keyboard support for minimized icon (Enter and Space)
             document.getElementById('pomodoro-minimized').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault(); // Prevent scrolling on Space
+                    e.preventDefault();
                     if (!minimizedDragMoved) {
                         toggleMinimize();
                     }
                 }
             });
-
-            // Initialize drag and resize functionality
             initDragAndResize();
-
-            // Reset elapsed time when task number changes (new task)
             document.getElementById('timer-task-number').addEventListener('change', function() {
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
@@ -3923,10 +3720,7 @@
 
         // ============ END POMODORO TIMER FUNCTIONS ============
 
-        // Setup event delegation for memory leak prevention
-        // Uses cached DOM references for better performance
         function setupEventDelegation() {
-            // Delegate project management events (main section)
             if (domCache.projectsContainer) {
                 domCache.projectsContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -3939,8 +3733,6 @@
                     }
                 });
             }
-
-            // Delegate task type management events
             if (domCache.taskTypesContainer) {
                 domCache.taskTypesContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -3953,8 +3745,6 @@
                     }
                 });
             }
-
-            // Delegate modal project management events
             if (domCache.modalProjectsContainer) {
                 domCache.modalProjectsContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -3967,8 +3757,6 @@
                     }
                 });
             }
-
-            // Delegate entries table events
             if (domCache.entriesBody) {
                 domCache.entriesBody.addEventListener('click', function(e) {
                     const target = e.target;
@@ -3976,7 +3764,6 @@
                         const id = parseInt(target.getAttribute('data-id'));
                         showEditForm(id);
                     } else if (target.classList.contains('delete-btn') && !target.classList.contains('delete-project-btn') && !target.classList.contains('delete-task-type-btn') && !target.classList.contains('modal-delete-project-btn')) {
-                        // Only handle entry delete buttons (not project/task type delete buttons)
                         const id = parseInt(target.getAttribute('data-id'));
                         openConfirmDialog(t('msg.confirmDeleteEntry'), () => deleteEntry(id));
                     }
@@ -3984,13 +3771,9 @@
             }
         }
 
-        // Helper: Setup form event handlers
         function setupFormHandlers() {
-            // Set today's date
             const today = new Date();
             domCache.date.value = today.toISOString().split('T')[0];
-
-            // Form submission
             document.getElementById('timesheet-form').addEventListener('submit', function(e) {
                 e.preventDefault();
 
@@ -4016,14 +3799,10 @@
 
                 resetForm();
             });
-
-            // Form reset
             document.getElementById('reset-form').addEventListener('click', resetForm);
         }
 
-        // Helper: Setup filter event handlers
         function setupFilterHandlers() {
-            // Date filters
             document.getElementById('filter-current-month').addEventListener('change', function() {
                 if (this.checked) {
                     document.getElementById('filter-current-week').checked = false;
@@ -4037,17 +3816,13 @@
                 }
                 renderEntries();
             });
-
-            // Show more button
             document.getElementById('show-more-btn').addEventListener('click', function() {
                 showAllEntries = !showAllEntries;
                 renderEntries();
             });
         }
 
-        // Helper: Setup modal event handlers
         function setupModalHandlers() {
-            // Settings modal
             document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
             document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
             document.getElementById('modal-cancel-btn').addEventListener('click', cancelSettingsChanges);
@@ -4056,19 +3831,13 @@
             document.getElementById('confirm-accept').addEventListener('click', triggerConfirmAccept);
             document.getElementById('confirm-cancel').addEventListener('click', triggerConfirmCancel);
             document.getElementById('confirm-close').addEventListener('click', triggerConfirmCancel);
-
-            // Language button
             document.getElementById('language-btn').addEventListener('click', changeLanguage);
-
-            // Modal tabs
             document.querySelectorAll('.modal-tab').forEach(tabButton => {
                 tabButton.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
                     switchTab(tabId);
                 });
             });
-
-            // Close modal on outside click
             window.addEventListener('click', function(event) {
                 const modal = document.getElementById('settings-modal');
                 if (event.target === modal) {
@@ -4079,8 +3848,6 @@
                     triggerConfirmCancel();
                 }
             });
-
-            // Close modal on Escape key
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     const confirmModalElement = document.getElementById('confirm-modal');
@@ -4103,8 +3870,6 @@
                     addModalProject();
                 }
             });
-
-            // Task type management
             document.getElementById('add-task-type-btn').addEventListener('click', addTaskType);
             document.getElementById('cancel-task-type-btn').addEventListener('click', cancelTaskTypeEdit);
             document.getElementById('task-type-name').addEventListener('keypress', function(e) {
@@ -4114,17 +3879,12 @@
             });
         }
 
-        // Helper: Setup UI event handlers
         function setupUIHandlers() {
             document.getElementById('export-button').addEventListener('click', exportData);
         }
 
-        // Inicjalizacja aplikacji
         function initApp() {
-            // Initialize DOM cache first for performance
             initDOMCache();
-
-            // Load data
             loadEntries();
             loadProjects();
             updateProjectSelect();
@@ -4132,34 +3892,22 @@
             loadTaskTypes();
             updateTaskTypeSelect();
             renderTaskTypeFilters();
-
-            // Initialize components
             initSectionToggles();
             initPomodoroTimer();
-
-            // Setup event handlers (organized by responsibility)
-            setupEventDelegation(); // Memory leak prevention
+            setupEventDelegation();
             setupFormHandlers();
             setupFilterHandlers();
             setupModalHandlers();
             setupUIHandlers();
-
-            // Initial render
             renderEntries();
             updateSummary();
-
-            // Initialize language
             updateUILanguage();
         }
 
-        // Uruchomienie aplikacji po załadowaniu strony
         document.addEventListener('DOMContentLoaded', initApp);
-
-        // Remove preload class after page loads to enable transitions
         window.addEventListener('load', function() {
             setTimeout(function() {
                 document.body.classList.remove('preload');
-                // Force update display to ensure colors are properly applied
                 if (typeof updatePomodoroDisplay === 'function') {
                     updatePomodoroDisplay();
                 }
