@@ -3697,6 +3697,28 @@
             if (typeof updateSummary === 'function') {
                 updateSummary();
             }
+
+            // Update validation messages if they are currently displayed
+            const validationElements = [
+                'date-feedback',
+                'task-type-feedback',
+                'client-feedback',
+                'hours-feedback',
+                'task-number-feedback'
+            ];
+
+            let hasValidationErrors = false;
+            validationElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element && element.textContent.trim() !== '') {
+                    hasValidationErrors = true;
+                }
+            });
+
+            // If there are validation messages displayed, re-validate to update them
+            if (hasValidationErrors && typeof validateForm === 'function') {
+                validateForm();
+            }
         }
 
         // Change language
