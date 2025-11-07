@@ -70,6 +70,7 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
 
         h1 {
@@ -874,6 +875,28 @@
             background-color: var(--primary-dark);
         }
 
+        .info-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-button:hover {
+            background-color: var(--primary-dark);
+        }
+
         .language-button {
             position: absolute;
             top: 15px;
@@ -933,6 +956,38 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .info-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-section h3 {
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            margin-bottom: 10px;
+        }
+
+        .info-section ul,
+        .info-section ol {
+            margin-left: 20px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .info-note {
+            background-color: var(--bg-light);
+            border-left: 4px solid var(--primary-color);
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
         }
 
         .modal-header h2 {
@@ -1091,6 +1146,7 @@
 
     <div class="container">
         <header>
+            <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <h1 data-i18n="app.title">GODZINY PRACY</h1>
             <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">🌐</button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
@@ -1228,6 +1284,55 @@
             </div>
             <button class="export-btn" id="export-button" data-i18n="summary.export" aria-label="Eksportuj dane z bieżącego miesiąca do pliku CSV">Eksportuj dane z bieżącego miesiąca (CSV)</button>
         </section>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="info-modal-title" data-i18n="info.title">Jak korzystać z Time Planner</h2>
+                <button class="modal-close" id="info-modal-close" aria-label="Zamknij instrukcję / Close guide" data-i18n-title="info.close" title="Zamknij instrukcję">&times;</button>
+            </div>
+            <div class="info-modal-body">
+                <div class="info-section">
+                    <h3 data-i18n="info.section.overviewTitle">Pierwsze kroki</h3>
+                    <p data-i18n="info.intro">Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.</p>
+                    <ol>
+                        <li data-i18n="info.section.overviewStep1">Wypełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.</li>
+                        <li data-i18n="info.section.overviewStep2">Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.</li>
+                        <li data-i18n="info.section.overviewStep3">Kliknij „Dodaj wpis”, aby zapisać czas w tabeli poniżej.</li>
+                        <li data-i18n="info.section.overviewStep4">Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.</li>
+                    </ol>
+                </div>
+                <div class="info-section">
+                    <h3 data-i18n="info.section.entriesTitle">Rejestrowanie zadań</h3>
+                    <ul>
+                        <li data-i18n="info.section.entriesItem1">Lista wpisów pokazuje wszystkie zadania – możesz je filtrować według miesiąca, tygodnia i rodzaju.</li>
+                        <li data-i18n="info.section.entriesItem2">Ikony edycji i kosza przy każdym wierszu pozwalają poprawić lub usunąć wpis.</li>
+                        <li data-i18n="info.section.entriesItem3">Przycisk „Eksportuj dane” pobiera plik CSV z godzinami z bieżącego miesiąca.</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
+                    <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
+                    <ol>
+                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
+                        <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie” lub przyjmij podpowiedź o dodaniu wpisu.</li>
+                        <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.</li>
+                        <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
+                    </ol>
+                    <div class="info-note" data-i18n="info.section.pomodoroNote">Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zebrzesz w następnych pomidorach.</div>
+                </div>
+                <div class="info-section">
+                    <h3 data-i18n="info.section.tipsTitle">Dodatkowe wskazówki</h3>
+                    <ul>
+                        <li data-i18n="info.section.tipsItem1">Przycisk języka w prawym górnym rogu przełącza polski i angielski interfejs.</li>
+                        <li data-i18n="info.section.tipsItem2">W Ustawieniach dodasz własne projekty i rodzaje zadań, które pojawią się w formularzu.</li>
+                        <li data-i18n="info.section.tipsItem3">Sekcja Podsumowanie na dole strony pokazuje bieżący miesiąc i sumę przepracowanych godzin.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Settings Modal -->
@@ -1516,6 +1621,8 @@
             // Modal elements
             settingsModal: null,
             modalClose: null,
+            infoModal: null,
+            infoModalClose: null,
             modalProjectName: null,
             modalAddProjectBtn: null,
             modalCancelProjectBtn: null,
@@ -1561,6 +1668,8 @@
             domCache.pomodoroMinimized = document.getElementById('pomodoro-minimized');
             domCache.settingsModal = document.getElementById('settings-modal');
             domCache.modalClose = document.getElementById('modal-close');
+            domCache.infoModal = document.getElementById('info-modal');
+            domCache.infoModalClose = document.getElementById('info-modal-close');
             domCache.modalProjectName = document.getElementById('modal-project-name');
             domCache.modalAddProjectBtn = document.getElementById('modal-add-project-btn');
             domCache.modalCancelProjectBtn = document.getElementById('modal-cancel-project-btn');
@@ -1605,6 +1714,7 @@
             pl: {
                 'app.title': 'TIME PLANNER',
                 'app.settings': 'Ustawienia',
+                'app.info': 'Instrukcja',
                 'app.language': 'Zmień język / Change language',
                 'section.visibility': 'Widoczność sekcji:',
                 'section.addEntry': 'Dodaj nowy wpis',
@@ -1687,6 +1797,29 @@
                 'pomodoro.notif.newTaskConfirm': 'Masz naliczony czas {time} dla zadania "{task}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?',
                 'pomodoro.notif.workComplete': 'Czas pracy zakończony! Czas na przerwę.',
                 'pomodoro.notif.breakComplete': 'Przerwa zakończona! Wracaj do pracy.',
+                'info.title': 'Jak korzystać z Time Planner',
+                'info.intro': 'Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.',
+                'info.section.overviewTitle': 'Pierwsze kroki',
+                'info.section.overviewStep1': 'Wypełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.',
+                'info.section.overviewStep2': 'Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.',
+                'info.section.overviewStep3': 'Kliknij „Dodaj wpis”, aby zapisać czas w tabeli poniżej.',
+                'info.section.overviewStep4': 'Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.',
+                'info.section.entriesTitle': 'Rejestrowanie zadań',
+                'info.section.entriesItem1': 'Lista wpisów pokazuje wszystkie zadania – możesz je filtrować według miesiąca, tygodnia i rodzaju.',
+                'info.section.entriesItem2': 'Ikony edycji i kosza przy każdym wierszu pozwalają poprawić lub usunąć wpis.',
+                'info.section.entriesItem3': 'Przycisk „Eksportuj dane” pobiera plik CSV z godzinami z bieżącego miesiąca.',
+                'info.section.pomodoroTitle': 'Tryb Pomodoro',
+                'info.section.pomodoroIntro': 'Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.',
+                'info.section.pomodoroStep1': 'Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
+                'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie” lub przyjmij podpowiedź o dodaniu wpisu.',
+                'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
+                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
+                'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zebrzesz w następnych pomidorach.',
+                'info.section.tipsTitle': 'Dodatkowe wskazówki',
+                'info.section.tipsItem1': 'Przycisk języka w prawym górnym rogu przełącza polski i angielski interfejs.',
+                'info.section.tipsItem2': 'W Ustawieniach dodasz własne projekty i rodzaje zadań, które pojawią się w formularzu.',
+                'info.section.tipsItem3': 'Sekcja Podsumowanie na dole strony pokazuje bieżący miesiąc i sumę przepracowanych godzin.',
+                'info.close': 'Zamknij instrukcję',
                 'msg.enterProjectName': 'Podaj nazwę projektu',
                 'msg.projectExists': 'Ten projekt już istnieje',
                 'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
@@ -1726,6 +1859,7 @@
             en: {
                 'app.title': 'TIME PLANNER',
                 'app.settings': 'Settings',
+                'app.info': 'Guide',
                 'app.language': 'Change language / Zmień język',
 
                 // Section visibility
@@ -1824,6 +1958,29 @@
                 'pomodoro.notif.newTaskConfirm': 'You have accumulated {time} for task "{task}". Do you want to add it before starting a new task?',
                 'pomodoro.notif.workComplete': 'Work time complete! Time for a break.',
                 'pomodoro.notif.breakComplete': 'Break complete! Back to work.',
+                'info.title': 'How to use Time Planner',
+                'info.intro': 'This page helps you plan work, track time, and remember your breaks.',
+                'info.section.overviewTitle': 'Getting started',
+                'info.section.overviewStep1': 'Fill in the Date, Task type, Project, and Task number fields.',
+                'info.section.overviewStep2': 'Enter the number of worked hours or use Pomodoro mode to calculate them automatically.',
+                'info.section.overviewStep3': 'Click “Add entry” to save your time in the table below.',
+                'info.section.overviewStep4': 'Use the toggles above the form to show or hide the sections you need.',
+                'info.section.entriesTitle': 'Tracking tasks',
+                'info.section.entriesItem1': 'The entries list shows every saved task – filter it by month, week, or task type.',
+                'info.section.entriesItem2': 'Use the edit and delete icons on each row to update or remove an entry.',
+                'info.section.entriesItem3': 'The “Export data” button downloads a CSV file with the current month hours.',
+                'info.section.pomodoroTitle': 'Pomodoro mode',
+                'info.section.pomodoroIntro': 'The Pomodoro timer keeps you focused with short work cycles.',
+                'info.section.pomodoroStep1': 'Enter the task number inside the Pomodoro panel and press Start to begin the countdown.',
+                'info.section.pomodoroStep2': 'When work ends, click “Complete task” or accept the prompt to add an entry.',
+                'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
+                'info.section.pomodoroStep4': 'Every new session with the same task number appends the tracked minutes to the existing entry so you keep the full history.',
+                'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
+                'info.section.tipsTitle': 'Extra tips',
+                'info.section.tipsItem1': 'The language button in the top-right corner switches between Polish and English.',
+                'info.section.tipsItem2': 'Use Settings to add your own projects and task types that appear in the form.',
+                'info.section.tipsItem3': 'The Summary section at the bottom shows the current month and the total hours worked.',
+                'info.close': 'Close guide',
 
                 // Messages
                 'msg.enterProjectName': 'Enter project name',
@@ -2499,6 +2656,18 @@
             const activeButton = document.querySelector(`.modal-tab[data-tab="${tabId}"]`);
             if (activeButton) {
                 activeButton.classList.add('active');
+            }
+        }
+
+        function openInfoModal() {
+            if (domCache.infoModal) {
+                domCache.infoModal.style.display = 'block';
+            }
+        }
+
+        function closeInfoModal() {
+            if (domCache.infoModal) {
+                domCache.infoModal.style.display = 'none';
             }
         }
 
@@ -3825,6 +3994,8 @@
         function setupModalHandlers() {
             document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
             document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
+            document.getElementById('info-btn').addEventListener('click', openInfoModal);
+            document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
             document.getElementById('modal-cancel-btn').addEventListener('click', cancelSettingsChanges);
             document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
             document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
@@ -3843,6 +4014,10 @@
                 if (event.target === modal) {
                     closeSettingsModal();
                 }
+                const infoModalElement = document.getElementById('info-modal');
+                if (event.target === infoModalElement) {
+                    closeInfoModal();
+                }
                 const confirmModalElement = document.getElementById('confirm-modal');
                 if (event.target === confirmModalElement) {
                     triggerConfirmCancel();
@@ -3853,6 +4028,11 @@
                     const confirmModalElement = document.getElementById('confirm-modal');
                     if (confirmModalElement.style.display === 'block') {
                         triggerConfirmCancel();
+                        return;
+                    }
+                    const infoModalElement = document.getElementById('info-modal');
+                    if (infoModalElement.style.display === 'block') {
+                        closeInfoModal();
                         return;
                     }
                     const modal = document.getElementById('settings-modal');
