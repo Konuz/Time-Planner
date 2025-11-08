@@ -2910,6 +2910,10 @@
 
             const clientCell = document.createElement('td');
             clientCell.textContent = entry.client || '-';
+            // Add tooltip with full project name for easier viewing when text is truncated
+            if (entry.client) {
+                clientCell.title = entry.client;
+            }
 
             const hoursCell = document.createElement('td');
             hoursCell.textContent = entry.hours;
