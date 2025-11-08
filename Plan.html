@@ -176,12 +176,55 @@
 
         .task-table {
             font-size: 14px;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        /* Fixed column widths for consistent header positioning */
+        .task-table th:nth-child(1),
+        .task-table td:nth-child(1) {
+            width: 10%;  /* Data */
+        }
+
+        .task-table th:nth-child(2),
+        .task-table td:nth-child(2) {
+            width: 18%;  /* Rodzaj zadania */
+        }
+
+        .task-table th:nth-child(3),
+        .task-table td:nth-child(3) {
+            width: 18%;  /* Projekt */
+        }
+
+        .task-table th:nth-child(4),
+        .task-table td:nth-child(4) {
+            width: 8%;   /* Godziny */
+        }
+
+        .task-table th:nth-child(5),
+        .task-table td:nth-child(5) {
+            width: 16%;  /* Numer */
+        }
+
+        .task-table th:nth-child(6),
+        .task-table td:nth-child(6) {
+            width: 30%;  /* Akcje (3 buttons: Edit, Clone, Delete) */
         }
 
         th, td {
             padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Allow text wrapping in Actions column for buttons */
+        .task-table th:nth-child(6),
+        .task-table td:nth-child(6) {
+            white-space: normal;
+            overflow: visible;
         }
 
         th {
@@ -205,6 +248,14 @@
         }
 
         .action-btn:hover {
+            color: white;
+        }
+
+        .clone-btn {
+            color: var(--primary-color);
+        }
+
+        .clone-btn:hover {
             color: white;
         }
 
@@ -344,6 +395,17 @@
 
             .task-table {
                 font-size: 12px;
+            }
+
+            /* Maintain fixed layout on mobile */
+            .task-table th:nth-child(1),
+            .task-table td:nth-child(1) {
+                width: 12%;  /* Data - slightly wider on mobile */
+            }
+
+            .task-table th:nth-child(4),
+            .task-table td:nth-child(4) {
+                width: 10%;  /* Godziny - slightly wider on mobile */
             }
 
             th, td {
@@ -1842,6 +1904,7 @@
                 'month.november': 'Listopad',
                 'month.december': 'Grudzień',
                 'action.edit': 'Edytuj',
+                'action.clone': 'Klonuj',
                 'action.delete': 'Usuń'
             },
             en: {
@@ -2007,6 +2070,7 @@
 
                 // Actions
                 'action.edit': 'Edit',
+                'action.clone': 'Clone',
                 'action.delete': 'Delete'
             }
         };
@@ -2770,6 +2834,21 @@
             updateSummary();
         }
 
+        function cloneEntry(id) {
+            const entry = entriesMap.get(id);
+            if (!entry) return;
+
+            const clonedEntry = {
+                date: new Date().toISOString().split('T')[0],  // Today's date
+                taskType: entry.taskType,
+                client: entry.client || '',
+                hours: entry.hours,
+                taskNumber: entry.taskNumber
+            };
+
+            addEntry(clonedEntry);
+        }
+
         function deleteEntry(id) {
             if (!entriesMap.has(id)) return;
 
@@ -2841,6 +2920,7 @@
             const actionsCell = document.createElement('td');
             actionsCell.innerHTML = `
                 <button class="action-btn edit-btn" data-id="${entry.id}">${t('action.edit')}</button>
+                <button class="action-btn clone-btn" data-id="${entry.id}">${t('action.clone')}</button>
                 <button class="action-btn delete-btn" data-id="${entry.id}">${t('action.delete')}</button>
             `;
 
@@ -3916,6 +3996,9 @@
                     if (target.classList.contains('edit-btn')) {
                         const id = parseInt(target.getAttribute('data-id'));
                         showEditForm(id);
+                    } else if (target.classList.contains('clone-btn')) {
+                        const id = parseInt(target.getAttribute('data-id'));
+                        cloneEntry(id);
                     } else if (target.classList.contains('delete-btn') && !target.classList.contains('delete-project-btn') && !target.classList.contains('delete-task-type-btn') && !target.classList.contains('modal-delete-project-btn')) {
                         const id = parseInt(target.getAttribute('data-id'));
                         openConfirmDialog(t('msg.confirmDeleteEntry'), () => deleteEntry(id));
