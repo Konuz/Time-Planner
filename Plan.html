@@ -635,10 +635,17 @@
         }
 
         .timer-btn-success {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background: #28a745;
             color: white;
             margin-top: 8px;
             width: 100%;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .timer-btn-success:hover {
+            background: #218838;
+            opacity: 1;
         }
 
         .timer-task-input {
@@ -912,6 +919,435 @@
 
             .minimized-icon {
                 font-size: 20px;
+            }
+        }
+
+        /* ===== TODO WIDGET STYLES ===== */
+        .todo-widget {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 350px;
+            min-width: 300px;
+            max-width: 700px;
+            background: var(--bg-lighter);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 40px);
+            will-change: transform;
+            transition: var(--transition);
+        }
+
+        .todo-widget.no-transition {
+            transition: none !important;
+        }
+
+        .todo-widget:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .todo-header {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            padding: 8px 16px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .todo-icon {
+            font-size: 20px;
+        }
+
+        .todo-title {
+            flex: 1;
+            font-weight: 700;
+            color: white;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .todo-minimize-btn {
+            background: none;
+            border: none;
+            color: white;
+            width: 24px;
+            min-width: 24px;
+            max-width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            margin-left: auto;
+            margin-right: 8px;
+            overflow: hidden;
+        }
+
+        .todo-minimize-btn:hover {
+            opacity: 0.7;
+        }
+
+        .todo-content {
+            padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            min-height: 0;
+            scrollbar-gutter: stable;
+        }
+
+        .todo-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .todo-content::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .todo-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .todo-content::-webkit-scrollbar-thumb:hover {
+            background: var(--text-color);
+        }
+
+        .todo-add-form {
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #todo-description {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-medium);
+            color: var(--text-light);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        #todo-description:focus {
+            outline: none;
+            border-color: #66BB6A;
+        }
+
+        #todo-priority {
+            padding: 8px 40px 8px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-medium);
+            color: var(--text-light);
+            font-size: 14px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        #todo-date {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-medium);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .todo-add-form label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .todo-add-form label input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .todo-form-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        #add-todo-btn {
+            flex: 1;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: opacity 0.2s ease;
+        }
+
+        #add-todo-btn:hover {
+            opacity: 0.8;
+        }
+
+        .delete-all-btn {
+            flex: 1;
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s ease;
+        }
+
+        .delete-all-btn:hover {
+            background: #c82333;
+        }
+
+        .todo-section {
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .todo-section summary {
+            background: var(--bg-medium);
+            padding: 12px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 14px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .todo-section summary:hover {
+            background: var(--bg-light);
+        }
+
+        .todo-list {
+            padding: 10px;
+            background: var(--bg-dark);
+            min-height: 50px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: stretch;
+            background: var(--bg-medium);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            cursor: grab;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .todo-item:hover {
+            background: var(--bg-lighter);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .todo-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .todo-item.drag-over {
+            border-top: 3px solid #66BB6A;
+        }
+
+        .todo-priority-flag {
+            width: 6px;
+            min-width: 6px;
+            flex-shrink: 0;
+        }
+
+        .priority-high {
+            background: #dc3545;
+        }
+
+        .priority-medium {
+            background: #ffc107;
+        }
+
+        .priority-low {
+            background: #28a745;
+        }
+
+        .todo-content-text {
+            flex: 1;
+            padding: 12px;
+            min-width: 0;
+        }
+
+        .todo-description {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+
+        .todo-date {
+            color: var(--text-color);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .overdue-icon {
+            color: #dc3545;
+            font-size: 14px;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+            align-items: center;
+        }
+
+        .todo-btn {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .todo-btn:hover {
+            opacity: 0.8;
+        }
+
+        .todo-success {
+            background: #28a745;
+        }
+
+        .todo-success:hover {
+            background: #218838;
+        }
+
+        .todo-cancel {
+            background: #dc3545;
+        }
+
+        .todo-cancel:hover {
+            background: #c82333;
+        }
+
+        .todo-move-pomodoro {
+            background: #1976d2;
+        }
+
+        .todo-move-pomodoro:hover {
+            background: #1565c0;
+        }
+
+        .todo-minimized {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            will-change: transform;
+        }
+
+        .todo-minimized:hover {
+            opacity: 0.9;
+        }
+
+        .todo-minimized.no-transition {
+            transition: none !important;
+        }
+
+        .minimized-count {
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .minimized-icon {
+            color: white;
+            font-size: 24px;
+            margin-top: 4px;
+        }
+
+        .todo-empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-color);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .todo-widget {
+                width: 300px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .todo-minimized {
+                top: 10px;
+                left: 10px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .minimized-count {
+                font-size: 14px;
+            }
+
+            .minimized-icon {
+                font-size: 18px;
+            }
+
+            .todo-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
             }
         }
 
@@ -1509,7 +1945,7 @@
                 <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer zadania">
-                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✅</button>
+                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center; font-size: 18px;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✓</button>
                 </div>
             </div>
 
@@ -1567,6 +2003,72 @@
     <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;" role="button" aria-label="Przywróć timer Pomodoro" tabindex="0">
         <span class="minimized-timer" id="minimized-timer" aria-live="off">30:00</span>
         <span class="minimized-icon" aria-hidden="true">🍅</span>
+    </div>
+
+    <!-- TODO Widget -->
+    <div id="todo-widget" class="todo-widget" role="region" aria-label="Lista zadań" style="display: none;">
+        <!-- Resize Handles -->
+        <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-e" data-direction="e" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-w" data-direction="w" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-ne" data-direction="ne" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-nw" data-direction="nw" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-se" data-direction="se" aria-hidden="true"></div>
+        <div class="resize-handle resize-handle-sw" data-direction="sw" aria-hidden="true"></div>
+
+        <div id="todo-header" class="todo-header">
+            <span class="todo-icon" aria-hidden="true">✓</span>
+            <span class="todo-title" data-i18n="todo.title">ZADANIA</span>
+            <button id="todo-minimize" class="todo-minimize-btn" aria-label="Minimalizuj listę zadań">−</button>
+        </div>
+
+        <div id="todo-content" class="todo-content">
+            <!-- Formularz dodawania zadania -->
+            <div class="todo-add-form">
+                <input type="text" id="todo-description" placeholder="Opis zadania..." data-i18n-placeholder="todo.descriptionPlaceholder" aria-label="Opis zadania">
+                <select id="todo-priority" aria-label="Priorytet zadania">
+                    <option value="high" data-i18n="todo.priorityHigh">Wysoki</option>
+                    <option value="medium" selected data-i18n="todo.priorityMedium">Średni</option>
+                    <option value="low" data-i18n="todo.priorityLow">Niski</option>
+                </select>
+                <input type="date" id="todo-date" aria-label="Termin zadania">
+                <label>
+                    <input type="checkbox" id="todo-no-date">
+                    <span data-i18n="todo.noDate">Bez daty</span>
+                </label>
+                <div class="todo-form-buttons">
+                    <button id="add-todo-btn" data-i18n="todo.addTask">Dodaj zadanie</button>
+                    <button id="delete-all-todos" class="delete-all-btn" data-i18n="todo.deleteAll">Usuń wszystkie</button>
+                </div>
+            </div>
+
+            <!-- Sekcja: Zadania z datą -->
+            <details class="todo-section" id="todo-with-dates" open>
+                <summary>
+                    <span>📅 <span data-i18n="todo.withDates">Zadania z terminem</span> (<span id="todo-dated-count">0</span>)</span>
+                </summary>
+                <div id="todo-dated-list" class="todo-list" data-list-type="dated">
+                    <div class="todo-empty-state" data-i18n="todo.noDatedTasks">Brak zadań z terminem</div>
+                </div>
+            </details>
+
+            <!-- Sekcja: Zadania bez daty -->
+            <details class="todo-section" id="todo-without-dates" open>
+                <summary>
+                    <span>📋 <span data-i18n="todo.withoutDates">Zadania bez terminu</span> (<span id="todo-undated-count">0</span>)</span>
+                </summary>
+                <div id="todo-undated-list" class="todo-list" data-list-type="undated">
+                    <div class="todo-empty-state" data-i18n="todo.noUndatedTasks">Brak zadań bez terminu</div>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- Minimized TODO Icon -->
+    <div id="todo-minimized" class="todo-minimized" role="button" aria-label="Przywróć listę zadań" tabindex="0">
+        <span class="minimized-count" id="minimized-todo-count" aria-live="off">0</span>
+        <span class="minimized-icon" aria-hidden="true">✓</span>
     </div>
 
     <script>
@@ -1634,6 +2136,19 @@
         let startTop = 0;
         let startWidth = 0;
         let startHeight = 0;
+
+        // TODO Widget Variables
+        const TODO_STORAGE_KEY = 'todo-tasks';
+        let todoTasks = []; // { id, description, priority, dueDate, createdAt, order }
+        let isDraggingTodo = false;
+        let isDraggingTodoMinimized = false;
+        let todoMinimizedDragMoved = false;
+        let isResizingTodo = false;
+        let resizeDirectionTodo = null;
+        let draggedTodoElement = null;
+        let draggedTodoId = null;
+        let draggedFromList = null;
+        let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
 
         const domCache = {
             // Form elements
@@ -1899,7 +2414,32 @@
                 'month.december': 'Grudzień',
                 'action.edit': 'Edytuj',
                 'action.clone': 'Klonuj',
-                'action.delete': 'Usuń'
+                'action.delete': 'Usuń',
+
+                // Todo widget
+                'todo.title': 'ZADANIA',
+                'todo.descriptionPlaceholder': 'Opis zadania...',
+                'todo.priorityHigh': 'Wysoki',
+                'todo.priorityMedium': 'Średni',
+                'todo.priorityLow': 'Niski',
+                'todo.noDate': 'Bez daty',
+                'todo.addTask': 'Dodaj zadanie',
+                'todo.deleteAll': 'Usuń wszystkie',
+                'todo.withDates': 'Zadania z terminem',
+                'todo.withoutDates': 'Zadania bez terminu',
+                'todo.noDatedTasks': 'Brak zadań z terminem',
+                'todo.noUndatedTasks': 'Brak zadań bez terminu',
+                'todo.complete': 'Zakończ sukcesem',
+                'todo.cancel': 'Anuluj',
+                'todo.moveToPomodoro': 'Przenieś do Pomodoro',
+                'todo.confirmCancel': 'Czy na pewno anulować to zadanie?',
+                'todo.confirmDeleteAll': 'Czy na pewno usunąć wszystkie zadania?',
+                'todo.createEntry': 'Czy wprowadzić nowy wpis czasu pracy?',
+                'todo.movedToPomodoro': 'Zadanie przeniesione do Pomodoro',
+                'todo.overdue': 'Przeterminowane',
+                'todo.emptyDescription': 'Proszę wprowadzić opis zadania',
+                'todo.selectDate': 'Wybierz datę',
+                'todo.noTasks': 'Brak zadań do usunięcia'
             },
             en: {
                 'app.title': 'TIME PLANNER',
@@ -2064,7 +2604,32 @@
                 // Actions
                 'action.edit': 'Edit',
                 'action.clone': 'Clone',
-                'action.delete': 'Delete'
+                'action.delete': 'Delete',
+
+                // Todo widget
+                'todo.title': 'TASKS',
+                'todo.descriptionPlaceholder': 'Task description...',
+                'todo.priorityHigh': 'High',
+                'todo.priorityMedium': 'Medium',
+                'todo.priorityLow': 'Low',
+                'todo.noDate': 'No date',
+                'todo.addTask': 'Add task',
+                'todo.deleteAll': 'Delete all',
+                'todo.withDates': 'Tasks with deadline',
+                'todo.withoutDates': 'Tasks without deadline',
+                'todo.noDatedTasks': 'No tasks with deadline',
+                'todo.noUndatedTasks': 'No tasks without deadline',
+                'todo.complete': 'Complete',
+                'todo.cancel': 'Cancel',
+                'todo.moveToPomodoro': 'Move to Pomodoro',
+                'todo.confirmCancel': 'Are you sure you want to cancel this task?',
+                'todo.confirmDeleteAll': 'Are you sure you want to delete all tasks?',
+                'todo.createEntry': 'Create new time entry?',
+                'todo.movedToPomodoro': 'Task moved to Pomodoro',
+                'todo.overdue': 'Overdue',
+                'todo.emptyDescription': 'Please enter task description',
+                'todo.selectDate': 'Select date',
+                'todo.noTasks': 'No tasks to delete'
             }
         };
 
@@ -2114,6 +2679,15 @@
                 element.title = t(key);
             });
 
+            // Update placeholder attribute for inputs
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                element.placeholder = t(key);
+            });
+
+            // Update Todo tooltips without re-rendering
+            updateTodoTooltips();
+
             // Refresh displays that depend on language
             if (typeof renderEntries === 'function') {
                 renderEntries();
@@ -2132,6 +2706,25 @@
             }
 
             refreshValidationMessages();
+        }
+
+        function updateTodoTooltips() {
+            // Update tooltips for all todo action buttons
+            document.querySelectorAll('.todo-success').forEach(btn => {
+                btn.setAttribute('title', t('todo.complete') || 'Zakończ sukcesem');
+                btn.setAttribute('aria-label', t('todo.complete') || 'Zakończ sukcesem');
+            });
+            document.querySelectorAll('.todo-cancel').forEach(btn => {
+                btn.setAttribute('title', t('todo.cancel') || 'Anuluj');
+                btn.setAttribute('aria-label', t('todo.cancel') || 'Anuluj');
+            });
+            document.querySelectorAll('.todo-move-pomodoro').forEach(btn => {
+                btn.setAttribute('title', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+                btn.setAttribute('aria-label', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+            });
+            document.querySelectorAll('.overdue-icon').forEach(icon => {
+                icon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+            });
         }
 
         function changeLanguage() {
@@ -2825,6 +3418,14 @@
             saveEntries();
             renderEntries();
             updateSummary();
+
+            // Delete pending Todo task if this entry was created from a Todo
+            if (pendingTodoForEntry) {
+                todoTasks = todoTasks.filter(t => t.id !== pendingTodoForEntry);
+                pendingTodoForEntry = null;
+                saveTodoTasks();
+                renderTodoTasks();
+            }
         }
 
         function cloneEntry(id) {
@@ -3864,6 +4465,206 @@
                 isDragging = false;
                 isDraggingMinimized = false;
             });
+
+            // ===== TODO WIDGET DRAG AND RESIZE =====
+            const todoWidget = document.getElementById('todo-widget');
+            const todoHeader = document.getElementById('todo-header');
+            const todoResizeHandles = todoWidget.querySelectorAll('.resize-handle');
+            const todoMinimized = document.getElementById('todo-minimized');
+
+            // Todo header drag (mouse)
+            todoHeader.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('todo-minimize-btn')) {
+                    return;
+                }
+
+                isDraggingTodo = true;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                const rect = todoWidget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                todoWidget.classList.add('no-transition');
+                e.preventDefault();
+            });
+
+            // Todo resize handles
+            todoResizeHandles.forEach(handle => {
+                handle.addEventListener('mousedown', function(e) {
+                    isResizingTodo = true;
+                    resizeDirectionTodo = this.getAttribute('data-direction');
+                    startX = e.clientX;
+                    startY = e.clientY;
+
+                    const rect = todoWidget.getBoundingClientRect();
+                    startWidth = rect.width;
+                    startHeight = rect.height;
+                    startLeft = rect.left;
+                    startTop = rect.top;
+
+                    todoWidget.classList.add('no-transition');
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            // Todo minimized drag (mouse)
+            todoMinimized.addEventListener('mousedown', function(e) {
+                isDraggingTodoMinimized = true;
+                todoMinimizedDragMoved = false;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                const rect = todoMinimized.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                todoMinimized.classList.add('no-transition');
+                e.preventDefault();
+            });
+
+            // Extend mousemove to handle Todo
+            document.addEventListener('mousemove', function(e) {
+                if (isDraggingTodo) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+
+                    todoWidget.style.left = (startLeft + deltaX) + 'px';
+                    todoWidget.style.top = (startTop + deltaY) + 'px';
+                    todoWidget.style.right = 'auto';
+                    todoWidget.style.bottom = 'auto';
+                } else if (isDraggingTodoMinimized) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+
+                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                        todoMinimizedDragMoved = true;
+                    }
+
+                    todoMinimized.style.left = (startLeft + deltaX) + 'px';
+                    todoMinimized.style.top = (startTop + deltaY) + 'px';
+                    todoMinimized.style.right = 'auto';
+                    todoMinimized.style.bottom = 'auto';
+                } else if (isResizingTodo) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    let newWidth = startWidth;
+                    let newHeight = startHeight;
+                    let newLeft = startLeft;
+                    let newTop = startTop;
+
+                    if (resizeDirectionTodo.includes('e')) {
+                        newWidth = Math.max(300, Math.min(700, startWidth + deltaX));
+                    }
+                    if (resizeDirectionTodo.includes('w')) {
+                        const proposedWidth = startWidth - deltaX;
+                        newWidth = Math.max(300, Math.min(700, proposedWidth));
+                        const widthDiff = startWidth - newWidth;
+                        newLeft = startLeft + widthDiff;
+                    }
+                    if (resizeDirectionTodo.includes('s')) {
+                        newHeight = Math.max(400, startHeight + deltaY);
+                    }
+                    if (resizeDirectionTodo.includes('n')) {
+                        const proposedHeight = startHeight - deltaY;
+                        newHeight = Math.max(400, proposedHeight);
+                        const heightDiff = startHeight - newHeight;
+                        newTop = startTop + heightDiff;
+                    }
+
+                    todoWidget.style.width = newWidth + 'px';
+                    todoWidget.style.height = newHeight + 'px';
+                    todoWidget.style.left = newLeft + 'px';
+                    todoWidget.style.top = newTop + 'px';
+                    todoWidget.style.right = 'auto';
+                    todoWidget.style.bottom = 'auto';
+                }
+            });
+
+            // Extend mouseup to handle Todo
+            document.addEventListener('mouseup', function() {
+                if (isDraggingTodo || isResizingTodo) {
+                    todoWidget.classList.remove('no-transition');
+                }
+                if (isDraggingTodoMinimized) {
+                    todoMinimized.classList.remove('no-transition');
+                }
+                isDraggingTodo = false;
+                isDraggingTodoMinimized = false;
+                isResizingTodo = false;
+                resizeDirectionTodo = null;
+            });
+
+            // Todo touch support
+            todoHeader.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('todo-minimize-btn')) {
+                    return;
+                }
+
+                isDraggingTodo = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+
+                const rect = todoWidget.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                todoWidget.classList.add('no-transition');
+            });
+
+            todoMinimized.addEventListener('touchstart', function(e) {
+                isDraggingTodoMinimized = true;
+                todoMinimizedDragMoved = false;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+
+                const rect = todoMinimized.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                todoMinimized.classList.add('no-transition');
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (isDraggingTodo) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+
+                    todoWidget.style.left = (startLeft + deltaX) + 'px';
+                    todoWidget.style.top = (startTop + deltaY) + 'px';
+                    todoWidget.style.right = 'auto';
+                    todoWidget.style.bottom = 'auto';
+                } else if (isDraggingTodoMinimized) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+
+                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                        todoMinimizedDragMoved = true;
+                    }
+
+                    todoMinimized.style.left = (startLeft + deltaX) + 'px';
+                    todoMinimized.style.top = (startTop + deltaY) + 'px';
+                    todoMinimized.style.right = 'auto';
+                    todoMinimized.style.bottom = 'auto';
+                }
+            });
+
+            document.addEventListener('touchend', function() {
+                if (isDraggingTodo) {
+                    todoWidget.classList.remove('no-transition');
+                }
+                if (isDraggingTodoMinimized) {
+                    todoMinimized.classList.remove('no-transition');
+                }
+                isDraggingTodo = false;
+                isDraggingTodoMinimized = false;
+            });
         }
 
         function toggleMinimize() {
@@ -3877,6 +4678,450 @@
                 widget.style.display = 'none';
                 minimized.style.display = 'flex';
             }
+        }
+
+        // ===== TODO WIDGET FUNCTIONS =====
+
+        function loadTodoTasks() {
+            const stored = localStorage.getItem(TODO_STORAGE_KEY);
+            if (stored) {
+                try {
+                    todoTasks = JSON.parse(stored);
+                } catch (e) {
+                    console.error('Error loading TODO tasks:', e);
+                    todoTasks = [];
+                }
+            }
+            renderTodoTasks();
+        }
+
+        function saveTodoTasks() {
+            safeLocalStorageSave(TODO_STORAGE_KEY, todoTasks, 300);
+        }
+
+        function addTodoTask() {
+            const description = document.getElementById('todo-description').value.trim();
+            const priority = document.getElementById('todo-priority').value;
+            const dateInput = document.getElementById('todo-date').value;
+            const noDate = document.getElementById('todo-no-date').checked;
+
+            if (!description) {
+                showNotification(t('todo.emptyDescription') || 'Proszę wprowadzić opis zadania');
+                return;
+            }
+
+            if (!noDate && !dateInput) {
+                showNotification(t('todo.selectDate') || 'Wybierz datę');
+                return;
+            }
+
+            const dueDate = noDate ? null : (dateInput || null);
+
+            const newTask = {
+                id: Date.now().toString(),
+                description: description,
+                priority: priority,
+                dueDate: dueDate,
+                createdAt: new Date().toISOString(),
+                order: todoTasks.length
+            };
+
+            // Insert with auto-sorting for dated tasks
+            if (dueDate) {
+                // Find insertion position based on date
+                const insertIndex = todoTasks.findIndex(task => {
+                    return task.dueDate && task.dueDate > dueDate;
+                });
+
+                if (insertIndex === -1) {
+                    todoTasks.push(newTask);
+                } else {
+                    todoTasks.splice(insertIndex, 0, newTask);
+                }
+
+                // Reorder all tasks
+                todoTasks.forEach((task, index) => {
+                    task.order = index;
+                });
+            } else {
+                todoTasks.push(newTask);
+            }
+
+            saveTodoTasks();
+            renderTodoTasks();
+
+            // Clear form
+            document.getElementById('todo-description').value = '';
+            document.getElementById('todo-date').value = '';
+            document.getElementById('todo-no-date').checked = false;
+            document.getElementById('todo-priority').value = 'medium';
+        }
+
+        function deleteTodoTask(id) {
+            const task = todoTasks.find(t => t.id === id);
+            if (!task) return;
+
+            const confirmMessage = t('todo.confirmCancel') || 'Czy na pewno anulować to zadanie?';
+            openConfirmDialog(confirmMessage,
+                function() {
+                    todoTasks = todoTasks.filter(t => t.id !== id);
+                    saveTodoTasks();
+                    renderTodoTasks();
+                },
+                null
+            );
+        }
+
+        function deleteAllTodoTasks() {
+            if (todoTasks.length === 0) {
+                showNotification(t('todo.noTasks') || 'Brak zadań do usunięcia');
+                return;
+            }
+
+            const confirmMessage = t('todo.confirmDeleteAll') || 'Czy na pewno usunąć wszystkie zadania?';
+            openConfirmDialog(confirmMessage,
+                function() {
+                    todoTasks = [];
+                    saveTodoTasks();
+                    renderTodoTasks();
+                },
+                null
+            );
+        }
+
+        function renderTodoTasks() {
+            const datedList = document.getElementById('todo-dated-list');
+            const undatedList = document.getElementById('todo-undated-list');
+
+            // Clear lists
+            datedList.innerHTML = '';
+            undatedList.innerHTML = '';
+
+            // Separate tasks
+            const datedTasks = todoTasks.filter(task => task.dueDate);
+            const undatedTasks = todoTasks.filter(task => !task.dueDate);
+
+            // Render dated tasks
+            if (datedTasks.length === 0) {
+                datedList.innerHTML = `<div class="todo-empty-state" data-i18n="todo.noDatedTasks">Brak zadań z terminem</div>`;
+            } else {
+                datedTasks.forEach(task => {
+                    datedList.appendChild(createTodoItem(task));
+                });
+            }
+
+            // Render undated tasks
+            if (undatedTasks.length === 0) {
+                undatedList.innerHTML = `<div class="todo-empty-state" data-i18n="todo.noUndatedTasks">Brak zadań bez terminu</div>`;
+            } else {
+                undatedTasks.forEach(task => {
+                    undatedList.appendChild(createTodoItem(task));
+                });
+            }
+
+            updateTodoCounts();
+            updateUILanguage();
+        }
+
+        function createTodoItem(task) {
+            const div = document.createElement('div');
+            div.className = 'todo-item';
+            div.setAttribute('data-todo-id', task.id);
+            div.setAttribute('data-priority', task.priority);
+            div.setAttribute('draggable', 'true');
+
+            const priorityFlag = document.createElement('div');
+            priorityFlag.className = `todo-priority-flag priority-${task.priority}`;
+
+            const contentText = document.createElement('div');
+            contentText.className = 'todo-content-text';
+
+            const description = document.createElement('div');
+            description.className = 'todo-description';
+            description.textContent = task.description;
+
+            contentText.appendChild(description);
+
+            if (task.dueDate) {
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'todo-date';
+
+                if (isOverdue(task.dueDate)) {
+                    const overdueIcon = document.createElement('span');
+                    overdueIcon.className = 'overdue-icon';
+                    overdueIcon.textContent = '⚠️';
+                    overdueIcon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+                    dateDiv.appendChild(overdueIcon);
+                }
+
+                const formattedDate = formatDate(task.dueDate);
+                const dateText = document.createTextNode(formattedDate);
+                dateDiv.appendChild(dateText);
+                contentText.appendChild(dateDiv);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'todo-actions';
+
+            const successBtn = document.createElement('button');
+            successBtn.className = 'todo-btn todo-success';
+            successBtn.textContent = '✓';
+            successBtn.setAttribute('title', t('todo.complete') || 'Zakończ sukcesem');
+            successBtn.setAttribute('aria-label', t('todo.complete') || 'Zakończ sukcesem');
+            successBtn.onclick = () => handleTodoSuccess(task.id);
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'todo-btn todo-cancel';
+            cancelBtn.textContent = '✕';
+            cancelBtn.setAttribute('title', t('todo.cancel') || 'Anuluj');
+            cancelBtn.setAttribute('aria-label', t('todo.cancel') || 'Anuluj');
+            cancelBtn.onclick = () => deleteTodoTask(task.id);
+
+            const moveBtn = document.createElement('button');
+            moveBtn.className = 'todo-btn todo-move-pomodoro';
+            moveBtn.textContent = '→';
+            moveBtn.setAttribute('title', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+            moveBtn.setAttribute('aria-label', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+            moveBtn.onclick = () => handleTodoMoveToPomodoro(task.id);
+
+            actions.appendChild(successBtn);
+            actions.appendChild(cancelBtn);
+            actions.appendChild(moveBtn);
+
+            div.appendChild(priorityFlag);
+            div.appendChild(contentText);
+            div.appendChild(actions);
+
+            return div;
+        }
+
+        function updateTodoCounts() {
+            const datedCount = todoTasks.filter(t => t.dueDate).length;
+            const undatedCount = todoTasks.filter(t => !t.dueDate).length;
+            const totalCount = todoTasks.length;
+
+            document.getElementById('todo-dated-count').textContent = datedCount;
+            document.getElementById('todo-undated-count').textContent = undatedCount;
+            document.getElementById('minimized-todo-count').textContent = totalCount;
+        }
+
+        function isOverdue(dueDate) {
+            if (!dueDate) return false;
+            const today = new Date().toISOString().split('T')[0];
+            return dueDate < today;
+        }
+
+        function toggleTodoMinimize() {
+            const widget = document.getElementById('todo-widget');
+            const minimized = document.getElementById('todo-minimized');
+
+            if (widget.style.display === 'none') {
+                widget.style.display = 'flex';
+                minimized.style.display = 'none';
+            } else {
+                widget.style.display = 'none';
+                minimized.style.display = 'flex';
+            }
+        }
+
+        function handleTodoSuccess(id) {
+            const task = todoTasks.find(t => t.id === id);
+            if (!task) return;
+
+            const confirmMessage = t('todo.createEntry') || 'Czy wprowadzić nowy wpis czasu pracy?';
+
+            openConfirmDialog(confirmMessage,
+                function() {
+                    // Fill task number field in main form
+                    const taskNumberInput = document.getElementById('task-number');
+                    if (taskNumberInput) {
+                        taskNumberInput.value = task.description;
+                        taskNumberInput.focus();
+                    }
+
+                    // Store the task ID to delete after entry is created
+                    pendingTodoForEntry = id;
+
+                    // Scroll to form
+                    const entryForm = document.getElementById('section-entry-form');
+                    if (entryForm) {
+                        entryForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                },
+                function() {
+                    // Just delete the task
+                    todoTasks = todoTasks.filter(t => t.id !== id);
+                    saveTodoTasks();
+                    renderTodoTasks();
+                }
+            );
+        }
+
+        function handleTodoMoveToPomodoro(id) {
+            const task = todoTasks.find(t => t.id === id);
+            if (!task) return;
+
+            // Copy description to Pomodoro task number field
+            const timerTaskInput = document.getElementById('timer-task-number');
+            if (timerTaskInput) {
+                timerTaskInput.value = task.description;
+                timerTaskInput.focus();
+            }
+
+            // Show notification
+            const message = t('todo.movedToPomodoro') || 'Zadanie przeniesione do Pomodoro';
+            showNotification(message);
+
+            // Note: Task is NOT deleted from todo list
+        }
+
+        function handleNoDateToggle() {
+            const dateInput = document.getElementById('todo-date');
+            const noDateCheckbox = document.getElementById('todo-no-date');
+
+            if (noDateCheckbox.checked) {
+                dateInput.style.display = 'none';
+                dateInput.value = '';
+            } else {
+                dateInput.style.display = '';
+            }
+        }
+
+        function initTodoDragDrop() {
+            const datedList = document.getElementById('todo-dated-list');
+            const undatedList = document.getElementById('todo-undated-list');
+
+            // Add drag and drop listeners to both lists
+            [datedList, undatedList].forEach(list => {
+                list.addEventListener('dragstart', handleTodoDragStart);
+                list.addEventListener('dragover', handleTodoDragOver);
+                list.addEventListener('drop', handleTodoDrop);
+                list.addEventListener('dragend', handleTodoDragEnd);
+                list.addEventListener('dragenter', handleTodoDragEnter);
+                list.addEventListener('dragleave', handleTodoDragLeave);
+            });
+        }
+
+        function handleTodoDragStart(e) {
+            const todoItem = e.target.closest('.todo-item');
+            if (!todoItem) return;
+
+            draggedTodoElement = todoItem;
+            draggedTodoId = todoItem.getAttribute('data-todo-id');
+            draggedFromList = todoItem.parentElement.getAttribute('data-list-type');
+
+            todoItem.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', todoItem.innerHTML);
+        }
+
+        function handleTodoDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            const list = e.currentTarget;
+            const listType = list.getAttribute('data-list-type');
+            const afterElement = getDragAfterElement(list, e.clientY);
+
+            if (afterElement == null) {
+                if (list.children.length === 0 || !list.querySelector('.todo-item')) {
+                    // Empty list or only has empty state
+                    list.innerHTML = '';
+                }
+                if (draggedTodoElement) {
+                    list.appendChild(draggedTodoElement);
+                }
+            } else {
+                list.insertBefore(draggedTodoElement, afterElement);
+            }
+        }
+
+        function handleTodoDragEnter(e) {
+            const todoItem = e.target.closest('.todo-item');
+            if (todoItem && todoItem !== draggedTodoElement) {
+                todoItem.classList.add('drag-over');
+            }
+        }
+
+        function handleTodoDragLeave(e) {
+            const todoItem = e.target.closest('.todo-item');
+            if (todoItem) {
+                todoItem.classList.remove('drag-over');
+            }
+        }
+
+        function handleTodoDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const list = e.currentTarget;
+            const listType = list.getAttribute('data-list-type');
+
+            if (!draggedTodoId) return;
+
+            // Remove drag-over class from all items
+            list.querySelectorAll('.todo-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+
+            // Update task's dueDate based on which list it was dropped into
+            const task = todoTasks.find(t => t.id === draggedTodoId);
+            if (task) {
+                if (listType === 'undated') {
+                    // Moved to undated section
+                    task.dueDate = null;
+                } else if (listType === 'dated') {
+                    // Moved to dated section - if it doesn't have a date, set it to today
+                    if (!task.dueDate) {
+                        task.dueDate = new Date().toISOString().split('T')[0];
+                    }
+                }
+
+                // Update order based on new position in list
+                const newOrder = [];
+                list.querySelectorAll('.todo-item').forEach((item, index) => {
+                    const id = item.getAttribute('data-todo-id');
+                    const t = todoTasks.find(task => task.id === id);
+                    if (t) {
+                        t.order = index;
+                        newOrder.push(t);
+                    }
+                });
+
+                saveTodoTasks();
+                renderTodoTasks();
+            }
+        }
+
+        function handleTodoDragEnd(e) {
+            const todoItem = e.target.closest('.todo-item');
+            if (todoItem) {
+                todoItem.classList.remove('dragging');
+            }
+
+            // Clear all drag-over classes
+            document.querySelectorAll('.todo-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+
+            draggedTodoElement = null;
+            draggedTodoId = null;
+            draggedFromList = null;
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.todo-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
         function initPomodoroTimer() {
@@ -4127,6 +5372,52 @@
             document.getElementById('export-button').addEventListener('click', exportData);
         }
 
+        function setupTodoHandlers() {
+            // Add task button
+            const addTodoBtn = document.getElementById('add-todo-btn');
+            if (addTodoBtn) {
+                addTodoBtn.addEventListener('click', addTodoTask);
+            }
+
+            // Delete all button
+            const deleteAllBtn = document.getElementById('delete-all-todos');
+            if (deleteAllBtn) {
+                deleteAllBtn.addEventListener('click', deleteAllTodoTasks);
+            }
+
+            // Minimize button
+            const todoMinimizeBtn = document.getElementById('todo-minimize');
+            if (todoMinimizeBtn) {
+                todoMinimizeBtn.addEventListener('click', toggleTodoMinimize);
+            }
+
+            // Minimized widget click
+            const todoMinimized = document.getElementById('todo-minimized');
+            if (todoMinimized) {
+                todoMinimized.addEventListener('click', function(e) {
+                    if (!todoMinimizedDragMoved) {
+                        toggleTodoMinimize();
+                    }
+                });
+
+                todoMinimized.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (!todoMinimizedDragMoved) {
+                            toggleTodoMinimize();
+                        }
+                    }
+                });
+            }
+
+            // No date checkbox
+            const noDateCheckbox = document.getElementById('todo-no-date');
+            if (noDateCheckbox) {
+                noDateCheckbox.addEventListener('change', handleNoDateToggle);
+                handleNoDateToggle(); // Set initial state
+            }
+        }
+
         function initApp() {
             initDOMCache();
             loadEntries();
@@ -4138,6 +5429,12 @@
             renderTaskTypeFilters();
             initSectionToggles();
             initPomodoroTimer();
+
+            // Initialize TODO widget
+            loadTodoTasks();
+            initTodoDragDrop();
+            setupTodoHandlers();
+
             setupEventDelegation();
             setupFormHandlers();
             setupFilterHandlers();
