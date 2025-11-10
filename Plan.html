@@ -53,6 +53,11 @@
             transition: none !important;
         }
 
+        /* Hide entire container during preload to prevent any flashing */
+        .preload .container {
+            opacity: 0 !important;
+        }
+
         /* Hide widgets during initial page load to prevent flashing */
         .preload .pomodoro-widget,
         .preload #pomodoro-widget,
@@ -1755,7 +1760,7 @@
 </head>
 <body class="preload">
     <script>
-        // Set initial language values immediately to prevent flashing
+        // Set initial values immediately to prevent flashing
         // This script runs synchronously before any DOM rendering
         (function() {
             try {
@@ -1766,19 +1771,29 @@
                 window.__INITIAL_LANG__ = 'en';
             }
 
-            // Restore scroll position to prevent jumping to top on refresh
+            // Load section visibility state
+            try {
+                const stored = localStorage.getItem('section-visibility');
+                window.__SECTION_VISIBILITY__ = stored ? JSON.parse(stored) : {
+                    'entry-form': true,
+                    'entries-list': true,
+                    'project-management': true,
+                    'summary': true
+                };
+            } catch (e) {
+                window.__SECTION_VISIBILITY__ = {
+                    'entry-form': true,
+                    'entries-list': true,
+                    'project-management': true,
+                    'summary': true
+                };
+            }
+
+            // Restore scroll position IMMEDIATELY (synchronously)
             try {
                 const scrollData = sessionStorage.getItem('scrollPosition');
                 if (scrollData) {
-                    const { x, y } = JSON.parse(scrollData);
-                    // Restore scroll as soon as possible
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', function() {
-                            window.scrollTo(x, y);
-                        });
-                    } else {
-                        window.scrollTo(x, y);
-                    }
+                    window.__SCROLL_POS__ = JSON.parse(scrollData);
                 }
             } catch (e) {
                 // Ignore scroll restoration errors
@@ -1819,18 +1834,30 @@
                 <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;" data-i18n="section.visibility">Widoczność sekcji:</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;" role="group" aria-label="Przełączniki widoczności sekcji">
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entry-form" checked aria-label="Pokaż/ukryj sekcję dodawania wpisu">
+                        <input type="checkbox" id="toggle-entry-form" aria-label="Pokaż/ukryj sekcję dodawania wpisu">
                         <span style="margin-left: 8px;" data-i18n="section.addEntry">Dodaj nowy wpis</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entries-list" checked aria-label="Pokaż/ukryj listę wpisów">
+                        <input type="checkbox" id="toggle-entries-list" aria-label="Pokaż/ukryj listę wpisów">
                         <span style="margin-left: 8px;" data-i18n="section.entriesList">Lista wpisów</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-summary" checked aria-label="Pokaż/ukryj podsumowanie">
+                        <input type="checkbox" id="toggle-summary" aria-label="Pokaż/ukryj podsumowanie">
                         <span style="margin-left: 8px;" data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
+                <script>
+                    // Set checkbox states immediately from loaded data
+                    (function() {
+                        if (window.__SECTION_VISIBILITY__) {
+                            var vis = window.__SECTION_VISIBILITY__;
+                            ['entry-form', 'entries-list', 'summary'].forEach(function(name) {
+                                var cb = document.getElementById('toggle-' + name);
+                                if (cb) cb.checked = vis[name] !== false;
+                            });
+                        }
+                    })();
+                </script>
             </div>
         </section>
 
@@ -5990,12 +6017,29 @@
             appInitialized = true;
         }
 
-        document.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+
+            // Restore scroll position immediately after DOM is ready
+            if (window.__SCROLL_POS__) {
+                const scrollPos = window.__SCROLL_POS__;
+                // Force scroll restoration with multiple attempts
+                window.scrollTo(scrollPos.x, scrollPos.y);
+                requestAnimationFrame(function() {
+                    window.scrollTo(scrollPos.x, scrollPos.y);
+                });
+            }
+        });
 
         // Remove preload class only after both app is initialized and window is fully loaded
         window.addEventListener('load', function() {
             const removePreload = function() {
                 if (appInitialized) {
+                    // One more scroll restoration attempt before showing content
+                    if (window.__SCROLL_POS__) {
+                        window.scrollTo(window.__SCROLL_POS__.x, window.__SCROLL_POS__.y);
+                    }
+
                     document.body.classList.remove('preload');
                     if (typeof updatePomodoroDisplay === 'function') {
                         updatePomodoroDisplay();
