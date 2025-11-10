@@ -557,7 +557,11 @@
         }
 
         .pomodoro-content::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
+            background: var(--primary-color) !important;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color) !important;
         }
 
         .pomodoro-display {
@@ -948,6 +952,23 @@
             cursor: nesw-resize;
         }
 
+        /* Przesunięcie prawych uchwytów resize, żeby nie kolidowały ze scrollbarem */
+        .pomodoro-widget .resize-handle-e,
+        .todo-widget .resize-handle-e {
+            right: 8px;
+            width: 8px;
+        }
+
+        .pomodoro-widget .resize-handle-ne,
+        .todo-widget .resize-handle-ne {
+            right: 8px;
+        }
+
+        .pomodoro-widget .resize-handle-se,
+        .todo-widget .resize-handle-se {
+            right: 8px;
+        }
+
         @media (max-width: 768px) {
             .pomodoro-widget {
                 width: 280px;
@@ -1045,7 +1066,11 @@
         }
 
         .todo-content::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
+            background: var(--primary-color) !important;
+        }
+
+        .todo-content::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color) !important;
         }
 
         .todo-add-form {
@@ -1577,6 +1602,29 @@
             padding: 25px;
             overflow-y: auto;
             flex: 1;
+            scrollbar-gutter: stable;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color) !important;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color) !important;
         }
 
         .modal-footer {
