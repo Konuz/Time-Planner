@@ -5103,25 +5103,30 @@
 
             const priorityFlag = document.createElement('div');
             priorityFlag.className = `todo-priority-flag priority-${task.priority}`;
+            priorityFlag.setAttribute('draggable', 'false');
 
             const contentText = document.createElement('div');
             contentText.className = 'todo-content-text';
+            contentText.setAttribute('draggable', 'false');
 
             const description = document.createElement('div');
             description.className = 'todo-description';
             description.textContent = task.description;
+            description.setAttribute('draggable', 'false');
 
             contentText.appendChild(description);
 
             if (task.dueDate) {
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'todo-date';
+                dateDiv.setAttribute('draggable', 'false');
 
                 if (isOverdue(task.dueDate)) {
                     const overdueIcon = document.createElement('span');
                     overdueIcon.className = 'overdue-icon';
                     overdueIcon.textContent = '⚠️';
                     overdueIcon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+                    overdueIcon.setAttribute('draggable', 'false');
                     dateDiv.appendChild(overdueIcon);
                 }
 
@@ -5133,12 +5138,14 @@
 
             const actions = document.createElement('div');
             actions.className = 'todo-actions';
+            actions.setAttribute('draggable', 'false');
 
             const successBtn = document.createElement('button');
             successBtn.className = 'todo-btn todo-success';
             successBtn.textContent = '✓';
             successBtn.setAttribute('title', t('todo.complete') || 'Zakończ sukcesem');
             successBtn.setAttribute('aria-label', t('todo.complete') || 'Zakończ sukcesem');
+            successBtn.setAttribute('draggable', 'false');
             successBtn.onclick = () => handleTodoSuccess(task.id);
 
             const cancelBtn = document.createElement('button');
@@ -5146,6 +5153,7 @@
             cancelBtn.textContent = '✕';
             cancelBtn.setAttribute('title', t('todo.cancel') || 'Anuluj');
             cancelBtn.setAttribute('aria-label', t('todo.cancel') || 'Anuluj');
+            cancelBtn.setAttribute('draggable', 'false');
             cancelBtn.onclick = () => deleteTodoTask(task.id);
 
             const moveBtn = document.createElement('button');
@@ -5153,6 +5161,7 @@
             moveBtn.textContent = '→';
             moveBtn.setAttribute('title', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
             moveBtn.setAttribute('aria-label', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+            moveBtn.setAttribute('draggable', 'false');
             moveBtn.onclick = () => handleTodoMoveToPomodoro(task.id);
 
             actions.appendChild(successBtn);
