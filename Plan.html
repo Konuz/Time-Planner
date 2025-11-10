@@ -2986,8 +2986,8 @@
 
         // Constrain widget position and size to viewport boundaries
         function constrainToViewport(element, proposedLeft, proposedTop, proposedWidth, proposedHeight) {
-            const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
+            const viewportHeight = document.documentElement.clientHeight || window.innerHeight || 0;
 
             // Use provided dimensions or fallback to element's current dimensions
             const width = (typeof proposedWidth === 'number') ? proposedWidth : element.offsetWidth;
@@ -3016,7 +3016,7 @@
                 return;
             }
 
-            const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+            const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
             const left = Math.round(rect.left);
             const top = Math.round(rect.top);
             const right = viewportWidth ? Math.round(Math.max(0, viewportWidth - rect.right)) : null;
