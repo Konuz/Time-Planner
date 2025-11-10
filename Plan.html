@@ -66,6 +66,13 @@
             visibility: hidden !important;
         }
 
+        /* Hide all translatable content during preload to prevent Polish text flashing */
+        .preload [data-i18n],
+        .preload [data-i18n-title],
+        .preload [data-i18n-placeholder] {
+            opacity: 0 !important;
+        }
+
         .no-transition {
             transition: none !important;
         }
@@ -1758,6 +1765,36 @@
             } catch (e) {
                 window.__INITIAL_LANG__ = 'en';
             }
+
+            // Restore scroll position to prevent jumping to top on refresh
+            try {
+                const scrollData = sessionStorage.getItem('scrollPosition');
+                if (scrollData) {
+                    const { x, y } = JSON.parse(scrollData);
+                    // Restore scroll as soon as possible
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            window.scrollTo(x, y);
+                        });
+                    } else {
+                        window.scrollTo(x, y);
+                    }
+                }
+            } catch (e) {
+                // Ignore scroll restoration errors
+            }
+
+            // Save scroll position before page unload
+            window.addEventListener('beforeunload', function() {
+                try {
+                    sessionStorage.setItem('scrollPosition', JSON.stringify({
+                        x: window.scrollX || window.pageXOffset || 0,
+                        y: window.scrollY || window.pageYOffset || 0
+                    }));
+                } catch (e) {
+                    // Ignore save errors
+                }
+            });
         })();
     </script>
     <div id="pomodoro-notification" class="pomodoro-notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
