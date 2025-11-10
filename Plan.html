@@ -1157,8 +1157,13 @@
         }
 
         .todo-item.dragging {
-            opacity: 0.5;
+            opacity: 0;
             cursor: grabbing;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            transition: none;
         }
 
         .todo-priority-flag {
