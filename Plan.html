@@ -1036,7 +1036,13 @@
 
         #todo-description:focus {
             outline: none;
-            border-color: #66BB6A;
+            border-color: #37b24d;
+            box-shadow: none;
+        }
+
+        #todo-description.empty-field:focus {
+            border-color: #ff6b6b;
+            box-shadow: none;
         }
 
         #todo-priority {
@@ -5046,7 +5052,9 @@
             renderTodoTasks();
 
             // Clear form
-            document.getElementById('todo-description').value = '';
+            const todoDescInput = document.getElementById('todo-description');
+            todoDescInput.value = '';
+            todoDescInput.dispatchEvent(new Event('input')); // Update empty-field class
             document.getElementById('todo-date').value = '';
             const noDateCheckbox = document.getElementById('todo-no-date');
             noDateCheckbox.checked = noDate;
@@ -5814,6 +5822,24 @@
             if (noDateCheckbox) {
                 noDateCheckbox.addEventListener('change', handleNoDateToggle);
                 handleNoDateToggle(); // Set initial state
+            }
+
+            // Update empty-field class for todo description
+            const todoDescInput = document.getElementById('todo-description');
+            if (todoDescInput) {
+                const updateTodoDescEmptyClass = () => {
+                    if (todoDescInput.value.trim() === '') {
+                        todoDescInput.classList.add('empty-field');
+                    } else {
+                        todoDescInput.classList.remove('empty-field');
+                    }
+                };
+
+                // Initial check
+                updateTodoDescEmptyClass();
+
+                // Update on input
+                todoDescInput.addEventListener('input', updateTodoDescEmptyClass);
             }
         }
 
