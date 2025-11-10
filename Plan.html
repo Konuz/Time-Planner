@@ -85,6 +85,47 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .month-end-warning {
+            background-color: rgba(250, 176, 5, 0.15);
+            border: 1px solid var(--warning-color);
+            border-radius: var(--border-radius);
+            padding: 6px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .month-end-warning.hidden {
+            display: none;
+        }
+
+        .month-end-warning-icon {
+            font-size: 16px;
+            color: var(--warning-color);
+            flex-shrink: 0;
+        }
+
+        .month-end-warning-text {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         h3 {
             color: var(--primary-color);
             margin-bottom: 15px;
@@ -180,35 +221,34 @@
             table-layout: fixed;
         }
 
-        /* Fixed column widths for consistent header positioning */
         .task-table th:nth-child(1),
         .task-table td:nth-child(1) {
-            width: 10%;  /* Data */
+            width: 10%;  
         }
 
         .task-table th:nth-child(2),
         .task-table td:nth-child(2) {
-            width: 18%;  /* Rodzaj zadania */
+            width: 18%;  
         }
 
         .task-table th:nth-child(3),
         .task-table td:nth-child(3) {
-            width: 18%;  /* Projekt */
+            width: 18%;  
         }
 
         .task-table th:nth-child(4),
         .task-table td:nth-child(4) {
-            width: 8%;   /* Godziny */
+            width: 8%;   
         }
 
         .task-table th:nth-child(5),
         .task-table td:nth-child(5) {
-            width: 16%;  /* Numer */
+            width: 16%;  
         }
 
         .task-table th:nth-child(6),
         .task-table td:nth-child(6) {
-            width: 30%;  /* Akcje (3 buttons: Edit, Clone, Delete) */
+            width: 30%;  
         }
 
         th, td {
@@ -220,7 +260,6 @@
             white-space: nowrap;
         }
 
-        /* Allow text wrapping in Actions column for buttons */
         .task-table th:nth-child(6),
         .task-table td:nth-child(6) {
             white-space: normal;
@@ -397,15 +436,14 @@
                 font-size: 12px;
             }
 
-            /* Maintain fixed layout on mobile */
             .task-table th:nth-child(1),
             .task-table td:nth-child(1) {
-                width: 12%;  /* Data - slightly wider on mobile */
+                width: 12%;  
             }
 
             .task-table th:nth-child(4),
             .task-table td:nth-child(4) {
-                width: 10%;  /* Godziny - slightly wider on mobile */
+                width: 10%;  
             }
 
             th, td {
@@ -440,7 +478,6 @@
             will-change: transform;
             overflow: hidden;
         }
-
 
         .pomodoro-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -520,7 +557,7 @@
         }
 
         .pomodoro-content::-webkit-scrollbar-thumb:hover {
-            background: #2196F3;
+            background: var(--primary-color);
         }
 
         .pomodoro-display {
@@ -938,7 +975,6 @@
             }
         }
 
-        /* ===== TODO WIDGET STYLES ===== */
         .todo-widget {
             position: fixed;
             top: 0;
@@ -956,7 +992,6 @@
             will-change: transform;
             overflow: hidden;
         }
-
 
         .todo-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
@@ -1010,7 +1045,7 @@
         }
 
         .todo-content::-webkit-scrollbar-thumb:hover {
-            background: var(--text-color);
+            background: var(--primary-color);
         }
 
         .todo-add-form {
@@ -1457,9 +1492,28 @@
             padding: 25px;
             max-height: calc(90vh - 120px);
             overflow-y: auto;
+            scrollbar-gutter: stable;
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        .info-modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .info-modal-body::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .info-modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .info-modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
         }
 
         .info-section h3 {
@@ -1632,7 +1686,6 @@
     </style>
 </head>
 <body class="preload">
-    <!-- Non-blocking notification for Pomodoro timer -->
     <div id="pomodoro-notification" class="pomodoro-notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <div class="container">
@@ -1642,6 +1695,11 @@
             <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">EN</button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
+
+        <div id="month-end-warning" class="month-end-warning hidden" role="alert" aria-live="polite">
+            <span class="month-end-warning-icon">⚠️</span>
+            <p class="month-end-warning-text" data-i18n="warning.endOfMonth">Zbliża się koniec miesiąca!</p>
+        </div>
 
         <main role="main">
 
@@ -1678,7 +1736,7 @@
                     <label for="task-type" data-i18n="form.taskType">Rodzaj zadania:</label>
                     <select id="task-type" name="task-type" required aria-describedby="task-type-feedback" aria-required="true">
                         <option value="" data-i18n="form.selectTaskType">-- Wybierz rodzaj zadania --</option>
-                        <!-- Opcje będą dynamicznie ładowane -->
+                        
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback" role="alert" aria-live="polite"></div>
                 </div>
@@ -1737,7 +1795,7 @@
                                 <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
                             </label>
                         </div>
-                        <!-- Filtry typów zadań będą generowane dynamicznie tutaj -->
+                        
                     </div>
                 </details>
             </div>
@@ -1754,7 +1812,7 @@
                     </tr>
                 </thead>
                 <tbody id="entries-body" aria-live="polite" aria-relevant="additions removals">
-                    <!-- All entries -->
+                    
                 </tbody>
             </table>
             <div style="text-align: center; margin-top: 20px;">
@@ -1772,7 +1830,6 @@
         </section>
     </div>
 
-    <!-- Info Modal -->
     <div id="info-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -1814,11 +1871,15 @@
                     </ol>
                     <div class="info-note" data-i18n="info.section.pomodoroNote">Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.</div>
                 </div>
+
+                <div class="info-section">
+                    <h3 data-i18n="info.section.monthEndTitle">Ostrzeżenie o końcu miesiąca</h3>
+                    <div class="info-note" data-i18n="info.section.monthEndNote">Ostrzeżenie o zbliżającym się końcu miesiąca ma przypomnieć o wpisaniu wszystkich godzin do odpowiednich, firmowych narzędzi do rozliczania czasu.</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -1826,14 +1887,14 @@
                 <button class="modal-close" id="modal-close" aria-label="Zamknij okno ustawień">&times;</button>
             </div>
 
-            <!-- Tabs Navigation -->
+            
             <div class="modal-tabs" role="tablist">
                 <button class="modal-tab active" role="tab" data-tab="projects-tab" aria-selected="true" aria-controls="projects-tab" data-i18n="settings.projects">Projekty</button>
                 <button class="modal-tab" role="tab" data-tab="tasks-tab" aria-selected="false" aria-controls="tasks-tab" data-i18n="settings.tasks">Zadania</button>
             </div>
 
             <div class="modal-body">
-                <!-- Projects Tab -->
+                
                 <div id="projects-tab" class="tab-content active" role="tabpanel" aria-labelledby="projects-tab-button">
                     <div class="modal-section">
                         <div class="entry-form">
@@ -1848,13 +1909,13 @@
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
                             <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                                <!-- Projects will be listed here -->
+                                
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tasks Tab -->
+                
                 <div id="tasks-tab" class="tab-content" role="tabpanel" aria-labelledby="tasks-tab-button">
                     <div class="modal-section">
                         <div class="entry-form">
@@ -1869,7 +1930,7 @@
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
                             <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
-                                <!-- Task types will be listed here -->
+                                
                             </div>
                         </div>
                     </div>
@@ -1884,7 +1945,6 @@
         </div>
     </div>
     
-    <!-- Confirm Dialog Modal -->
     <div id="confirm-modal" class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-hidden="true">
         <div class="modal-content">
             <div class="modal-header">
@@ -1901,9 +1961,8 @@
         </div>
     </div>
 
-    <!-- Pomodoro Timer Widget -->
     <div id="pomodoro-widget" class="pomodoro-widget" role="region" aria-label="Timer Pomodoro">
-        <!-- Resize Handles -->
+        
         <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-e" data-direction="e" aria-hidden="true"></div>
@@ -1997,15 +2056,13 @@
         </main>
     </div>
 
-    <!-- Minimized Pomodoro Icon -->
     <div id="pomodoro-minimized" class="pomodoro-minimized" style="display: none;" role="button" aria-label="Przywróć timer Pomodoro" tabindex="0">
         <span class="minimized-timer" id="minimized-timer" aria-live="off">30:00</span>
         <span class="minimized-icon" aria-hidden="true">🍅</span>
     </div>
 
-    <!-- TODO Widget -->
     <div id="todo-widget" class="todo-widget" role="region" aria-label="Lista To-Do" style="display: none;">
-        <!-- Resize Handles -->
+        
         <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-e" data-direction="e" aria-hidden="true"></div>
@@ -2022,7 +2079,7 @@
         </div>
 
         <div id="todo-content" class="todo-content">
-            <!-- Formularz dodawania zadania -->
+            
             <div class="todo-add-form">
                 <input type="text" id="todo-description" placeholder="Opis zadania..." data-i18n-placeholder="todo.descriptionPlaceholder" aria-label="Opis zadania">
                 <select id="todo-priority" aria-label="Priorytet zadania">
@@ -2041,7 +2098,7 @@
                 </div>
             </div>
 
-            <!-- Sekcja: Zadania z datą -->
+            
             <details class="todo-section" id="todo-with-dates" open>
                 <summary>
                     <span>📅 <span data-i18n="todo.withDates">Zadania z terminem</span> (<span id="todo-dated-count">0</span>)</span>
@@ -2051,7 +2108,7 @@
                 </div>
             </details>
 
-            <!-- Sekcja: Zadania bez daty -->
+            
             <details class="todo-section" id="todo-without-dates" open>
                 <summary>
                     <span>📋 <span data-i18n="todo.withoutDates">Zadania bez terminu</span> (<span id="todo-undated-count">0</span>)</span>
@@ -2063,7 +2120,6 @@
         </div>
     </div>
 
-    <!-- Minimized TODO Icon -->
     <div id="todo-minimized" class="todo-minimized" role="button" aria-label="Przywróć listę To-Do" tabindex="0">
         <span class="minimized-count" id="minimized-todo-count" aria-live="off">0</span>
         <span class="minimized-icon" aria-hidden="true">📋</span>
@@ -2097,7 +2153,6 @@
             onCancel: null
         };
 
-        // Pomodoro Timer Variables
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
         const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
         const POMODORO_COMPLETION_THRESHOLD = 0.9; // 90% of work duration required for full pomodoro
@@ -2105,7 +2160,6 @@
         const DEBOUNCE_DELAY_MS = 300; // Default debounce delay for localStorage saves
         const DEBOUNCE_DELAY_LONG_MS = 500; // Longer debounce for pomodoro data
 
-        // Validation constants
         const MAX_TASK_NUMBER_LENGTH = 100;
         const MAX_PROJECT_NAME_LENGTH = 100;
         const MAX_TASK_TYPE_LENGTH = 50;
@@ -2132,7 +2186,6 @@
             autoStartBreak: true
         };
 
-        // Drag/resize runtime state for the Pomodoro widget
         let isDragging = false;
         let isDraggingMinimized = false;
         let minimizedDragMoved = false;
@@ -2145,7 +2198,6 @@
         let startWidth = 0;
         let startHeight = 0;
 
-        // TODO Widget Variables
         const TODO_STORAGE_KEY = 'todo-tasks';
         let todoTasks = []; // { id, description, priority, dueDate, createdAt, order }
         let isDraggingTodo = false;
@@ -2187,29 +2239,24 @@
         let widgetLayoutState = getDefaultWidgetLayoutState();
 
         const domCache = {
-            // Form elements
             date: null,
             taskType: null,
             client: null,
             hours: null,
             taskNumber: null,
 
-            // Filter elements
             filterCurrentMonth: null,
             filterCurrentWeek: null,
 
-            // Container elements
             entriesBody: null,
             projectsContainer: null,
             taskTypesContainer: null,
             modalProjectsContainer: null,
 
-            // Button elements
             showMoreBtn: null,
             resetForm: null,
             exportButton: null,
 
-            // Pomodoro elements
             timerDisplay: null,
             timerTaskNumber: null,
             timerStart: null,
@@ -2218,7 +2265,6 @@
             timerCircleProgress: null,
             pomodoroMinimized: null,
 
-            // Modal elements
             settingsModal: null,
             modalClose: null,
             infoModal: null,
@@ -2233,12 +2279,10 @@
             confirmClose: null,
             confirmTitle: null,
 
-            // Project management
             projectName: null,
             addProjectBtn: null,
             cancelProjectBtn: null,
 
-            // Task type management
             taskTypeName: null,
             addTaskTypeBtn: null,
             cancelTaskTypeBtn: null
@@ -2279,7 +2323,6 @@
             domCache.confirmClose = document.getElementById('confirm-close');
             domCache.confirmTitle = document.getElementById('confirm-modal-title');
 
-            // Pomodoro timer elements
             domCache.minimizedTimer = document.getElementById('minimized-timer');
             domCache.pomodoroWidget = document.getElementById('pomodoro-widget');
             domCache.timerMode = document.getElementById('timer-mode');
@@ -2289,36 +2332,28 @@
             domCache.pomodoroLongBreaks = document.getElementById('pomodoro-long-breaks');
             domCache.pomodoroToday = document.getElementById('pomodoro-today');
 
-            // Settings inputs
             domCache.workDuration = document.getElementById('work-duration');
             domCache.shortBreakDuration = document.getElementById('short-break-duration');
             domCache.longBreakDuration = document.getElementById('long-break-duration');
             domCache.soundEnabled = document.getElementById('sound-enabled');
             domCache.autoStartBreak = document.getElementById('auto-start-break');
 
-            // TODO widget elements
             domCache.todoWidget = document.getElementById('todo-widget');
             domCache.todoMinimized = document.getElementById('todo-minimized');
 
-            // Summary elements
             domCache.currentMonth = document.getElementById('current-month');
             domCache.totalHours = document.getElementById('total-hours');
 
-            // Form validation feedback elements
             domCache.dateFeedback = document.getElementById('date-feedback');
             domCache.taskTypeFeedback = document.getElementById('task-type-feedback');
             domCache.clientFeedback = document.getElementById('client-feedback');
             domCache.hoursFeedback = document.getElementById('hours-feedback');
             domCache.taskNumberFeedback = document.getElementById('task-number-feedback');
 
-            // Filter elements
             domCache.filterAllTasks = document.getElementById('filter-all-tasks');
             domCache.taskTypeFiltersContainer = document.getElementById('task-type-filters-container');
+            domCache.monthEndWarning = document.getElementById('month-end-warning');
         }
-
-        // ============================
-        // Internationalization (i18n)
-        // ============================
 
         const SUPPORTED_LANGUAGES = ['pl', 'en'];
         let storedLanguage = null;
@@ -2345,6 +2380,7 @@
                 'app.settings': 'Ustawienia',
                 'app.info': 'Instrukcja',
                 'app.language': 'Zmień język / Change language',
+                'warning.endOfMonth': 'Zbliża się koniec miesiąca!',
                 'section.visibility': 'Widoczność sekcji:',
                 'section.addEntry': 'Dodaj nowy wpis',
                 'section.entriesList': 'Lista wpisów',
@@ -2438,11 +2474,13 @@
                 'info.section.overviewStep7': 'Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.',
                 'info.section.pomodoroTitle': 'Tryb Pomodoro',
                 'info.section.pomodoroIntro': 'Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.',
-                'info.section.pomodoroStep1': 'Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
-                'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie”, wyświetli się informacja o dodaniu wpisu.',
+                'info.section.pomodoroStep1': 'Kliknij ikonę 🍅, aby rozwinąć widżet i wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
+                'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie" (zielony checkmark), wyświetli się informacja o dodaniu wpisu.',
                 'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
                 'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
                 'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.',
+                'info.section.monthEndTitle': 'Ostrzeżenie o końcu miesiąca',
+                'info.section.monthEndNote': 'Ostrzeżenie o zbliżającym się końcu miesiąca ma przypomnieć o wpisaniu wszystkich godzin do odpowiednich, firmowych narzędzi do rozliczania czasu.',
                 'info.section.todoTitle': 'Lista To-Do',
                 'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
                 'info.section.todoStep1': 'Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty”).',
@@ -2487,7 +2525,6 @@
                 'action.clone': 'Klonuj',
                 'action.delete': 'Usuń',
 
-                // Todo widget
                 'todo.title': 'TO-DO',
                 'todo.descriptionPlaceholder': 'Opis zadania...',
                 'todo.priorityHigh': 'Wysoki',
@@ -2517,14 +2554,13 @@
                 'app.settings': 'Settings',
                 'app.info': 'Guide',
                 'app.language': 'Change language / Zmień język',
+                'warning.endOfMonth': 'End of month approaching!',
 
-                // Section visibility
                 'section.visibility': 'Section visibility:',
                 'section.addEntry': 'Add new entry',
                 'section.entriesList': 'Entries list',
                 'section.summary': 'Summary',
 
-                // Form labels
                 'form.addEntry': 'Add new entry',
                 'form.editEntry': 'Edit entry',
                 'form.date': 'Date:',
@@ -2538,7 +2574,6 @@
                 'form.updateButton': 'Update entry',
                 'form.clearButton': 'Clear',
 
-                // Entries list
                 'entries.title': 'Entries list',
                 'entries.filterCurrentMonth': 'Show only entries from current month',
                 'entries.filterCurrentWeek': 'Show only entries from current week',
@@ -2546,7 +2581,6 @@
                 'entries.selectDeselectAll': 'Select/Deselect all',
                 'entries.showAll': 'Show all entries',
 
-                // Table headers
                 'table.date': 'Date',
                 'table.taskType': 'Task type',
                 'table.project': 'Project',
@@ -2554,13 +2588,11 @@
                 'table.number': 'Number/Name',
                 'table.actions': 'Actions',
 
-                // Summary
                 'summary.title': 'Summary',
                 'summary.currentMonth': 'Current month:',
                 'summary.totalHours': 'Total hours:',
                 'summary.export': 'Export current month data (CSV)',
 
-                // Settings modal
                 'settings.title': 'Settings',
                 'settings.projects': 'Projects',
                 'settings.tasks': 'Tasks',
@@ -2576,7 +2608,6 @@
                 'confirm.confirm': 'OK',
                 'confirm.cancel': 'Cancel',
 
-                // Pomodoro
                 'pomodoro.title': 'POMODORO',
                 'pomodoro.workTime': 'Work time',
                 'pomodoro.shortBreak': 'Short break',
@@ -2599,7 +2630,6 @@
                 'pomodoro.soundEnabled': 'Notification sound',
                 'pomodoro.autoStartBreak': 'Auto-start break',
 
-                // Pomodoro notifications
                 'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
@@ -2626,11 +2656,13 @@
                 'info.section.overviewStep7': 'The "Export data" button downloads a CSV file with the current month hours.',
                 'info.section.pomodoroTitle': 'Pomodoro mode',
                 'info.section.pomodoroIntro': 'The Pomodoro timer keeps you focused with short work cycles.',
-                'info.section.pomodoroStep1': 'Enter the task number or name inside the Pomodoro panel and press Start to begin the countdown.',
-                'info.section.pomodoroStep2': 'When work ends, click “Complete task” or accept the prompt to add an entry.',
+                'info.section.pomodoroStep1': 'Click the 🍅 icon to expand the widget and enter the task number or name inside the Pomodoro panel and press Start to begin the countdown.',
+                'info.section.pomodoroStep2': 'When work ends, click "Complete task" (green checkmark), a notification about adding the entry will be displayed.',
                 'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
                 'info.section.pomodoroStep4': 'Every new session with the same task number or name appends the tracked minutes to the existing entry so you keep the full history.',
                 'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
+                'info.section.monthEndTitle': 'Month-End Warning',
+                'info.section.monthEndNote': 'The month-end warning reminder is to ensure all hours are entered into the appropriate company time tracking tools.',
                 'info.section.todoTitle': 'To-Do list',
                 'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
                 'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority and due date (or enable “No date”).',
@@ -2639,7 +2671,6 @@
                 'info.section.todoStep4': 'The ✓, ✕ and → buttons complete, cancel or send the task to Pomodoro so the timer picks up its number.',
                 'info.close': 'Close guide',
 
-                // Messages
                 'msg.enterProjectName': 'Enter project name',
                 'msg.projectExists': 'This project already exists',
                 'msg.confirmDeleteProject': 'Are you sure you want to delete project',
@@ -2655,7 +2686,6 @@
                 'msg.storageQuotaExceeded': 'Storage is full. Please export your data and remove old entries.',
                 'msg.storageSaveFailed': 'Unable to save data. Please check your browser settings.',
 
-                // Validation messages
                 'validation.selectDate': 'Select date',
                 'validation.selectTaskType': 'Select task type',
                 'validation.selectProject': 'Select project',
@@ -2664,7 +2694,6 @@
                 'validation.hoursMaxEight': 'Maximum number of hours is 8',
                 'validation.enterTaskNumber': 'Enter task number or name',
 
-                // Months
                 'month.january': 'January',
                 'month.february': 'February',
                 'month.march': 'March',
@@ -2678,12 +2707,10 @@
                 'month.november': 'November',
                 'month.december': 'December',
 
-                // Actions
                 'action.edit': 'Edit',
                 'action.clone': 'Clone',
                 'action.delete': 'Delete',
 
-                // Todo widget
                 'todo.title': 'TO-DO',
                 'todo.descriptionPlaceholder': 'Task description...',
                 'todo.priorityHigh': 'High',
@@ -2710,7 +2737,6 @@
             }
         };
 
-        // Translation function
         function t(key, params = {}) {
             const languageData = translations[currentLanguage];
             const fallbackData = translations['pl'];
@@ -2719,7 +2745,6 @@
                 (fallbackData && fallbackData[key]) ||
                 key;
 
-            // Replace parameters in the text
             Object.keys(params).forEach(param => {
                 text = text.replace(`{${param}}`, params[param]);
             });
@@ -2727,21 +2752,16 @@
             return text;
         }
 
-        // Update UI with current language
         function updateUILanguage() {
             try {
-                // Update document language
                 document.documentElement.lang = currentLanguage;
 
-                // Update language button text
                 const languageBtn = document.getElementById('language-btn');
                 if (languageBtn) {
                     languageBtn.textContent = currentLanguage.toUpperCase();
                 }
 
-                // Single DOM traversal for all i18n elements (optimized from 3 separate queries)
                 document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
-                    // Handle data-i18n attribute (text content)
                     if (element.hasAttribute('data-i18n')) {
                         const key = element.getAttribute('data-i18n');
                         const translation = t(key);
@@ -2759,23 +2779,19 @@
                         }
                     }
 
-                    // Handle data-i18n-title attribute
                     if (element.hasAttribute('data-i18n-title')) {
                         const key = element.getAttribute('data-i18n-title');
                         element.title = t(key);
                     }
 
-                    // Handle data-i18n-placeholder attribute
                     if (element.hasAttribute('data-i18n-placeholder')) {
                         const key = element.getAttribute('data-i18n-placeholder');
                         element.placeholder = t(key);
                     }
                 });
 
-                // Update Todo tooltips without re-rendering
                 updateTodoTooltips();
 
-                // Refresh displays that depend on language
                 if (typeof renderEntries === 'function') {
                     renderEntries();
                 }
@@ -2795,12 +2811,10 @@
                 refreshValidationMessages();
             } catch (error) {
                 console.error('Error updating UI language:', error);
-                // Fail silently to not disrupt user experience
             }
         }
 
         function updateTodoTooltips() {
-            // Update tooltips for all todo action buttons
             document.querySelectorAll('.todo-success').forEach(btn => {
                 btn.setAttribute('title', t('todo.complete') || 'Zakończ sukcesem');
                 btn.setAttribute('aria-label', t('todo.complete') || 'Zakończ sukcesem');
@@ -2824,7 +2838,6 @@
             updateUILanguage();
         }
 
-        // Funkcje zarządzania widocznością sekcji
         function loadSectionVisibility() {
             const stored = localStorage.getItem(SECTION_VISIBILITY_KEY);
             if (stored) {
@@ -2855,7 +2868,6 @@
         function initSectionToggles() {
             const visibility = loadSectionVisibility();
 
-            // Ustaw stan checkboxów i widoczność sekcji
             Object.keys(visibility).forEach(sectionName => {
                 const checkbox = document.getElementById(`toggle-${sectionName}`);
                 const section = document.getElementById(`section-${sectionName}`);
@@ -2864,7 +2876,6 @@
                     checkbox.checked = visibility[sectionName];
                     section.style.display = visibility[sectionName] ? 'block' : 'none';
 
-                    // Dodaj event listener
                     checkbox.addEventListener('change', function() {
                         toggleSectionVisibility(sectionName, this.checked);
                     });
@@ -2872,7 +2883,6 @@
             });
         }
 
-        // Funkcje pomocnicze do formatowania daty
         function formatDate(dateString) {
             const date = new Date(dateString);
             const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
@@ -2889,7 +2899,7 @@
         }
 
         function isSameWeek(date1, date2) {
-            // Poniedziałek jako pierwszy dzień tygodnia
+            // Monday as first day of the week
             const getWeekStart = (date) => {
                 const d = new Date(date);
                 const day = d.getDay();
@@ -2905,19 +2915,40 @@
             return week1.getTime() === week2.getTime();
         }
 
+        /**
+         * Updates the visibility of the month-end warning banner
+         * Shows warning 3 days before end of month, hides on day 1 of new month
+         */
+        function updateMonthEndWarning() {
+            if (!domCache.monthEndWarning) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysRemaining = lastDayOfMonth - currentDay;
+
+            if (daysRemaining >= 0 && daysRemaining <= 3 && currentDay !== 1) {
+                domCache.monthEndWarning.classList.remove('hidden');
+            } else {
+                domCache.monthEndWarning.classList.add('hidden');
+            }
+        }
+
         // ============ LOCALSTORAGE MANAGEMENT WITH ERROR HANDLING ============
 
-        // Debounce timers for batch saves
         const saveTimers = {};
 
         // Safe localStorage save with error handling and debouncing
         function safeLocalStorageSave(key, data, debounceMs = DEBOUNCE_DELAY_MS) {
-            // Clear existing timer for this key
             if (saveTimers[key]) {
                 clearTimeout(saveTimers[key]);
             }
 
-            // Set new debounced save
             saveTimers[key] = setTimeout(() => {
                 try {
                     const serialized = JSON.stringify(data);
@@ -2926,10 +2957,8 @@
                     console.error(`LocalStorage save failed for ${key}:`, e);
 
                     if (e.name === 'QuotaExceededError' || e.code === 22) {
-                        // Handle quota exceeded
                         handleStorageQuotaExceeded(key, data);
                     } else {
-                        // Other errors (e.g., private browsing mode)
                         showStorageError(t('msg.storageSaveFailed'));
                     }
                 } finally {
@@ -2939,21 +2968,14 @@
             }, debounceMs);
         }
 
-        // Handle storage quota exceeded
         function handleStorageQuotaExceeded(key, data) {
             console.warn('LocalStorage quota exceeded. Attempting cleanup...');
-
-            // Try to free up space by removing old data
-            // (In this case, we won't remove user data, just alert)
             showStorageError(t('msg.storageQuotaExceeded'));
         }
 
-        // Show storage error to user
         function showStorageError(message) {
             showNotification(`⚠️ ${message}`, 5000);
         }
-
-        // ============ END LOCALSTORAGE MANAGEMENT ============
 
         function loadWidgetLayoutState() {
             widgetLayoutState = getDefaultWidgetLayoutState();
@@ -3121,7 +3143,6 @@
             return syncWidgetLayout(type, true, options);
         }
 
-
         function loadEntries() {
             const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
             entries = storedEntries.map(entry => ({
@@ -3135,7 +3156,6 @@
             safeLocalStorageSave(STORAGE_KEY, entries);
         }
 
-        // Funkcje zarządzania projektami
         function loadProjects() {
             const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
             const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [];
@@ -3164,15 +3184,12 @@
                 clientSelect.appendChild(option);
             });
 
-            // Przywróć poprzednią wartość jeśli nadal istnieje
             if (projects.includes(currentValue)) {
                 clientSelect.value = currentValue;
             }
         }
 
-        // Generic function to render item lists (projects, task types, etc.)
         function renderItemsList(items, config) {
-            // config: { container, emptyMessage, editBtnClass, deleteBtnClass }
             config.container.innerHTML = '';
 
             if (items.length === 0) {
@@ -3201,7 +3218,6 @@
             });
         }
 
-        // Generic management system to eliminate DRY violations
         function createItemManager(config) {
             return {
                 add: function() {
@@ -3271,7 +3287,6 @@
             };
         }
 
-        // Project management instance (modal only)
         const modalProjectManager = createItemManager({
             items: projects,
             editingIndex: editingProjectIndex,
@@ -3289,7 +3304,6 @@
             onChange: markAsChanged
         });
 
-        // Funkcje zarządzania typami zadań
         function loadTaskTypes() {
             const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
             const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [];
@@ -3318,7 +3332,6 @@
                 taskTypeSelect.appendChild(option);
             });
 
-            // Przywróć poprzednią wartość jeśli nadal istnieje
             if (taskTypes.includes(currentValue)) {
                 taskTypeSelect.value = currentValue;
             }
@@ -3334,10 +3347,8 @@
         }
 
         function renderTaskTypeFilters() {
-            // Zachowaj stan checkboxa "wszystkie"
             const filterAllChecked = domCache.filterAllTasks ? domCache.filterAllTasks.checked : true;
 
-            // Zachowaj stany poszczególnych filtrów przed ich usunięciem
             const filterStates = {};
             taskTypes.forEach(taskType => {
                 const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
@@ -3345,7 +3356,6 @@
                 filterStates[taskType] = filterElement ? filterElement.checked : true;
             });
 
-            // Wyczyść kontener ale zachowaj checkbox "wszystkie"
             domCache.taskTypeFiltersContainer.innerHTML = `
                 <div class="filter-option">
                     <label>
@@ -3354,7 +3364,6 @@
                     </label>
                 </div>`;
 
-            // Generuj filtry dla każdego typu zadania
             taskTypes.forEach(taskType => {
                 const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
                 const isChecked = filterStates[taskType] ?? true; // ES6+: nullish coalescing
@@ -3369,10 +3378,8 @@
                 domCache.taskTypeFiltersContainer.appendChild(filterDiv);
             });
 
-            // Update cache reference for the recreated element
             domCache.filterAllTasks = document.getElementById('filter-all-tasks');
 
-            // Ponownie podepnij event listenery po regeneracji filtrów
             initTaskTypeFilterListeners();
         }
 
@@ -3390,7 +3397,6 @@
                 const target = event.target;
                 if (target.type !== 'checkbox') return;
 
-                // Handle "select all" checkbox
                 if (target.id === 'filter-all-tasks') {
                     const isChecked = target.checked;
                     taskTypes.forEach(taskType => {
@@ -3404,7 +3410,6 @@
                     return;
                 }
 
-                // Handle individual task type filters
                 if (target.dataset.taskType) {
                     // Check if all are selected or none are selected
                     const allChecked = taskTypes.every(tt => {
@@ -3418,7 +3423,6 @@
                         return el ? !el.checked : false;
                     });
 
-                    // Update "select all" checkbox state
                     if (domCache.filterAllTasks) {
                         if (allChecked) {
                             domCache.filterAllTasks.checked = true;
@@ -3431,11 +3435,9 @@
                 }
             };
 
-            // Add single delegated event listener
             domCache.taskTypeFiltersContainer.addEventListener('change', taskTypeFilterHandler);
         }
 
-        // Task type management instance (unified via createItemManager)
         const taskTypeManager = createItemManager({
             items: taskTypes,
             editingIndex: editingTaskTypeIndex,
@@ -3454,7 +3456,6 @@
             onChange: markAsChanged
         });
 
-        // Funkcje zarządzania oknem modalnym
         function updateApplyButtonState() {
             const applyBtn = document.getElementById('modal-apply-btn');
             if (applyBtn) {
@@ -3473,23 +3474,19 @@
         }
 
         function switchTab(tabId) {
-            // Ukryj wszystkie zakładki
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
 
-            // Usuń aktywny stan ze wszystkich przycisków zakładek
             document.querySelectorAll('.modal-tab').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            // Pokaż wybraną zakładkę
             const selectedTab = document.getElementById(tabId);
             if (selectedTab) {
                 selectedTab.classList.add('active');
             }
 
-            // Zaznacz aktywny przycisk zakładki
             const activeButton = document.querySelector(`.modal-tab[data-tab="${tabId}"]`);
             if (activeButton) {
                 activeButton.classList.add('active');
@@ -3511,32 +3508,26 @@
         function openSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = 'block';
-            // Upewnij się, że pierwsza zakładka jest aktywna
             switchTab('projects-tab');
             renderModalProjects();
             renderTaskTypes();
             modalOriginalProjects = projects.slice();
             modalOriginalTaskTypes = taskTypes.slice();
-            // Reset unsaved changes flag when opening
             markAsSaved();
         }
 
         function closeSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = 'none';
-            // Reset editing states
             cancelModalProjectEdit();
             taskTypeManager.cancel();
-            // Reset unsaved changes flag when closing
             markAsSaved();
         }
 
         function applySettings() {
-            // Settings are applied in real-time, so this just provides feedback
             showNotification(t('msg.settingsApplied'));
             modalOriginalProjects = projects.slice();
             modalOriginalTaskTypes = taskTypes.slice();
-            // Mark as saved after applying
             markAsSaved();
         }
 
@@ -3570,7 +3561,6 @@
             closeSettingsModal();
         }
 
-        // Funkcje zarządzania projektami w modalu
         function renderModalProjects() {
             renderItemsList(projects, {
                 container: domCache.modalProjectsContainer,
@@ -3580,7 +3570,6 @@
             });
         }
 
-        // Modal project wrapper functions (unified via createItemManager)
         function addModalProject() { modalProjectManager.add(); }
         function editModalProject(index) { modalProjectManager.edit(index); }
         function deleteModalProject(index) { modalProjectManager.delete(index); }
@@ -3647,7 +3636,7 @@
                 const newEntry = {
                     ...existingEntry,
                     ...updatedEntry,
-                    date: new Date(updatedEntry.date + 'T00:00:00') // Dodaj czas aby uniknąć problemów z timezone
+                    date: new Date(updatedEntry.date + 'T00:00:00') // Add time to avoid timezone issues
                 };
                 entries[index] = newEntry;
                 entriesMap.set(id, newEntry); // Update Map
@@ -3884,7 +3873,6 @@
         function validateForm() {
             let isValid = true;
 
-            // Walidacja daty
             if (!domCache.date.value) {
                 setFieldError(domCache.date, domCache.dateFeedback, 'validation.selectDate');
                 isValid = false;
@@ -3903,7 +3891,6 @@
                 }
             }
 
-            // Walidacja rodzaju zadania
             if (!domCache.taskType.value) {
                 setFieldError(domCache.taskType, domCache.taskTypeFeedback, 'validation.selectTaskType');
                 isValid = false;
@@ -3911,7 +3898,6 @@
                 setFieldError(domCache.taskType, domCache.taskTypeFeedback);
             }
 
-            // Walidacja projektu
             if (!domCache.client.value) {
                 setFieldError(domCache.client, domCache.clientFeedback, 'validation.selectProject');
                 isValid = false;
@@ -3919,7 +3905,6 @@
                 setFieldError(domCache.client, domCache.clientFeedback);
             }
 
-            // Walidacja liczby godzin
             const hoursValue = parseFloat(domCache.hours.value);
 
             if (!domCache.hours.value) {
@@ -3935,7 +3920,6 @@
                 setFieldError(domCache.hours, domCache.hoursFeedback);
             }
 
-            // Walidacja numeru zadania
             if (!domCache.taskNumber.value) {
                 setFieldError(domCache.taskNumber, domCache.taskNumberFeedback, 'validation.enterTaskNumber');
                 isValid = false;
@@ -3948,8 +3932,6 @@
             
             return isValid;
         }
-
-        // ============ POMODORO TIMER FUNCTIONS ============
 
         function loadPomodoroData() {
             const stored = localStorage.getItem(POMODORO_STORAGE_KEY);
@@ -4101,7 +4083,6 @@
                     domCache.pomodoroWidget.classList.remove('timer-running');
                 }
 
-                // Update progress ring
                 let totalTime;
                 switch(pomodoroState.mode) {
                     case 'work':
@@ -4154,7 +4135,6 @@
                 }
             } catch (error) {
                 console.error('Error updating Pomodoro display:', error);
-                // Fail silently to not disrupt timer functionality
             }
         }
 
@@ -4403,7 +4383,6 @@
             };
         }
 
-        // Start new task (clear task number and reset elapsed time)
         function startNewTask() {
             const resetForNewTask = () => {
                 const timerTaskInput = document.getElementById('timer-task-number');
@@ -4424,12 +4403,10 @@
                     recordPomodoroWork();
                     resetForNewTask();
                 }, () => {
-                    // User cancelled - keep current state
                 });
                 return;
             }
 
-            // Clear task number and reset time
             resetForNewTask();
         }
 
@@ -4553,7 +4530,6 @@
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
 
                     widget.style.left = constrained.left + 'px';
@@ -4568,7 +4544,6 @@
                         minimizedDragMoved = true;
                     }
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
 
                     minimizedWidget.style.left = constrained.left + 'px';
@@ -4601,7 +4576,6 @@
                         newTop = startTop + heightDiff;
                     }
 
-                    // Constrain to viewport boundaries after calculating new dimensions
                     const constrained = constrainToViewport(widget, newLeft, newTop, newWidth, newHeight);
 
                     widget.style.width = constrained.width + 'px';
@@ -4668,7 +4642,6 @@
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
 
                     widget.style.left = constrained.left + 'px';
@@ -4684,7 +4657,6 @@
                         minimizedDragMoved = true;
                     }
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
 
                     minimizedWidget.style.left = constrained.left + 'px';
@@ -4715,13 +4687,11 @@
                 resizeDirection = null;
             });
 
-            // ===== TODO WIDGET DRAG AND RESIZE =====
             const todoWidget = document.getElementById('todo-widget');
             const todoHeader = document.getElementById('todo-header');
             const todoResizeHandles = todoWidget.querySelectorAll('.resize-handle');
             const todoMinimized = document.getElementById('todo-minimized');
 
-            // Todo header drag (mouse)
             todoHeader.addEventListener('mousedown', function(e) {
                 if (e.target.classList.contains('todo-minimize-btn')) {
                     return;
@@ -4739,7 +4709,6 @@
                 e.preventDefault();
             });
 
-            // Todo resize handles
             todoResizeHandles.forEach(handle => {
                 handle.addEventListener('mousedown', function(e) {
                     isResizingTodo = true;
@@ -4759,7 +4728,6 @@
                 });
             });
 
-            // Todo minimized drag (mouse)
             todoMinimized.addEventListener('mousedown', function(e) {
                 isDraggingTodoMinimized = true;
                 todoMinimizedDragMoved = false;
@@ -4774,13 +4742,11 @@
                 e.preventDefault();
             });
 
-            // Extend mousemove to handle Todo
             document.addEventListener('mousemove', function(e) {
                 if (isDraggingTodo) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
 
                     todoWidget.style.left = constrained.left + 'px';
@@ -4795,7 +4761,6 @@
                         todoMinimizedDragMoved = true;
                     }
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
 
                     todoMinimized.style.left = constrained.left + 'px';
@@ -4829,7 +4794,6 @@
                         newTop = startTop + heightDiff;
                     }
 
-                    // Constrain to viewport boundaries after calculating new dimensions
                     const constrained = constrainToViewport(todoWidget, newLeft, newTop, newWidth, newHeight);
 
                     todoWidget.style.width = constrained.width + 'px';
@@ -4841,7 +4805,6 @@
                 }
             });
 
-            // Extend mouseup to handle Todo
             document.addEventListener('mouseup', function() {
                 let layoutChanged = false;
                 if (isDraggingTodo || isResizingTodo) {
@@ -4863,7 +4826,6 @@
                 resizeDirectionTodo = null;
             });
 
-            // Todo touch support
             todoHeader.addEventListener('touchstart', function(e) {
                 if (e.target.classList.contains('todo-minimize-btn')) {
                     return;
@@ -4901,7 +4863,6 @@
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
 
                     todoWidget.style.left = constrained.left + 'px';
@@ -4917,7 +4878,6 @@
                         todoMinimizedDragMoved = true;
                     }
 
-                    // Constrain to viewport boundaries
                     const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
 
                     todoMinimized.style.left = constrained.left + 'px';
@@ -4948,7 +4908,6 @@
                 resizeDirectionTodo = null;
             });
 
-            // Handle window resize to keep widgets within viewport bounds
             window.addEventListener('resize', function() {
                 const widgets = [
                     { type: 'pomodoro', id: 'pomodoro-widget' },
@@ -5011,8 +4970,6 @@
                 }
             }
         }
-
-        // ===== TODO WIDGET FUNCTIONS =====
 
         function loadTodoTasks() {
             const stored = localStorage.getItem(TODO_STORAGE_KEY);
@@ -5146,7 +5103,6 @@
                 });
             }
 
-            // Render undated tasks
             if (undatedTasks.length === 0) {
                 undatedList.innerHTML = `<div class="todo-empty-state" data-i18n="todo.noUndatedTasks">Brak zadań bez terminu</div>`;
             } else {
@@ -5356,7 +5312,6 @@
             const datedList = document.getElementById('todo-dated-list');
             const undatedList = document.getElementById('todo-undated-list');
 
-            // Add drag and drop listeners to both lists
             [datedList, undatedList].forEach(list => {
                 list.addEventListener('dragstart', handleTodoDragStart);
                 list.addEventListener('dragover', handleTodoDragOver);
@@ -5557,7 +5512,12 @@
                 progressCircle.classList.remove('no-transition');
             }, 50);
             if (Notification.permission === 'default') {
-                Notification.requestPermission();
+                const notificationChoice = localStorage.getItem('notificationPermissionAsked');
+                if (!notificationChoice) {
+                    Notification.requestPermission().then(permission => {
+                        localStorage.setItem('notificationPermissionAsked', 'true');
+                    });
+                }
             }
             document.getElementById('timer-start').addEventListener('click', startTimer);
             document.getElementById('timer-pause').addEventListener('click', pauseTimer);
@@ -5619,7 +5579,6 @@
                 }
             });
 
-            // Settings change listeners
             ['work-duration', 'short-break-duration', 'long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
                 document.getElementById(id).addEventListener('change', savePomodoroSettings);
             });
@@ -5630,8 +5589,6 @@
             toggleMinimize();
 
         }
-
-        // ============ END POMODORO TIMER FUNCTIONS ============
 
         function setupEventDelegation() {
             if (domCache.taskTypesContainer) {
@@ -5777,7 +5734,6 @@
                 }
             });
 
-            // Project management in modal
             document.getElementById('modal-add-project-btn').addEventListener('click', addModalProject);
             document.getElementById('modal-cancel-project-btn').addEventListener('click', cancelModalProjectEdit);
             document.getElementById('modal-project-name').addEventListener('keypress', function(e) {
@@ -5874,7 +5830,6 @@
             initSectionToggles();
             initPomodoroTimer();
 
-            // Initialize TODO widget
             loadTodoTasks();
             initTodoDragDrop();
             setupTodoHandlers();
@@ -5887,6 +5842,7 @@
             renderEntries();
             updateSummary();
             updateUILanguage();
+            updateMonthEndWarning();
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
