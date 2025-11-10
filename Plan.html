@@ -1712,7 +1712,7 @@
 
                 <div class="form-group">
                     <label for="task-number" data-i18n="form.taskNumber">Numer lub nazwa zadania:</label>
-                    <input type="text" id="task-number" name="task-number" required aria-describedby="task-number-feedback" aria-required="true">
+                    <input type="text" id="task-number" name="task-number" maxlength="100" required aria-describedby="task-number-feedback" aria-required="true">
                     <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
@@ -1774,11 +1774,6 @@
                 <button id="show-more-btn" class="show-more-btn" style="display: none;" data-i18n="entries.showAll">Pokaż wszystkie wpisy</button>
             </div>
         </section>
-
-        <!-- Project management moved to settings modal -->
-        <div id="projects-container" style="display: none;">
-            <!-- Hidden - used for backward compatibility -->
-        </div>
 
         <section class="summary" id="section-summary" style="margin-top: 40px;">
             <h2 data-i18n="summary.title">Podsumowanie</h2>
@@ -2118,6 +2113,16 @@
         // Pomodoro Timer Variables
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
         const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
+        const POMODORO_COMPLETION_THRESHOLD = 0.9; // 90% of work duration required for full pomodoro
+        const SHORT_WARNING_THRESHOLD = 900; // 15 minutes in seconds
+        const DEBOUNCE_DELAY_MS = 300; // Default debounce delay for localStorage saves
+        const DEBOUNCE_DELAY_LONG_MS = 500; // Longer debounce for pomodoro data
+
+        // Validation constants
+        const MAX_TASK_NUMBER_LENGTH = 100;
+        const MAX_PROJECT_NAME_LENGTH = 100;
+        const MAX_TASK_TYPE_LENGTH = 50;
+        const MAX_FUTURE_DAYS = 365; // Maximum days in the future for date entries
         let pomodoroTimer = null;
         let pomodoroState = {
             mode: 'work', // 'work', 'shortBreak', 'longBreak'
@@ -2261,7 +2266,6 @@
             domCache.filterCurrentMonth = document.getElementById('filter-current-month');
             domCache.filterCurrentWeek = document.getElementById('filter-current-week');
             domCache.entriesBody = document.getElementById('entries-body');
-            domCache.projectsContainer = document.getElementById('projects-container');
             domCache.taskTypesContainer = document.getElementById('task-types-container');
             domCache.modalProjectsContainer = document.getElementById('modal-projects-container');
             domCache.showMoreBtn = document.getElementById('show-more-btn');
@@ -2287,12 +2291,42 @@
             domCache.confirmCancel = document.getElementById('confirm-cancel');
             domCache.confirmClose = document.getElementById('confirm-close');
             domCache.confirmTitle = document.getElementById('confirm-modal-title');
-            domCache.projectName = document.getElementById('project-name');
-            domCache.addProjectBtn = document.getElementById('add-project-btn');
-            domCache.cancelProjectBtn = document.getElementById('cancel-project-btn');
-            domCache.taskTypeName = document.getElementById('task-type-name');
-            domCache.addTaskTypeBtn = document.getElementById('add-task-type-btn');
-            domCache.cancelTaskTypeBtn = document.getElementById('cancel-task-type-btn');
+
+            // Pomodoro timer elements
+            domCache.minimizedTimer = document.getElementById('minimized-timer');
+            domCache.pomodoroWidget = document.getElementById('pomodoro-widget');
+            domCache.timerMode = document.getElementById('timer-mode');
+            domCache.pomodoroCurrentTime = document.getElementById('pomodoro-current-time');
+            domCache.pomodoroSession = document.getElementById('pomodoro-session');
+            domCache.pomodoroShortBreaks = document.getElementById('pomodoro-short-breaks');
+            domCache.pomodoroLongBreaks = document.getElementById('pomodoro-long-breaks');
+            domCache.pomodoroToday = document.getElementById('pomodoro-today');
+
+            // Settings inputs
+            domCache.workDuration = document.getElementById('work-duration');
+            domCache.shortBreakDuration = document.getElementById('short-break-duration');
+            domCache.longBreakDuration = document.getElementById('long-break-duration');
+            domCache.soundEnabled = document.getElementById('sound-enabled');
+            domCache.autoStartBreak = document.getElementById('auto-start-break');
+
+            // TODO widget elements
+            domCache.todoWidget = document.getElementById('todo-widget');
+            domCache.todoMinimized = document.getElementById('todo-minimized');
+
+            // Summary elements
+            domCache.currentMonth = document.getElementById('current-month');
+            domCache.totalHours = document.getElementById('total-hours');
+
+            // Form validation feedback elements
+            domCache.dateFeedback = document.getElementById('date-feedback');
+            domCache.taskTypeFeedback = document.getElementById('task-type-feedback');
+            domCache.clientFeedback = document.getElementById('client-feedback');
+            domCache.hoursFeedback = document.getElementById('hours-feedback');
+            domCache.taskNumberFeedback = document.getElementById('task-number-feedback');
+
+            // Filter elements
+            domCache.filterAllTasks = document.getElementById('filter-all-tasks');
+            domCache.taskTypeFiltersContainer = document.getElementById('task-type-filters-container');
         }
 
         // ============================
@@ -2708,63 +2742,68 @@
 
         // Update UI with current language
         function updateUILanguage() {
-            // Update document language
-            document.documentElement.lang = currentLanguage;
+            try {
+                // Update document language
+                document.documentElement.lang = currentLanguage;
 
-            // Single DOM traversal for all i18n elements (optimized from 3 separate queries)
-            document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
-                // Handle data-i18n attribute (text content)
-                if (element.hasAttribute('data-i18n')) {
-                    const key = element.getAttribute('data-i18n');
-                    const translation = t(key);
+                // Single DOM traversal for all i18n elements (optimized from 3 separate queries)
+                document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
+                    // Handle data-i18n attribute (text content)
+                    if (element.hasAttribute('data-i18n')) {
+                        const key = element.getAttribute('data-i18n');
+                        const translation = t(key);
 
-                    if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
-                        if (element.hasAttribute('placeholder')) {
-                            element.placeholder = translation;
+                        if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
+                            if (element.hasAttribute('placeholder')) {
+                                element.placeholder = translation;
+                            }
+                        } else if (element.tagName === 'INPUT' && element.type === 'button') {
+                            element.value = translation;
+                        } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
+                            element.textContent = translation;
+                        } else {
+                            element.textContent = translation;
                         }
-                    } else if (element.tagName === 'INPUT' && element.type === 'button') {
-                        element.value = translation;
-                    } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
-                        element.textContent = translation;
-                    } else {
-                        element.textContent = translation;
                     }
+
+                    // Handle data-i18n-title attribute
+                    if (element.hasAttribute('data-i18n-title')) {
+                        const key = element.getAttribute('data-i18n-title');
+                        element.title = t(key);
+                    }
+
+                    // Handle data-i18n-placeholder attribute
+                    if (element.hasAttribute('data-i18n-placeholder')) {
+                        const key = element.getAttribute('data-i18n-placeholder');
+                        element.placeholder = t(key);
+                    }
+                });
+
+                // Update Todo tooltips without re-rendering
+                updateTodoTooltips();
+
+                // Refresh displays that depend on language
+                if (typeof renderEntries === 'function') {
+                    renderEntries();
+                }
+                if (typeof updatePomodoroDisplay === 'function') {
+                    updatePomodoroDisplay();
+                }
+                if (typeof updateSummary === 'function') {
+                    updateSummary();
+                }
+                if (typeof updateProjectSelect === 'function') {
+                    updateProjectSelect();
+                }
+                if (typeof updateTaskTypeSelect === 'function') {
+                    updateTaskTypeSelect();
                 }
 
-                // Handle data-i18n-title attribute
-                if (element.hasAttribute('data-i18n-title')) {
-                    const key = element.getAttribute('data-i18n-title');
-                    element.title = t(key);
-                }
-
-                // Handle data-i18n-placeholder attribute
-                if (element.hasAttribute('data-i18n-placeholder')) {
-                    const key = element.getAttribute('data-i18n-placeholder');
-                    element.placeholder = t(key);
-                }
-            });
-
-            // Update Todo tooltips without re-rendering
-            updateTodoTooltips();
-
-            // Refresh displays that depend on language
-            if (typeof renderEntries === 'function') {
-                renderEntries();
+                refreshValidationMessages();
+            } catch (error) {
+                console.error('Error updating UI language:', error);
+                // Fail silently to not disrupt user experience
             }
-            if (typeof updatePomodoroDisplay === 'function') {
-                updatePomodoroDisplay();
-            }
-            if (typeof updateSummary === 'function') {
-                updateSummary();
-            }
-            if (typeof updateProjectSelect === 'function') {
-                updateProjectSelect();
-            }
-            if (typeof updateTaskTypeSelect === 'function') {
-                updateTaskTypeSelect();
-            }
-
-            refreshValidationMessages();
         }
 
         function updateTodoTooltips() {
@@ -2807,7 +2846,7 @@
         }
 
         function saveSectionVisibility(visibility) {
-            safeLocalStorageSave(SECTION_VISIBILITY_KEY, visibility, 300);
+            safeLocalStorageSave(SECTION_VISIBILITY_KEY, visibility);
         }
 
         function toggleSectionVisibility(sectionName, isVisible) {
@@ -2879,7 +2918,7 @@
         const saveTimers = {};
 
         // Safe localStorage save with error handling and debouncing
-        function safeLocalStorageSave(key, data, debounceMs = 300) {
+        function safeLocalStorageSave(key, data, debounceMs = DEBOUNCE_DELAY_MS) {
             // Clear existing timer for this key
             if (saveTimers[key]) {
                 clearTimeout(saveTimers[key]);
@@ -3100,7 +3139,7 @@
         }
 
         function saveEntries() {
-            safeLocalStorageSave(STORAGE_KEY, entries, 300);
+            safeLocalStorageSave(STORAGE_KEY, entries);
         }
 
         // Funkcje zarządzania projektami
@@ -3117,7 +3156,7 @@
         }
 
         function saveProjects() {
-            safeLocalStorageSave(PROJECTS_STORAGE_KEY, projects, 300);
+            safeLocalStorageSave(PROJECTS_STORAGE_KEY, projects);
         }
 
         function updateProjectSelect() {
@@ -3166,15 +3205,6 @@
                 itemCard.appendChild(itemSpan);
                 itemCard.appendChild(actionsDiv);
                 config.container.appendChild(itemCard);
-            });
-        }
-
-        function renderProjects() {
-            renderItemsList(projects, {
-                container: domCache.projectsContainer,
-                emptyMessage: 'Brak projektów',
-                editBtnClass: 'edit-project-btn',
-                deleteBtnClass: 'delete-project-btn'
             });
         }
 
@@ -3248,24 +3278,7 @@
             };
         }
 
-        // Project management instances
-        const projectManager = createItemManager({
-            items: projects,
-            editingIndex: editingProjectIndex,
-            inputId: 'project-name',
-            addBtnId: 'add-project-btn',
-            cancelBtnId: 'cancel-project-btn',
-            addBtnText: 'Dodaj projekt',
-            editBtnText: 'Zapisz zmiany',
-            emptyMsg: 'msg.enterProjectName',
-            existsMsg: 'msg.projectExists',
-            deleteMsg: 'msg.confirmDeleteProject',
-            save: saveProjects,
-            update: updateProjectSelect,
-            render: renderProjects,
-            scrollTo: '.project-management'
-        });
-
+        // Project management instance (modal only)
         const modalProjectManager = createItemManager({
             items: projects,
             editingIndex: editingProjectIndex,
@@ -3297,7 +3310,7 @@
         }
 
         function saveTaskTypes() {
-            safeLocalStorageSave(TASK_TYPES_STORAGE_KEY, taskTypes, 300);
+            safeLocalStorageSave(TASK_TYPES_STORAGE_KEY, taskTypes);
         }
 
         function updateTaskTypeSelect() {
@@ -3328,11 +3341,8 @@
         }
 
         function renderTaskTypeFilters() {
-            const container = document.getElementById('task-type-filters-container');
-
             // Zachowaj stan checkboxa "wszystkie"
-            const filterAllTasksElement = document.getElementById('filter-all-tasks');
-            const filterAllChecked = filterAllTasksElement ? filterAllTasksElement.checked : true;
+            const filterAllChecked = domCache.filterAllTasks ? domCache.filterAllTasks.checked : true;
 
             // Zachowaj stany poszczególnych filtrów przed ich usunięciem
             const filterStates = {};
@@ -3343,7 +3353,7 @@
             });
 
             // Wyczyść kontener ale zachowaj checkbox "wszystkie"
-            container.innerHTML = `
+            domCache.taskTypeFiltersContainer.innerHTML = `
                 <div class="filter-option">
                     <label>
                         <input type="checkbox" id="filter-all-tasks" ${filterAllChecked ? 'checked' : ''}>
@@ -3363,24 +3373,33 @@
                         <input type="checkbox" id="${filterId}" data-task-type="${taskType}" ${isChecked ? 'checked' : ''}>
                         ${taskType}
                     </label>`;
-                container.appendChild(filterDiv);
+                domCache.taskTypeFiltersContainer.appendChild(filterDiv);
             });
+
+            // Update cache reference for the recreated element
+            domCache.filterAllTasks = document.getElementById('filter-all-tasks');
 
             // Ponownie podepnij event listenery po regeneracji filtrów
             initTaskTypeFilterListeners();
         }
 
-        function initTaskTypeFilterListeners() {
-            // Obsługa checkboxa "Zaznacz/Odznacz wszystkie"
-            const filterAllTasks = document.getElementById('filter-all-tasks');
-            if (filterAllTasks) {
-                // Usuń stare event listenery poprzez klonowanie elementu
-                const newFilterAllTasks = filterAllTasks.cloneNode(true);
-                filterAllTasks.parentNode.replaceChild(newFilterAllTasks, filterAllTasks);
+        // Event delegation handler for task type filters (prevents memory leaks)
+        let taskTypeFilterHandler = null;
 
-                newFilterAllTasks.addEventListener('change', function() {
-                    const isChecked = this.checked;
-                    // Zaznacz/odznacz wszystkie filtry typów zadań
+        function initTaskTypeFilterListeners() {
+            // Remove old event delegation handler if exists
+            if (taskTypeFilterHandler) {
+                domCache.taskTypeFiltersContainer.removeEventListener('change', taskTypeFilterHandler);
+            }
+
+            // Single event delegation handler for all checkboxes (memory leak fix)
+            taskTypeFilterHandler = function(event) {
+                const target = event.target;
+                if (target.type !== 'checkbox') return;
+
+                // Handle "select all" checkbox
+                if (target.id === 'filter-all-tasks') {
+                    const isChecked = target.checked;
                     taskTypes.forEach(taskType => {
                         const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
                         const filterElement = document.getElementById(filterId);
@@ -3389,42 +3408,38 @@
                         }
                     });
                     renderEntries();
-                });
-            }
-
-            // Obsługa pojedynczych filtrów typów zadań
-            taskTypes.forEach(taskType => {
-                const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
-                const filterElement = document.getElementById(filterId);
-
-                if (filterElement) {
-                    filterElement.addEventListener('change', function() {
-                        // Sprawdź czy wszystkie są zaznaczone lub wszystkie odznaczone
-                        const allChecked = taskTypes.every(tt => {
-                            const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
-                            const el = document.getElementById(fid);
-                            return el ? el.checked : true;
-                        });
-                        const noneChecked = taskTypes.every(tt => {
-                            const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
-                            const el = document.getElementById(fid);
-                            return el ? !el.checked : false;
-                        });
-
-                        // Aktualizuj stan checkboxa "wszystkie"
-                        const filterAllTasks = document.getElementById('filter-all-tasks');
-                        if (filterAllTasks) {
-                            if (allChecked) {
-                                filterAllTasks.checked = true;
-                            } else if (noneChecked) {
-                                filterAllTasks.checked = false;
-                            }
-                        }
-
-                        renderEntries();
-                    });
+                    return;
                 }
-            });
+
+                // Handle individual task type filters
+                if (target.dataset.taskType) {
+                    // Check if all are selected or none are selected
+                    const allChecked = taskTypes.every(tt => {
+                        const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? el.checked : true;
+                    });
+                    const noneChecked = taskTypes.every(tt => {
+                        const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? !el.checked : false;
+                    });
+
+                    // Update "select all" checkbox state
+                    if (domCache.filterAllTasks) {
+                        if (allChecked) {
+                            domCache.filterAllTasks.checked = true;
+                        } else if (noneChecked) {
+                            domCache.filterAllTasks.checked = false;
+                        }
+                    }
+
+                    renderEntries();
+                }
+            };
+
+            // Add single delegated event listener
+            domCache.taskTypeFiltersContainer.addEventListener('change', taskTypeFilterHandler);
         }
 
         // Task type management instance (unified via createItemManager)
@@ -3541,7 +3556,6 @@
 
                 saveProjects();
                 updateProjectSelect();
-                renderProjects();
                 renderModalProjects();
 
                 saveTaskTypes();
@@ -3580,23 +3594,28 @@
         function cancelModalProjectEdit() { modalProjectManager.cancel(); }
 
         function addEntry(entry) {
-            const newEntry = {
-                ...entry,
-                id: Date.now(),
-                date: new Date(entry.date)
-            };
-            entries.push(newEntry);
-            entriesMap.set(newEntry.id, newEntry); // Update Map for O(1) lookups
-            saveEntries();
-            renderEntries();
-            updateSummary();
+            try {
+                const newEntry = {
+                    ...entry,
+                    id: Date.now(),
+                    date: new Date(entry.date)
+                };
+                entries.push(newEntry);
+                entriesMap.set(newEntry.id, newEntry); // Update Map for O(1) lookups
+                saveEntries();
+                renderEntries();
+                updateSummary();
 
-            // Delete pending Todo task if this entry was created from a Todo
-            if (pendingTodoForEntry) {
-                todoTasks = todoTasks.filter(t => t.id !== pendingTodoForEntry);
-                pendingTodoForEntry = null;
-                saveTodoTasks();
-                renderTodoTasks();
+                // Delete pending Todo task if this entry was created from a Todo
+                if (pendingTodoForEntry) {
+                    todoTasks = todoTasks.filter(t => t.id !== pendingTodoForEntry);
+                    pendingTodoForEntry = null;
+                    saveTodoTasks();
+                    renderTodoTasks();
+                }
+            } catch (error) {
+                console.error('Error adding entry:', error);
+                alert(t('error.addEntry') || 'Błąd podczas dodawania wpisu. Spróbuj ponownie.');
             }
         }
 
@@ -3713,31 +3732,53 @@
         }
 
         function renderEntries() {
-            const currentDate = new Date();
-            domCache.entriesBody.innerHTML = '';
-            let filteredEntries = filterEntriesByDate([...entries], currentDate);
-            filteredEntries = filterEntriesByTaskType(filteredEntries);
-            filteredEntries.sort((a, b) => b.date - a.date);
-            const totalEntries = filteredEntries.length;
-            const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
-            if (totalEntries > ENTRIES_LIMIT) {
-                domCache.showMoreBtn.style.display = 'inline-block';
-                domCache.showMoreBtn.textContent = showAllEntries ?
-                    `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
-                    `Pokaż wszystkie wpisy (${totalEntries})`;
-            } else {
-                domCache.showMoreBtn.style.display = 'none';
-            }
-            if (totalEntries === 0) {
+            try {
+                const currentDate = new Date();
+                let filteredEntries = filterEntriesByDate(entries, currentDate);
+                filteredEntries = filterEntriesByTaskType(filteredEntries);
+                filteredEntries.sort((a, b) => b.date - a.date);
+                const totalEntries = filteredEntries.length;
+                const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
+
+                // Update show more button
+                if (totalEntries > ENTRIES_LIMIT) {
+                    domCache.showMoreBtn.style.display = 'inline-block';
+                    domCache.showMoreBtn.textContent = showAllEntries ?
+                        `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
+                        `Pokaż wszystkie wpisy (${totalEntries})`;
+                } else {
+                    domCache.showMoreBtn.style.display = 'none';
+                }
+
+                // Use DocumentFragment for better performance
+                const fragment = document.createDocumentFragment();
+
+                if (totalEntries === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.setAttribute('colspan', '6');
+                    cell.style.textAlign = 'center';
+                    cell.style.padding = '20px';
+                    cell.textContent = 'Brak wpisów spełniających kryteria filtrowania';
+                    row.appendChild(cell);
+                    fragment.appendChild(row);
+                } else {
+                    entriesToShow.forEach(entry => {
+                        fragment.appendChild(createEntryRow(entry));
+                    });
+                }
+
+                // Single DOM update
+                domCache.entriesBody.innerHTML = '';
+                domCache.entriesBody.appendChild(fragment);
+            } catch (error) {
+                console.error('Error rendering entries:', error);
                 domCache.entriesBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">Brak wpisów spełniających kryteria filtrowania</td>
-                    </tr>
-                `;
-            } else {
-                entriesToShow.forEach(entry => {
-                    domCache.entriesBody.appendChild(createEntryRow(entry));
-                });
+                        <td colspan="6" style="text-align: center; padding: 20px; color: var(--error-color);">
+                            Błąd podczas wyświetlania wpisów. Odśwież stronę.
+                        </td>
+                    </tr>`;
             }
         }
 
@@ -3745,12 +3786,12 @@
             const entry = entriesMap.get(id);
             if (!entry) return;
 
-            document.getElementById('date').value = entry.date.toISOString().split('T')[0];
-            document.getElementById('task-type').value = entry.taskType;
-            document.getElementById('client').value = entry.client || '';
-            document.getElementById('hours').value = entry.hours;
-            document.getElementById('task-number').value = entry.taskNumber;
-            
+            domCache.date.value = entry.date.toISOString().split('T')[0];
+            domCache.taskType.value = entry.taskType;
+            domCache.client.value = entry.client || '';
+            domCache.hours.value = entry.hours;
+            domCache.taskNumber.value = entry.taskNumber;
+
             const submitButton = document.querySelector('#timesheet-form button[type="submit"]');
             submitButton.textContent = t('form.updateButton');
             submitButton.dataset.editId = id;
@@ -3764,22 +3805,22 @@
             document.querySelector('#timesheet-form button[type="submit"]').textContent = t('form.addButton');
             document.querySelector('#timesheet-form button[type="submit"]').removeAttribute('data-edit-id');
             document.querySelector('.entry-form h2').textContent = t('form.addEntry');
-            setFieldError(document.getElementById('date'), document.getElementById('date-feedback'));
-            setFieldError(document.getElementById('task-type'), document.getElementById('task-type-feedback'));
-            setFieldError(document.getElementById('client'), document.getElementById('client-feedback'));
-            setFieldError(document.getElementById('hours'), document.getElementById('hours-feedback'));
-            setFieldError(document.getElementById('task-number'), document.getElementById('task-number-feedback'));
+            setFieldError(domCache.date, domCache.dateFeedback);
+            setFieldError(domCache.taskType, domCache.taskTypeFeedback);
+            setFieldError(domCache.client, domCache.clientFeedback);
+            setFieldError(domCache.hours, domCache.hoursFeedback);
+            setFieldError(domCache.taskNumber, domCache.taskNumberFeedback);
             const today = new Date();
-            document.getElementById('date').value = today.toISOString().split('T')[0];
+            domCache.date.value = today.toISOString().split('T')[0];
         }
 
         function updateSummary() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
             const totalHours = currentMonthEntries.reduce((sum, entry) => sum + parseFloat(entry.hours), 0);
-            
-            document.getElementById('current-month').textContent = getMonthName(currentDate);
-            document.getElementById('total-hours').textContent = totalHours.toFixed(2);
+
+            domCache.currentMonth.textContent = getMonthName(currentDate);
+            domCache.totalHours.textContent = totalHours.toFixed(2);
         }
 
         function exportData() {
@@ -3828,16 +3869,14 @@
 
         function refreshValidationMessages() {
             const fields = [
-                { inputId: 'date', feedbackId: 'date-feedback' },
-                { inputId: 'task-type', feedbackId: 'task-type-feedback' },
-                { inputId: 'client', feedbackId: 'client-feedback' },
-                { inputId: 'hours', feedbackId: 'hours-feedback' },
-                { inputId: 'task-number', feedbackId: 'task-number-feedback' }
+                { input: domCache.date, feedback: domCache.dateFeedback },
+                { input: domCache.taskType, feedback: domCache.taskTypeFeedback },
+                { input: domCache.client, feedback: domCache.clientFeedback },
+                { input: domCache.hours, feedback: domCache.hoursFeedback },
+                { input: domCache.taskNumber, feedback: domCache.taskNumberFeedback }
             ];
 
-            fields.forEach(({ inputId, feedbackId }) => {
-                const input = document.getElementById(inputId);
-                const feedback = document.getElementById(feedbackId);
+            fields.forEach(({ input, feedback }) => {
                 if (!input || !feedback) return;
                 const key = input.dataset.errorKey;
                 if (key) {
@@ -3851,63 +3890,67 @@
 
         function validateForm() {
             let isValid = true;
-            
+
             // Walidacja daty
-            const dateInput = document.getElementById('date');
-            const dateFeedback = document.getElementById('date-feedback');
-            if (!dateInput.value) {
-                setFieldError(dateInput, dateFeedback, 'validation.selectDate');
+            if (!domCache.date.value) {
+                setFieldError(domCache.date, domCache.dateFeedback, 'validation.selectDate');
                 isValid = false;
             } else {
-                setFieldError(dateInput, dateFeedback);
+                const selectedDate = new Date(domCache.date.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const maxFutureDate = new Date(today);
+                maxFutureDate.setDate(maxFutureDate.getDate() + MAX_FUTURE_DAYS);
+
+                if (selectedDate > maxFutureDate) {
+                    setFieldError(domCache.date, domCache.dateFeedback, 'validation.dateTooFar');
+                    isValid = false;
+                } else {
+                    setFieldError(domCache.date, domCache.dateFeedback);
+                }
             }
 
             // Walidacja rodzaju zadania
-            const taskTypeInput = document.getElementById('task-type');
-            const taskTypeFeedback = document.getElementById('task-type-feedback');
-            if (!taskTypeInput.value) {
-                setFieldError(taskTypeInput, taskTypeFeedback, 'validation.selectTaskType');
+            if (!domCache.taskType.value) {
+                setFieldError(domCache.taskType, domCache.taskTypeFeedback, 'validation.selectTaskType');
                 isValid = false;
             } else {
-                setFieldError(taskTypeInput, taskTypeFeedback);
+                setFieldError(domCache.taskType, domCache.taskTypeFeedback);
             }
 
             // Walidacja projektu
-            const clientInput = document.getElementById('client');
-            const clientFeedback = document.getElementById('client-feedback');
-            if (!clientInput.value) {
-                setFieldError(clientInput, clientFeedback, 'validation.selectProject');
+            if (!domCache.client.value) {
+                setFieldError(domCache.client, domCache.clientFeedback, 'validation.selectProject');
                 isValid = false;
             } else {
-                setFieldError(clientInput, clientFeedback);
+                setFieldError(domCache.client, domCache.clientFeedback);
             }
 
             // Walidacja liczby godzin
-            const hoursInput = document.getElementById('hours');
-            const hoursFeedback = document.getElementById('hours-feedback');
-            const hoursValue = parseFloat(hoursInput.value);
+            const hoursValue = parseFloat(domCache.hours.value);
 
-            if (!hoursInput.value) {
-                setFieldError(hoursInput, hoursFeedback, 'validation.enterHours');
+            if (!domCache.hours.value) {
+                setFieldError(domCache.hours, domCache.hoursFeedback, 'validation.enterHours');
                 isValid = false;
             } else if (isNaN(hoursValue) || hoursValue < 0.25) {
-                setFieldError(hoursInput, hoursFeedback, 'validation.hoursGreaterThanZero');
+                setFieldError(domCache.hours, domCache.hoursFeedback, 'validation.hoursGreaterThanZero');
                 isValid = false;
             } else if (hoursValue > 8) {
-                setFieldError(hoursInput, hoursFeedback, 'validation.hoursMaxEight');
+                setFieldError(domCache.hours, domCache.hoursFeedback, 'validation.hoursMaxEight');
                 isValid = false;
             } else {
-                setFieldError(hoursInput, hoursFeedback);
+                setFieldError(domCache.hours, domCache.hoursFeedback);
             }
 
             // Walidacja numeru zadania
-            const taskNumberInput = document.getElementById('task-number');
-            const taskNumberFeedback = document.getElementById('task-number-feedback');
-            if (!taskNumberInput.value) {
-                setFieldError(taskNumberInput, taskNumberFeedback, 'validation.enterTaskNumber');
+            if (!domCache.taskNumber.value) {
+                setFieldError(domCache.taskNumber, domCache.taskNumberFeedback, 'validation.enterTaskNumber');
+                isValid = false;
+            } else if (domCache.taskNumber.value.length > MAX_TASK_NUMBER_LENGTH) {
+                setFieldError(domCache.taskNumber, domCache.taskNumberFeedback, 'validation.taskNumberTooLong');
                 isValid = false;
             } else {
-                setFieldError(taskNumberInput, taskNumberFeedback);
+                setFieldError(domCache.taskNumber, domCache.taskNumberFeedback);
             }
             
             return isValid;
@@ -3938,11 +3981,11 @@
             const settings = localStorage.getItem(POMODORO_SETTINGS_KEY);
             if (settings) {
                 pomodoroSettings = JSON.parse(settings);
-                document.getElementById('work-duration').value = pomodoroSettings.workDuration;
-                document.getElementById('short-break-duration').value = pomodoroSettings.shortBreakDuration;
-                document.getElementById('long-break-duration').value = pomodoroSettings.longBreakDuration;
-                document.getElementById('sound-enabled').checked = pomodoroSettings.soundEnabled;
-                document.getElementById('auto-start-break').checked = pomodoroSettings.autoStartBreak;
+                domCache.workDuration.value = pomodoroSettings.workDuration;
+                domCache.shortBreakDuration.value = pomodoroSettings.shortBreakDuration;
+                domCache.longBreakDuration.value = pomodoroSettings.longBreakDuration;
+                domCache.soundEnabled.checked = pomodoroSettings.soundEnabled;
+                domCache.autoStartBreak.checked = pomodoroSettings.autoStartBreak;
             }
 
             updatePomodoroDisplay();
@@ -3959,16 +4002,16 @@
                 sessionCount: pomodoroState.sessionCount,
                 lastDate: today
             };
-            safeLocalStorageSave(POMODORO_STORAGE_KEY, data, 500);
+            safeLocalStorageSave(POMODORO_STORAGE_KEY, data, DEBOUNCE_DELAY_LONG_MS);
         }
 
         function savePomodoroSettings() {
-            pomodoroSettings.workDuration = parseInt(document.getElementById('work-duration').value);
-            pomodoroSettings.shortBreakDuration = parseInt(document.getElementById('short-break-duration').value);
-            pomodoroSettings.longBreakDuration = parseInt(document.getElementById('long-break-duration').value);
-            pomodoroSettings.soundEnabled = document.getElementById('sound-enabled').checked;
-            pomodoroSettings.autoStartBreak = document.getElementById('auto-start-break').checked;
-            safeLocalStorageSave(POMODORO_SETTINGS_KEY, pomodoroSettings, 300);
+            pomodoroSettings.workDuration = parseInt(domCache.workDuration.value);
+            pomodoroSettings.shortBreakDuration = parseInt(domCache.shortBreakDuration.value);
+            pomodoroSettings.longBreakDuration = parseInt(domCache.longBreakDuration.value);
+            pomodoroSettings.soundEnabled = domCache.soundEnabled.checked;
+            pomodoroSettings.autoStartBreak = domCache.autoStartBreak.checked;
+            safeLocalStorageSave(POMODORO_SETTINGS_KEY, pomodoroSettings);
         }
 
         function formatTime(seconds) {
@@ -3988,10 +4031,6 @@
             }
             return formatted;
         }
-
-        // Backward compatibility aliases
-        function formatSecondsToHMS(seconds) { return formatSeconds(seconds, true); }
-        function formatSecondsToHM(seconds) { return formatSeconds(seconds, false); }
 
         function getColorForProgress(progress) {
             let r, g, b;
@@ -4058,82 +4097,83 @@
         }
 
         function updatePomodoroDisplay() {
-            const timeStr = formatTime(pomodoroState.timeRemaining);
-            document.getElementById('timer-display').textContent = timeStr;
-            document.getElementById('minimized-timer').textContent = timeStr;
+            try {
+                const timeStr = formatTime(pomodoroState.timeRemaining);
+                domCache.timerDisplay.textContent = timeStr;
+                domCache.minimizedTimer.textContent = timeStr;
 
-            const widget = document.getElementById('pomodoro-widget');
-            if (pomodoroState.isRunning) {
-                widget.classList.add('timer-running');
-            } else {
-                widget.classList.remove('timer-running');
-            }
+                if (pomodoroState.isRunning) {
+                    domCache.pomodoroWidget.classList.add('timer-running');
+                } else {
+                    domCache.pomodoroWidget.classList.remove('timer-running');
+                }
 
-            // Update progress ring
-            let totalTime;
-            switch(pomodoroState.mode) {
-                case 'work':
-                    totalTime = pomodoroSettings.workDuration * 60;
-                    break;
-                case 'shortBreak':
-                    totalTime = pomodoroSettings.shortBreakDuration * 60;
-                    break;
-                case 'longBreak':
-                    totalTime = pomodoroSettings.longBreakDuration * 60;
-                    break;
-            }
+                // Update progress ring
+                let totalTime;
+                switch(pomodoroState.mode) {
+                    case 'work':
+                        totalTime = pomodoroSettings.workDuration * 60;
+                        break;
+                    case 'shortBreak':
+                        totalTime = pomodoroSettings.shortBreakDuration * 60;
+                        break;
+                    case 'longBreak':
+                        totalTime = pomodoroSettings.longBreakDuration * 60;
+                        break;
+                }
 
-            const progress = pomodoroState.timeRemaining / totalTime;
-            const circumference = 2 * Math.PI * 90;
-            const offset = circumference * (1 - progress);
-            document.getElementById('timer-circle-progress').style.strokeDashoffset = offset;
-            const timerDisplay = document.getElementById('timer-display');
-            const minimizedTimer = document.getElementById('minimized-timer');
-            const minimizedWidget = document.getElementById('pomodoro-minimized');
-            const progressCircle = document.getElementById('timer-circle-progress');
-            if (pomodoroState.mode === 'work') {
-                const color = getColorForProgress(progress);
-                const hexColor = colorToHex(color.r, color.g, color.b);
-                const glowColor = colorToRgba(color.r, color.g, color.b, 0.3);
+                const progress = pomodoroState.timeRemaining / totalTime;
+                const circumference = 2 * Math.PI * 90;
+                const offset = circumference * (1 - progress);
+                domCache.timerCircleProgress.style.strokeDashoffset = offset;
 
-                timerDisplay.style.color = hexColor;
-                timerDisplay.style.textShadow = `0 2px 10px ${glowColor}`;
-                minimizedWidget.style.background = `linear-gradient(135deg, ${hexColor} 0%, ${hexColor} 100%)`;
-                progressCircle.style.stroke = hexColor;
-            } else {
-                timerDisplay.style.color = '#2196F3';
-                timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-                minimizedWidget.style.background = 'linear-gradient(135deg, #2196F3 0%, #1976d2 100%)';
-                progressCircle.style.stroke = '#2196F3';
-            }
-            let modeText = '';
-            switch(pomodoroState.mode) {
-                case 'work':
-                    modeText = t('pomodoro.workTime');
-                    break;
-                case 'shortBreak':
-                    modeText = t('pomodoro.shortBreak');
-                    break;
-                case 'longBreak':
-                    modeText = t('pomodoro.longBreak');
-                    break;
-            }
-            document.getElementById('timer-mode').textContent = modeText;
-            if (pomodoroState.mode === 'work') {
-                const currentTimeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
-                document.getElementById('pomodoro-current-time').textContent = currentTimeFormatted;
+                if (pomodoroState.mode === 'work') {
+                    const color = getColorForProgress(progress);
+                    const hexColor = colorToHex(color.r, color.g, color.b);
+                    const glowColor = colorToRgba(color.r, color.g, color.b, 0.3);
+
+                    domCache.timerDisplay.style.color = hexColor;
+                    domCache.timerDisplay.style.textShadow = `0 2px 10px ${glowColor}`;
+                    domCache.pomodoroMinimized.style.background = `linear-gradient(135deg, ${hexColor} 0%, ${hexColor} 100%)`;
+                    domCache.timerCircleProgress.style.stroke = hexColor;
+                } else {
+                    domCache.timerDisplay.style.color = '#2196F3';
+                    domCache.timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
+                    domCache.pomodoroMinimized.style.background = 'linear-gradient(135deg, #2196F3 0%, #1976d2 100%)';
+                    domCache.timerCircleProgress.style.stroke = '#2196F3';
+                }
+                let modeText = '';
+                switch(pomodoroState.mode) {
+                    case 'work':
+                        modeText = t('pomodoro.workTime');
+                        break;
+                    case 'shortBreak':
+                        modeText = t('pomodoro.shortBreak');
+                        break;
+                    case 'longBreak':
+                        modeText = t('pomodoro.longBreak');
+                        break;
+                }
+                domCache.timerMode.textContent = modeText;
+                if (pomodoroState.mode === 'work') {
+                    const currentTimeFormatted = formatSeconds(pomodoroState.elapsedTime, true);
+                    domCache.pomodoroCurrentTime.textContent = currentTimeFormatted;
+                }
+            } catch (error) {
+                console.error('Error updating Pomodoro display:', error);
+                // Fail silently to not disrupt timer functionality
             }
         }
 
         function updatePomodoroStats() {
             const completed = pomodoroState.sessionCount % 4;
             const sessionDisplay = '🍅'.repeat(completed) + '○'.repeat(4 - completed);
-            document.getElementById('pomodoro-session').textContent = `${sessionDisplay} (${completed}/4)`;
-            document.getElementById('pomodoro-short-breaks').textContent = pomodoroState.shortBreaksToday;
-            document.getElementById('pomodoro-long-breaks').textContent = pomodoroState.longBreaksToday;
+            domCache.pomodoroSession.textContent = `${sessionDisplay} (${completed}/4)`;
+            domCache.pomodoroShortBreaks.textContent = pomodoroState.shortBreaksToday;
+            domCache.pomodoroLongBreaks.textContent = pomodoroState.longBreaksToday;
             const todaySeconds = Math.floor(pomodoroState.todayHours * 3600);
-            const todayTimeFormatted = formatSecondsToHMS(todaySeconds);
-            document.getElementById('pomodoro-today').textContent = `${todayTimeFormatted} (${pomodoroState.todayPomodoros} 🍅)`;
+            const todayTimeFormatted = formatSeconds(todaySeconds, true);
+            domCache.pomodoroToday.textContent = `${todayTimeFormatted} (${pomodoroState.todayPomodoros} 🍅)`;
         }
 
         function timerTick() {
@@ -4169,10 +4209,8 @@
 
             if (pomodoroState.mode === 'work') {
                 const elapsedSeconds = pomodoroState.elapsedTime;
-                const requiredTime = pomodoroSettings.workDuration * 60 * 0.9;
+                const requiredTime = pomodoroSettings.workDuration * 60 * POMODORO_COMPLETION_THRESHOLD;
                 const isFullPomodoro = elapsedSeconds >= requiredTime;
-
-                console.log('Timer completed - elapsedTime:', elapsedSeconds, 'requiredTime:', requiredTime, 'isFullPomodoro:', isFullPomodoro);
 
                 if (elapsedSeconds > 0) {
                     recordPomodoroWork({ elapsedSecondsOverride: elapsedSeconds });
@@ -4240,12 +4278,12 @@
         }
 
         function roundWorkTime(seconds) {
-            if (seconds < 900) {
+            if (seconds < SHORT_WARNING_THRESHOLD) {
                 return 0;
             }
             const hours = Math.floor(seconds / 3600);
             const remainingSeconds = seconds % 3600;
-            if (remainingSeconds < 900) {
+            if (remainingSeconds < SHORT_WARNING_THRESHOLD) {
                 return hours;
             } else if (remainingSeconds < 2700) {
                 return hours + 0.5;
@@ -4318,7 +4356,7 @@
                 return entry.taskNumber === taskNumber && entryDate === todayISO;
             });
 
-            const timeFormatted = formatSecondsToHMS(elapsedSeconds);
+            const timeFormatted = formatSeconds(elapsedSeconds, true);
             let notificationMessage;
 
             if (existingEntryIndex !== -1) {
@@ -4385,7 +4423,7 @@
 
             if (pomodoroState.elapsedTime > 0) {
                 const elapsedSeconds = pomodoroState.elapsedTime;
-                const formattedTime = formatSecondsToHM(elapsedSeconds);
+                const formattedTime = formatSeconds(elapsedSeconds, false);
                 const currentTaskNumber = document.getElementById('timer-task-number').value.trim() || pomodoroState.currentTaskNumber;
                 const confirmMsg = t('pomodoro.notif.newTaskConfirm', { time: formattedTime, task: currentTaskNumber });
 
@@ -4997,7 +5035,7 @@
         }
 
         function saveTodoTasks() {
-            safeLocalStorageSave(TODO_STORAGE_KEY, todoTasks, 300);
+            safeLocalStorageSave(TODO_STORAGE_KEY, todoTasks);
         }
 
         function addTodoTask() {
@@ -5569,7 +5607,7 @@
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
-                        const timeFormatted = formatSecondsToHMS(pomodoroState.elapsedTime);
+                        const timeFormatted = formatSeconds(pomodoroState.elapsedTime, true);
                         const currentInput = this;
                         const message = `${t('msg.confirmTaskChange')} (${timeFormatted}). ${t('msg.continue')}`;
                         openConfirmDialog(message, () => {
@@ -5603,18 +5641,6 @@
         // ============ END POMODORO TIMER FUNCTIONS ============
 
         function setupEventDelegation() {
-            if (domCache.projectsContainer) {
-                domCache.projectsContainer.addEventListener('click', function(e) {
-                    const target = e.target;
-                    if (target.classList.contains('edit-project-btn')) {
-                        const index = parseInt(target.getAttribute('data-index'));
-                        projectManager.edit(index);
-                    } else if (target.classList.contains('delete-project-btn')) {
-                        const index = parseInt(target.getAttribute('data-index'));
-                        projectManager.delete(index);
-                    }
-                });
-            }
             if (domCache.taskTypesContainer) {
                 domCache.taskTypesContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -5825,21 +5851,21 @@
             }
 
             // Update empty-field class for todo description
-            const todoDescInput = document.getElementById('todo-description');
-            if (todoDescInput) {
-                const updateTodoDescEmptyClass = () => {
-                    if (todoDescInput.value.trim() === '') {
-                        todoDescInput.classList.add('empty-field');
+            const todoDescriptionInput = document.getElementById('todo-description');
+            if (todoDescriptionInput) {
+                const updateTodoEmptyFieldClass = () => {
+                    if (todoDescriptionInput.value.trim() === '') {
+                        todoDescriptionInput.classList.add('empty-field');
                     } else {
-                        todoDescInput.classList.remove('empty-field');
+                        todoDescriptionInput.classList.remove('empty-field');
                     }
                 };
 
                 // Initial check
-                updateTodoDescEmptyClass();
+                updateTodoEmptyFieldClass();
 
                 // Update on input
-                todoDescInput.addEventListener('input', updateTodoDescEmptyClass);
+                todoDescriptionInput.addEventListener('input', updateTodoEmptyFieldClass);
             }
         }
 
@@ -5849,7 +5875,6 @@
             loadEntries();
             loadProjects();
             updateProjectSelect();
-            renderProjects();
             loadTaskTypes();
             updateTaskTypeSelect();
             renderTaskTypeFilters();
