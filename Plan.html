@@ -1684,7 +1684,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="task-number" data-i18n="form.taskNumber">Numer zadania:</label>
+                    <label for="task-number" data-i18n="form.taskNumber">Numer lub nazwa zadania:</label>
                     <input type="text" id="task-number" name="task-number" required aria-describedby="task-number-feedback" aria-required="true">
                     <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
                 </div>
@@ -1775,7 +1775,7 @@
                     <h3 data-i18n="info.section.overviewTitle">Rejestrowanie zadań</h3>
                     <p data-i18n="info.intro">Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.</p>
                     <ol>
-                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.</li>
+                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.</li>
                         <li data-i18n="info.section.overviewStep2">Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.</li>
                         <li data-i18n="info.section.overviewStep3">Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.</li>
                         <li data-i18n="info.section.overviewStep4">Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.</li>
@@ -1798,10 +1798,10 @@
                     <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
-                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
+                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
                         <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie”, wyświetli się informacja o dodaniu wpisu.</li>
                         <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.</li>
-                        <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
+                        <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
                     </ol>
                     <div class="info-note" data-i18n="info.section.pomodoroNote">Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.</div>
                 </div>
@@ -1931,9 +1931,9 @@
             </div>
 
             <div class="timer-task-input">
-                <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
+                <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer lub nazwa zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer zadania">
+                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer lub nazwa zadania">
                     <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center; font-size: 18px;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✓</button>
                 </div>
             </div>
@@ -2309,7 +2309,7 @@
                 'form.project': 'Projekt:',
                 'form.selectProject': '-- Wybierz projekt --',
                 'form.hours': 'Liczba przepracowanych godzin (max 8):',
-                'form.taskNumber': 'Numer zadania:',
+                'form.taskNumber': 'Numer lub nazwa zadania:',
                 'form.addButton': 'Dodaj wpis',
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
@@ -2350,7 +2350,7 @@
                 'pomodoro.start': 'Start',
                 'pomodoro.pause': 'Pauza',
                 'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Numer zadania:',
+                'pomodoro.taskNumber': 'Numer lub nazwa zadania:',
                 'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
                 'pomodoro.newTask': 'Nowe',
                 'pomodoro.session': 'Sesja:',
@@ -2364,8 +2364,8 @@
                 'pomodoro.longBreakDuration': 'min - Długa przerwa',
                 'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
                 'pomodoro.autoStartBreak': 'Auto-start przerwy',
-                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer zadania',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer zadania aby zapisać czas pracy',
+                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer lub nazwę zadania',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer lub nazwę zadania aby zapisać czas pracy',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
                 'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.',
                 'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
@@ -2381,7 +2381,7 @@
                 'info.title': 'Jak korzystać z Time Planner',
                 'info.intro': 'Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.',
                 'info.section.overviewTitle': 'Rejestrowanie zadań',
-                'info.section.overviewStep1': 'W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.',
+                'info.section.overviewStep1': 'W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.',
                 'info.section.overviewStep2': 'Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.',
                 'info.section.overviewStep3': 'Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.',
                 'info.section.overviewStep4': 'Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.',
@@ -2390,10 +2390,10 @@
                 'info.section.overviewStep7': 'Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.',
                 'info.section.pomodoroTitle': 'Tryb Pomodoro',
                 'info.section.pomodoroIntro': 'Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.',
-                'info.section.pomodoroStep1': 'Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
+                'info.section.pomodoroStep1': 'Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
                 'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie”, wyświetli się informacja o dodaniu wpisu.',
                 'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
-                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
+                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
                 'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.',
                 'info.section.todoTitle': 'Lista To-Do',
                 'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
@@ -2422,7 +2422,7 @@
                 'validation.enterHours': 'Podaj liczbę godzin',
                 'validation.hoursGreaterThanZero': 'Liczba godzin musi być co najmniej 0,25',
                 'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
-                'validation.enterTaskNumber': 'Podaj numer zadania',
+                'validation.enterTaskNumber': 'Podaj numer lub nazwę zadania',
                 'month.january': 'Styczeń',
                 'month.february': 'Luty',
                 'month.march': 'Marzec',
@@ -2485,7 +2485,7 @@
                 'form.project': 'Project:',
                 'form.selectProject': '-- Select project --',
                 'form.hours': 'Number of hours worked (max 8):',
-                'form.taskNumber': 'Task number:',
+                'form.taskNumber': 'Task number or name:',
                 'form.addButton': 'Add entry',
                 'form.updateButton': 'Update entry',
                 'form.clearButton': 'Clear',
@@ -2536,7 +2536,7 @@
                 'pomodoro.start': 'Start',
                 'pomodoro.pause': 'Pause',
                 'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Task number:',
+                'pomodoro.taskNumber': 'Task number or name:',
                 'pomodoro.completeTask': 'Complete task, start new (session continuity)',
                 'pomodoro.newTask': 'New',
                 'pomodoro.session': 'Session:',
@@ -2552,8 +2552,8 @@
                 'pomodoro.autoStartBreak': 'Auto-start break',
 
                 // Pomodoro notifications
-                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number to save work time',
+                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
                 'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 15 min). Entry not added.',
                 'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 15 min). Timer still running - continue working or enter new task!',
@@ -2569,7 +2569,7 @@
                 'info.title': 'How to use Time Planner',
                 'info.intro': 'This page helps you plan work, track time, and remember your breaks.',
                 'info.section.overviewTitle': 'Tracking tasks',
-                'info.section.overviewStep1': 'In Settings, enter your Projects and Tasks, then fill in the Date, Task type, Project, and Task number fields.',
+                'info.section.overviewStep1': 'In Settings, enter your Projects and Tasks, then fill in the Date, Task type, Project, and Task number or name fields.',
                 'info.section.overviewStep2': 'Enter the number of worked hours or use Pomodoro mode to calculate them automatically.',
                 'info.section.overviewStep3': 'Click "Add entry" to save your time in the table below.',
                 'info.section.overviewStep4': 'Use the toggles above the form to show or hide the sections you need.',
@@ -2578,10 +2578,10 @@
                 'info.section.overviewStep7': 'The "Export data" button downloads a CSV file with the current month hours.',
                 'info.section.pomodoroTitle': 'Pomodoro mode',
                 'info.section.pomodoroIntro': 'The Pomodoro timer keeps you focused with short work cycles.',
-                'info.section.pomodoroStep1': 'Enter the task number inside the Pomodoro panel and press Start to begin the countdown.',
+                'info.section.pomodoroStep1': 'Enter the task number or name inside the Pomodoro panel and press Start to begin the countdown.',
                 'info.section.pomodoroStep2': 'When work ends, click “Complete task” or accept the prompt to add an entry.',
                 'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
-                'info.section.pomodoroStep4': 'Every new session with the same task number appends the tracked minutes to the existing entry so you keep the full history.',
+                'info.section.pomodoroStep4': 'Every new session with the same task number or name appends the tracked minutes to the existing entry so you keep the full history.',
                 'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
                 'info.section.todoTitle': 'To-Do list',
                 'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
@@ -2614,7 +2614,7 @@
                 'validation.enterHours': 'Enter number of hours',
                 'validation.hoursGreaterThanZero': 'Number of hours must be at least 0.25',
                 'validation.hoursMaxEight': 'Maximum number of hours is 8',
-                'validation.enterTaskNumber': 'Enter task number',
+                'validation.enterTaskNumber': 'Enter task number or name',
 
                 // Months
                 'month.january': 'January',
@@ -3766,7 +3766,7 @@
             
             const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
-            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer zadania\n';
+            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
