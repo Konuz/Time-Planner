@@ -952,6 +952,23 @@
             cursor: nesw-resize;
         }
 
+        /* Przesunięcie prawych uchwytów resize, żeby nie kolidowały ze scrollbarem */
+        .pomodoro-widget .resize-handle-e,
+        .todo-widget .resize-handle-e {
+            right: 8px;
+            width: 8px;
+        }
+
+        .pomodoro-widget .resize-handle-ne,
+        .todo-widget .resize-handle-ne {
+            right: 8px;
+        }
+
+        .pomodoro-widget .resize-handle-se,
+        .todo-widget .resize-handle-se {
+            right: 8px;
+        }
+
         @media (max-width: 768px) {
             .pomodoro-widget {
                 width: 280px;
