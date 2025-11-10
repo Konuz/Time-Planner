@@ -554,10 +554,17 @@
         .pomodoro-content::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 4px;
+            cursor: pointer;
         }
 
         .pomodoro-content::-webkit-scrollbar-thumb:hover {
             background: var(--primary-color);
+            cursor: grab;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color);
+            cursor: grabbing;
         }
 
         .pomodoro-display {
@@ -1042,10 +1049,17 @@
         .todo-content::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 4px;
+            cursor: pointer;
         }
 
         .todo-content::-webkit-scrollbar-thumb:hover {
             background: var(--primary-color);
+            cursor: grab;
+        }
+
+        .todo-content::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color);
+            cursor: grabbing;
         }
 
         .todo-add-form {
@@ -1510,10 +1524,17 @@
         .info-modal-body::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 4px;
+            cursor: pointer;
         }
 
         .info-modal-body::-webkit-scrollbar-thumb:hover {
             background: var(--primary-color);
+            cursor: grab;
+        }
+
+        .info-modal-body::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color);
+            cursor: grabbing;
         }
 
         .info-section h3 {
@@ -1577,6 +1598,32 @@
             padding: 25px;
             overflow-y: auto;
             flex: 1;
+            scrollbar-gutter: stable;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+            cursor: grab;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color);
+            cursor: grabbing;
         }
 
         .modal-footer {
