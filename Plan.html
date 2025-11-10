@@ -441,9 +441,6 @@
             will-change: transform;
         }
 
-        .pomodoro-widget.no-transition {
-            transition: none !important;
-        }
 
         .pomodoro-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -472,7 +469,7 @@
             letter-spacing: 1px;
         }
 
-        .pomodoro-minimize-btn {
+        .widget-minimize-btn {
             background: none;
             border: none;
             color: white;
@@ -494,7 +491,7 @@
             border-radius: 8px;
         }
 
-        .pomodoro-minimize-btn:hover {
+        .widget-minimize-btn:hover {
             opacity: 0.7;
         }
 
@@ -954,9 +951,6 @@
             transition: var(--transition);
         }
 
-        .todo-widget.no-transition {
-            transition: none !important;
-        }
 
         .todo-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
@@ -983,32 +977,6 @@
             color: white;
             font-size: 14px;
             letter-spacing: 1px;
-        }
-
-        .todo-minimize-btn {
-            background: none;
-            border: none;
-            color: white;
-            width: 24px;
-            min-width: 24px;
-            max-width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.2s ease;
-            padding: 0;
-            line-height: 1;
-            margin-left: auto;
-            margin-right: 8px;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-
-        .todo-minimize-btn:hover {
-            opacity: 0.7;
         }
 
         .todo-content {
@@ -1188,10 +1156,6 @@
         .todo-item.dragging {
             opacity: 0.5;
             cursor: grabbing;
-        }
-
-        .todo-item.drag-over {
-            border-top: 3px solid #66BB6A;
         }
 
         .todo-priority-flag {
@@ -1608,10 +1572,6 @@
             text-align: left;
         }
 
-        header {
-            position: relative;
-        }
-
         .modal-tabs {
             display: flex;
             border-bottom: 1px solid var(--border-color);
@@ -1820,6 +1780,16 @@
                     </ol>
                 </div>
                 <div class="info-section">
+                    <h3 data-i18n="info.section.todoTitle">Lista To-Do</h3>
+                    <p data-i18n="info.section.todoIntro">Widżet To-Do pomaga gromadzić szybkie zadania obok timera.</p>
+                    <ol>
+                        <li data-i18n="info.section.todoStep1">Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty”).</li>
+                        <li data-i18n="info.section.todoStep2">Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.</li>
+                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem” i „bez terminu”.</li>
+                        <li data-i18n="info.section.todoStep4">Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.</li>
+                    </ol>
+                </div>
+                <div class="info-section">
                     <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
@@ -1932,7 +1902,7 @@
         <div id="pomodoro-header" class="pomodoro-header">
             <span class="pomodoro-icon" aria-hidden="true">🍅</span>
             <span class="pomodoro-title" data-i18n="pomodoro.title">POMODORO</span>
-            <button id="pomodoro-minimize" class="pomodoro-minimize-btn" aria-label="Minimalizuj timer Pomodoro">−</button>
+            <button id="pomodoro-minimize" class="widget-minimize-btn pomodoro-minimize-btn" aria-label="Minimalizuj timer Pomodoro">−</button>
         </div>
         <div id="pomodoro-content" class="pomodoro-content">
             <div class="pomodoro-display">
@@ -2020,7 +1990,7 @@
     </div>
 
     <!-- TODO Widget -->
-    <div id="todo-widget" class="todo-widget" role="region" aria-label="Lista zadań" style="display: none;">
+    <div id="todo-widget" class="todo-widget" role="region" aria-label="Lista To-Do" style="display: none;">
         <!-- Resize Handles -->
         <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
@@ -2032,9 +2002,9 @@
         <div class="resize-handle resize-handle-sw" data-direction="sw" aria-hidden="true"></div>
 
         <div id="todo-header" class="todo-header">
-            <span class="todo-icon" aria-hidden="true">✓</span>
-            <span class="todo-title" data-i18n="todo.title">ZADANIA</span>
-            <button id="todo-minimize" class="todo-minimize-btn" aria-label="Minimalizuj listę zadań">−</button>
+            <span class="todo-icon" aria-hidden="true">📋</span>
+            <span class="todo-title" data-i18n="todo.title">TO-DO</span>
+            <button id="todo-minimize" class="widget-minimize-btn todo-minimize-btn" aria-label="Minimalizuj listę To-Do">−</button>
         </div>
 
         <div id="todo-content" class="todo-content">
@@ -2080,9 +2050,9 @@
     </div>
 
     <!-- Minimized TODO Icon -->
-    <div id="todo-minimized" class="todo-minimized" role="button" aria-label="Przywróć listę zadań" tabindex="0">
+    <div id="todo-minimized" class="todo-minimized" role="button" aria-label="Przywróć listę To-Do" tabindex="0">
         <span class="minimized-count" id="minimized-todo-count" aria-live="off">0</span>
-        <span class="minimized-icon" aria-hidden="true">✓</span>
+        <span class="minimized-icon" aria-hidden="true">📋</span>
     </div>
 
     <script>
@@ -2161,8 +2131,35 @@
         let resizeDirectionTodo = null;
         let draggedTodoElement = null;
         let draggedTodoId = null;
-        let draggedFromList = null;
+        let todoGlobalDragOverAttached = false;
+        let todoGlobalDragEnterAttached = false;
         let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
+
+        const getDefaultWidgetLayoutState = () => ({
+            pomodoro: {
+                left: null,
+                right: 20,
+                top: 20,
+                width: null,
+                height: null,
+                minimizedLeft: null,
+                minimizedRight: 20,
+                minimizedTop: 20,
+                isMinimized: false
+            },
+            todo: {
+                left: 20,
+                right: null,
+                top: 20,
+                width: null,
+                height: null,
+                minimizedLeft: 20,
+                minimizedRight: null,
+                minimizedTop: 20,
+                isMinimized: true
+            }
+        });
+        let widgetLayoutState = getDefaultWidgetLayoutState();
 
         const domCache = {
             // Form elements
@@ -2392,6 +2389,12 @@
                 'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
                 'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
                 'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.',
+                'info.section.todoTitle': 'Lista To-Do',
+                'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
+                'info.section.todoStep1': 'Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty”).',
+                'info.section.todoStep2': 'Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.',
+                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem” i „bez terminu”.',
+                'info.section.todoStep4': 'Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.',
                 'info.close': 'Zamknij instrukcję',
                 'msg.enterProjectName': 'Podaj nazwę projektu',
                 'msg.projectExists': 'Ten projekt już istnieje',
@@ -2431,7 +2434,7 @@
                 'action.delete': 'Usuń',
 
                 // Todo widget
-                'todo.title': 'ZADANIA',
+                'todo.title': 'TO-DO',
                 'todo.descriptionPlaceholder': 'Opis zadania...',
                 'todo.priorityHigh': 'Wysoki',
                 'todo.priorityMedium': 'Średni',
@@ -2574,6 +2577,12 @@
                 'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
                 'info.section.pomodoroStep4': 'Every new session with the same task number appends the tracked minutes to the existing entry so you keep the full history.',
                 'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
+                'info.section.todoTitle': 'To-Do list',
+                'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
+                'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority and due date (or enable “No date”).',
+                'info.section.todoStep2': 'Use the form buttons to add tasks or remove them all; every task is saved automatically in your browser.',
+                'info.section.todoStep3': 'Drag items to reorder them or move them between the dated and undated sections.',
+                'info.section.todoStep4': 'The ✓, ✕ and → buttons complete, cancel or send the task to Pomodoro so the timer picks up its number.',
                 'info.close': 'Close guide',
 
                 // Messages
@@ -2621,7 +2630,7 @@
                 'action.delete': 'Delete',
 
                 // Todo widget
-                'todo.title': 'TASKS',
+                'todo.title': 'TO-DO',
                 'todo.descriptionPlaceholder': 'Task description...',
                 'todo.priorityHigh': 'High',
                 'todo.priorityMedium': 'Medium',
@@ -2669,34 +2678,37 @@
             // Update document language
             document.documentElement.lang = currentLanguage;
 
-            // Update all elements with data-i18n attribute
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                const translation = t(key);
+            // Single DOM traversal for all i18n elements (optimized from 3 separate queries)
+            document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
+                // Handle data-i18n attribute (text content)
+                if (element.hasAttribute('data-i18n')) {
+                    const key = element.getAttribute('data-i18n');
+                    const translation = t(key);
 
-                if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
-                    if (element.hasAttribute('placeholder')) {
-                        element.placeholder = translation;
+                    if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
+                        if (element.hasAttribute('placeholder')) {
+                            element.placeholder = translation;
+                        }
+                    } else if (element.tagName === 'INPUT' && element.type === 'button') {
+                        element.value = translation;
+                    } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
+                        element.textContent = translation;
+                    } else {
+                        element.textContent = translation;
                     }
-                } else if (element.tagName === 'INPUT' && element.type === 'button') {
-                    element.value = translation;
-                } else if (element.tagName === 'BUTTON' || element.tagName === 'OPTION') {
-                    element.textContent = translation;
-                } else {
-                    element.textContent = translation;
                 }
-            });
 
-            // Update title attribute for buttons
-            document.querySelectorAll('[data-i18n-title]').forEach(element => {
-                const key = element.getAttribute('data-i18n-title');
-                element.title = t(key);
-            });
+                // Handle data-i18n-title attribute
+                if (element.hasAttribute('data-i18n-title')) {
+                    const key = element.getAttribute('data-i18n-title');
+                    element.title = t(key);
+                }
 
-            // Update placeholder attribute for inputs
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-i18n-placeholder');
-                element.placeholder = t(key);
+                // Handle data-i18n-placeholder attribute
+                if (element.hasAttribute('data-i18n-placeholder')) {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    element.placeholder = t(key);
+                }
             });
 
             // Update Todo tooltips without re-rendering
@@ -2746,12 +2758,6 @@
             localStorage.setItem('app-language', currentLanguage);
             updateUILanguage();
         }
-
-        // Domyślne projekty
-        const DEFAULT_PROJECTS = [];
-
-        // Domyślne typy zadań
-        const DEFAULT_TASK_TYPES = [];
 
         // Funkcje zarządzania widocznością sekcji
         function loadSectionVisibility() {
@@ -2851,7 +2857,6 @@
                 try {
                     const serialized = JSON.stringify(data);
                     localStorage.setItem(key, serialized);
-                    delete saveTimers[key];
                 } catch (e) {
                     console.error(`LocalStorage save failed for ${key}:`, e);
 
@@ -2862,6 +2867,9 @@
                         // Other errors (e.g., private browsing mode)
                         showStorageError(t('msg.storageSaveFailed'));
                     }
+                } finally {
+                    // Always clean up timer reference to prevent memory leak
+                    delete saveTimers[key];
                 }
             }, debounceMs);
         }
@@ -2882,6 +2890,173 @@
 
         // ============ END LOCALSTORAGE MANAGEMENT ============
 
+        function loadWidgetLayoutState() {
+            widgetLayoutState = getDefaultWidgetLayoutState();
+        }
+
+        function getWidgetElements(type) {
+            if (type === 'pomodoro') {
+                return {
+                    widget: document.getElementById('pomodoro-widget'),
+                    minimized: document.getElementById('pomodoro-minimized')
+                };
+            }
+            if (type === 'todo') {
+                return {
+                    widget: document.getElementById('todo-widget'),
+                    minimized: document.getElementById('todo-minimized')
+                };
+            }
+            return { widget: null, minimized: null };
+        }
+
+        function applyWidgetLayoutState(type) {
+            const layout = widgetLayoutState[type];
+            if (!layout) {
+                return;
+            }
+            const { widget, minimized } = getWidgetElements(type);
+            if (!widget || !minimized) {
+                return;
+            }
+
+            setElementPosition(widget, {
+                left: layout.left,
+                top: layout.top,
+                right: layout.right
+            });
+            setElementSize(widget, layout.width, layout.height);
+
+            setElementPosition(minimized, {
+                left: layout.minimizedLeft,
+                top: layout.minimizedTop,
+                right: layout.minimizedRight
+            });
+
+            if (layout.isMinimized) {
+                widget.style.display = 'none';
+                minimized.style.display = 'flex';
+            } else {
+                widget.style.display = 'flex';
+                minimized.style.display = 'none';
+            }
+        }
+
+        function setElementPosition(element, position) {
+            if (!element) {
+                return;
+            }
+            const { left, top, right } = position || {};
+
+            if (typeof left === 'number' && Number.isFinite(left)) {
+                element.style.left = `${left}px`;
+                element.style.right = 'auto';
+            } else if (typeof right === 'number' && Number.isFinite(right)) {
+                element.style.right = `${right}px`;
+                element.style.left = 'auto';
+            } else {
+                element.style.left = '';
+                element.style.right = '';
+            }
+
+            if (typeof top === 'number' && Number.isFinite(top)) {
+                element.style.top = `${top}px`;
+                element.style.bottom = 'auto';
+            } else {
+                element.style.top = '';
+                element.style.bottom = '';
+            }
+        }
+
+        function setElementSize(element, width, height) {
+            if (!element) {
+                return;
+            }
+            if (typeof width === 'number' && Number.isFinite(width)) {
+                element.style.width = `${width}px`;
+            } else if (width == null) {
+                element.style.width = '';
+            }
+
+            if (typeof height === 'number' && Number.isFinite(height)) {
+                element.style.height = `${height}px`;
+            } else if (height == null) {
+                element.style.height = '';
+            }
+        }
+
+        // Constrain widget position and size to viewport boundaries
+        function constrainToViewport(element, proposedLeft, proposedTop, proposedWidth, proposedHeight) {
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+
+            // Use provided dimensions or fallback to element's current dimensions
+            const width = (typeof proposedWidth === 'number') ? proposedWidth : element.offsetWidth;
+            const height = (typeof proposedHeight === 'number') ? proposedHeight : element.offsetHeight;
+
+            // Clamp position to viewport boundaries using Math.max/min pattern
+            // Ensures: 0 <= left <= (viewportWidth - width)
+            const left = Math.max(0, Math.min(proposedLeft, viewportWidth - width));
+            const top = Math.max(0, Math.min(proposedTop, viewportHeight - height));
+
+            return { left, top, width, height };
+        }
+
+        // Unified widget synchronization function (eliminates 80% code duplication)
+        function syncWidgetLayout(type, isMinimized = false, options = {}) {
+            const elements = getWidgetElements(type);
+            const element = isMinimized ? elements.minimized : elements.widget;
+
+            if (!element || element.style.display === 'none') {
+                return;
+            }
+
+            const rect = element.getBoundingClientRect();
+            const layout = widgetLayoutState[type];
+            if (!layout) {
+                return;
+            }
+
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+            const left = Math.round(rect.left);
+            const top = Math.round(rect.top);
+            const right = viewportWidth ? Math.round(Math.max(0, viewportWidth - rect.right)) : null;
+
+            if (isMinimized) {
+                layout.minimizedLeft = left;
+                layout.minimizedTop = top;
+                layout.minimizedRight = right;
+
+                if (options.syncWidgetPosition) {
+                    layout.left = layout.minimizedLeft;
+                    layout.top = layout.minimizedTop;
+                    layout.right = layout.minimizedRight;
+                }
+            } else {
+                layout.left = left;
+                layout.top = top;
+                layout.right = right;
+                layout.width = Math.round(rect.width);
+                layout.height = Math.round(rect.height);
+
+                if (options.syncMinimizedPosition) {
+                    layout.minimizedLeft = layout.left;
+                    layout.minimizedTop = layout.top;
+                    layout.minimizedRight = layout.right;
+                }
+            }
+        }
+
+        // Backward compatibility wrappers
+        function syncWidgetRectToLayout(type, options = {}) {
+            return syncWidgetLayout(type, false, options);
+        }
+
+        function syncMinimizedRectToLayout(type, options = {}) {
+            return syncWidgetLayout(type, true, options);
+        }
+
+
         function loadEntries() {
             const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
             entries = storedEntries.map(entry => ({
@@ -2898,7 +3073,7 @@
         // Funkcje zarządzania projektami
         function loadProjects() {
             const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
-            const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [...DEFAULT_PROJECTS];
+            const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [];
 
             projects.length = 0; // Preserve reference for managers relying on the original array
             projects.push(...loadedProjects);
@@ -2930,36 +3105,44 @@
             }
         }
 
-        function renderProjects() {
-            // Use cached DOM reference for better performance
-            domCache.projectsContainer.innerHTML = '';
+        // Generic function to render item lists (projects, task types, etc.)
+        function renderItemsList(items, config) {
+            // config: { container, emptyMessage, editBtnClass, deleteBtnClass }
+            config.container.innerHTML = '';
 
-            if (projects.length === 0) {
-                domCache.projectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
+            if (items.length === 0) {
+                config.container.innerHTML = `<p style="text-align: center; color: var(--text-color);">${config.emptyMessage}</p>`;
                 return;
             }
 
-            projects.forEach((project, index) => {
-                const projectCard = document.createElement('div');
-                projectCard.className = 'project-card';
+            items.forEach((item, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'project-card';
 
                 // Safe: Use textContent for user data to prevent XSS
-                const projectSpan = document.createElement('span');
-                projectSpan.textContent = project;
+                const itemSpan = document.createElement('span');
+                itemSpan.textContent = item;
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'project-actions';
                 actionsDiv.innerHTML = `
-                    <button class="project-action-btn edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                    <button class="project-action-btn delete-btn delete-project-btn" data-index="${index}">${t('action.delete')}</button>
+                    <button class="project-action-btn ${config.editBtnClass}" data-index="${index}">${t('action.edit')}</button>
+                    <button class="project-action-btn delete-btn ${config.deleteBtnClass}" data-index="${index}">${t('action.delete')}</button>
                 `;
 
-                projectCard.appendChild(projectSpan);
-                projectCard.appendChild(actionsDiv);
-                domCache.projectsContainer.appendChild(projectCard);
+                itemCard.appendChild(itemSpan);
+                itemCard.appendChild(actionsDiv);
+                config.container.appendChild(itemCard);
             });
+        }
 
-            // Event listeners are now delegated via projects-container (see initApp)
+        function renderProjects() {
+            renderItemsList(projects, {
+                container: domCache.projectsContainer,
+                emptyMessage: 'Brak projektów',
+                editBtnClass: 'edit-project-btn',
+                deleteBtnClass: 'delete-project-btn'
+            });
         }
 
         // Generic management system to eliminate DRY violations
@@ -3067,16 +3250,10 @@
             onChange: markAsChanged
         });
 
-        // Wrapper functions for backward compatibility
-        function addProject() { projectManager.add(); }
-        function editProject(index) { projectManager.edit(index); }
-        function deleteProject(index) { projectManager.delete(index); }
-        function cancelProjectEdit() { projectManager.cancel(); }
-
         // Funkcje zarządzania typami zadań
         function loadTaskTypes() {
             const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
-            const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [...DEFAULT_TASK_TYPES];
+            const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [];
 
             taskTypes.length = 0; // Preserve reference shared with task type manager
             taskTypes.push(...loadedTaskTypes);
@@ -3109,35 +3286,12 @@
         }
 
         function renderTaskTypes() {
-            // Use cached DOM reference for better performance
-            domCache.taskTypesContainer.innerHTML = '';
-
-            if (taskTypes.length === 0) {
-                domCache.taskTypesContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak typów zadań</p>';
-                return;
-            }
-
-            taskTypes.forEach((taskType, index) => {
-                const taskTypeCard = document.createElement('div');
-                taskTypeCard.className = 'project-card';
-
-                // Safe: Use textContent for user data to prevent XSS
-                const taskTypeSpan = document.createElement('span');
-                taskTypeSpan.textContent = taskType;
-
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'project-actions';
-                actionsDiv.innerHTML = `
-                    <button class="project-action-btn edit-task-type-btn" data-index="${index}">${t('action.edit')}</button>
-                    <button class="project-action-btn delete-btn delete-task-type-btn" data-index="${index}">${t('action.delete')}</button>
-                `;
-
-                taskTypeCard.appendChild(taskTypeSpan);
-                taskTypeCard.appendChild(actionsDiv);
-                domCache.taskTypesContainer.appendChild(taskTypeCard);
+            renderItemsList(taskTypes, {
+                container: domCache.taskTypesContainer,
+                emptyMessage: 'Brak typów zadań',
+                editBtnClass: 'edit-task-type-btn',
+                deleteBtnClass: 'delete-task-type-btn'
             });
-
-            // Event listeners are now delegated via task-types-container (see initApp)
         }
 
         function renderTaskTypeFilters() {
@@ -3259,12 +3413,6 @@
             onChange: markAsChanged
         });
 
-        // Task type wrapper functions for backward compatibility
-        function addTaskType() { taskTypeManager.add(); }
-        function editTaskType(index) { taskTypeManager.edit(index); }
-        function deleteTaskType(index) { taskTypeManager.delete(index); }
-        function cancelTaskTypeEdit() { taskTypeManager.cancel(); }
-
         // Funkcje zarządzania oknem modalnym
         function updateApplyButtonState() {
             const applyBtn = document.getElementById('modal-apply-btn');
@@ -3337,7 +3485,7 @@
             modal.style.display = 'none';
             // Reset editing states
             cancelModalProjectEdit();
-            cancelTaskTypeEdit();
+            taskTypeManager.cancel();
             // Reset unsaved changes flag when closing
             markAsSaved();
         }
@@ -3384,35 +3532,12 @@
 
         // Funkcje zarządzania projektami w modalu
         function renderModalProjects() {
-            // Use cached DOM reference for better performance
-            domCache.modalProjectsContainer.innerHTML = '';
-
-            if (projects.length === 0) {
-                domCache.modalProjectsContainer.innerHTML = '<p style="text-align: center; color: var(--text-color);">Brak projektów</p>';
-                return;
-            }
-
-            projects.forEach((project, index) => {
-                const projectCard = document.createElement('div');
-                projectCard.className = 'project-card';
-
-                // Safe: Use textContent for user data to prevent XSS
-                const projectSpan = document.createElement('span');
-                projectSpan.textContent = project;
-
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'project-actions';
-                actionsDiv.innerHTML = `
-                    <button class="project-action-btn modal-edit-project-btn" data-index="${index}">${t('action.edit')}</button>
-                    <button class="project-action-btn delete-btn modal-delete-project-btn" data-index="${index}">${t('action.delete')}</button>
-                `;
-
-                projectCard.appendChild(projectSpan);
-                projectCard.appendChild(actionsDiv);
-                domCache.modalProjectsContainer.appendChild(projectCard);
+            renderItemsList(projects, {
+                container: domCache.modalProjectsContainer,
+                emptyMessage: 'Brak projektów',
+                editBtnClass: 'modal-edit-project-btn',
+                deleteBtnClass: 'modal-delete-project-btn'
             });
-
-            // Event listeners are now delegated via modal-projects-container (see initApp)
         }
 
         // Modal project wrapper functions (unified via createItemManager)
@@ -3501,10 +3626,18 @@
         }
 
         function filterEntriesByTaskType(entries) {
-            return entries.filter(entry => {
-                const filterId = `filter-${entry.taskType.toLowerCase().replace(/\s+/g, '-')}`;
+            // Cache all filter states before filtering to avoid O(n) DOM queries
+            const filterStates = {};
+            taskTypes.forEach(taskType => {
+                const filterId = `filter-${taskType.toLowerCase().replace(/\s+/g, '-')}`;
                 const filterElement = document.getElementById(filterId);
-                return filterElement ? filterElement.checked : true;
+                filterStates[taskType] = filterElement ? filterElement.checked : true;
+            });
+
+            return entries.filter(entry => {
+                return filterStates[entry.taskType] !== undefined
+                    ? filterStates[entry.taskType]
+                    : true;
             });
         }
 
@@ -3811,18 +3944,21 @@
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
-        function formatSecondsToHMS(seconds) {
+        function formatSeconds(seconds, includeSeconds = true) {
             const hours = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const formatted = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+            if (includeSeconds) {
+                const secs = Math.floor(seconds % 60);
+                return `${formatted}:${secs.toString().padStart(2, '0')}`;
+            }
+            return formatted;
         }
 
-        function formatSecondsToHM(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const mins = Math.floor((seconds % 3600) / 60);
-            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-        }
+        // Backward compatibility aliases
+        function formatSecondsToHMS(seconds) { return formatSeconds(seconds, true); }
+        function formatSecondsToHM(seconds) { return formatSeconds(seconds, false); }
 
         function getColorForProgress(progress) {
             let r, g, b;
@@ -4351,8 +4487,11 @@
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
 
-                    widget.style.left = (startLeft + deltaX) + 'px';
-                    widget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
+
+                    widget.style.left = constrained.left + 'px';
+                    widget.style.top = constrained.top + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
                 } else if (isDraggingMinimized) {
@@ -4363,8 +4502,11 @@
                         minimizedDragMoved = true;
                     }
 
-                    minimizedWidget.style.left = (startLeft + deltaX) + 'px';
-                    minimizedWidget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
+
+                    minimizedWidget.style.left = constrained.left + 'px';
+                    minimizedWidget.style.top = constrained.top + 'px';
                     minimizedWidget.style.right = 'auto';
                     minimizedWidget.style.bottom = 'auto';
                 } else if (isResizing) {
@@ -4393,20 +4535,31 @@
                         newTop = startTop + heightDiff;
                     }
 
-                    widget.style.width = newWidth + 'px';
-                    widget.style.height = newHeight + 'px';
-                    widget.style.left = newLeft + 'px';
-                    widget.style.top = newTop + 'px';
+                    // Constrain to viewport boundaries after calculating new dimensions
+                    const constrained = constrainToViewport(widget, newLeft, newTop, newWidth, newHeight);
+
+                    widget.style.width = constrained.width + 'px';
+                    widget.style.height = constrained.height + 'px';
+                    widget.style.left = constrained.left + 'px';
+                    widget.style.top = constrained.top + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
                 }
             });
             document.addEventListener('mouseup', function() {
+                let layoutChanged = false;
                 if (isDragging || isResizing) {
                     widget.classList.remove('no-transition');
+                    syncWidgetRectToLayout('pomodoro');
+                    layoutChanged = true;
                 }
                 if (isDraggingMinimized) {
                     minimizedWidget.classList.remove('no-transition');
+                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
+                    layoutChanged = true;
+                }
+                if (layoutChanged) {
+                    applyWidgetLayoutState('pomodoro');
                 }
                 isDragging = false;
                 isDraggingMinimized = false;
@@ -4449,8 +4602,11 @@
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
-                    widget.style.left = (startLeft + deltaX) + 'px';
-                    widget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
+
+                    widget.style.left = constrained.left + 'px';
+                    widget.style.top = constrained.top + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
                 } else if (isDraggingMinimized) {
@@ -4462,22 +4618,35 @@
                         minimizedDragMoved = true;
                     }
 
-                    minimizedWidget.style.left = (startLeft + deltaX) + 'px';
-                    minimizedWidget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
+
+                    minimizedWidget.style.left = constrained.left + 'px';
+                    minimizedWidget.style.top = constrained.top + 'px';
                     minimizedWidget.style.right = 'auto';
                     minimizedWidget.style.bottom = 'auto';
                 }
             });
 
             document.addEventListener('touchend', function() {
-                if (isDragging) {
+                let layoutChanged = false;
+                if (isDragging || isResizing) {
                     widget.classList.remove('no-transition');
+                    syncWidgetRectToLayout('pomodoro');
+                    layoutChanged = true;
                 }
                 if (isDraggingMinimized) {
                     minimizedWidget.classList.remove('no-transition');
+                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
+                    layoutChanged = true;
+                }
+                if (layoutChanged) {
+                    applyWidgetLayoutState('pomodoro');
                 }
                 isDragging = false;
                 isDraggingMinimized = false;
+                isResizing = false;
+                resizeDirection = null;
             });
 
             // ===== TODO WIDGET DRAG AND RESIZE =====
@@ -4545,8 +4714,11 @@
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
 
-                    todoWidget.style.left = (startLeft + deltaX) + 'px';
-                    todoWidget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
+
+                    todoWidget.style.left = constrained.left + 'px';
+                    todoWidget.style.top = constrained.top + 'px';
                     todoWidget.style.right = 'auto';
                     todoWidget.style.bottom = 'auto';
                 } else if (isDraggingTodoMinimized) {
@@ -4557,8 +4729,11 @@
                         todoMinimizedDragMoved = true;
                     }
 
-                    todoMinimized.style.left = (startLeft + deltaX) + 'px';
-                    todoMinimized.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
+
+                    todoMinimized.style.left = constrained.left + 'px';
+                    todoMinimized.style.top = constrained.top + 'px';
                     todoMinimized.style.right = 'auto';
                     todoMinimized.style.bottom = 'auto';
                 } else if (isResizingTodo) {
@@ -4588,10 +4763,13 @@
                         newTop = startTop + heightDiff;
                     }
 
-                    todoWidget.style.width = newWidth + 'px';
-                    todoWidget.style.height = newHeight + 'px';
-                    todoWidget.style.left = newLeft + 'px';
-                    todoWidget.style.top = newTop + 'px';
+                    // Constrain to viewport boundaries after calculating new dimensions
+                    const constrained = constrainToViewport(todoWidget, newLeft, newTop, newWidth, newHeight);
+
+                    todoWidget.style.width = constrained.width + 'px';
+                    todoWidget.style.height = constrained.height + 'px';
+                    todoWidget.style.left = constrained.left + 'px';
+                    todoWidget.style.top = constrained.top + 'px';
                     todoWidget.style.right = 'auto';
                     todoWidget.style.bottom = 'auto';
                 }
@@ -4599,11 +4777,19 @@
 
             // Extend mouseup to handle Todo
             document.addEventListener('mouseup', function() {
+                let layoutChanged = false;
                 if (isDraggingTodo || isResizingTodo) {
                     todoWidget.classList.remove('no-transition');
+                    syncWidgetRectToLayout('todo');
+                    layoutChanged = true;
                 }
                 if (isDraggingTodoMinimized) {
                     todoMinimized.classList.remove('no-transition');
+                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
+                    layoutChanged = true;
+                }
+                if (layoutChanged) {
+                    applyWidgetLayoutState('todo');
                 }
                 isDraggingTodo = false;
                 isDraggingTodoMinimized = false;
@@ -4649,8 +4835,11 @@
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
-                    todoWidget.style.left = (startLeft + deltaX) + 'px';
-                    todoWidget.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
+
+                    todoWidget.style.left = constrained.left + 'px';
+                    todoWidget.style.top = constrained.top + 'px';
                     todoWidget.style.right = 'auto';
                     todoWidget.style.bottom = 'auto';
                 } else if (isDraggingTodoMinimized) {
@@ -4662,35 +4851,98 @@
                         todoMinimizedDragMoved = true;
                     }
 
-                    todoMinimized.style.left = (startLeft + deltaX) + 'px';
-                    todoMinimized.style.top = (startTop + deltaY) + 'px';
+                    // Constrain to viewport boundaries
+                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
+
+                    todoMinimized.style.left = constrained.left + 'px';
+                    todoMinimized.style.top = constrained.top + 'px';
                     todoMinimized.style.right = 'auto';
                     todoMinimized.style.bottom = 'auto';
                 }
             });
 
             document.addEventListener('touchend', function() {
-                if (isDraggingTodo) {
+                let layoutChanged = false;
+                if (isDraggingTodo || isResizingTodo) {
                     todoWidget.classList.remove('no-transition');
+                    syncWidgetRectToLayout('todo');
+                    layoutChanged = true;
                 }
                 if (isDraggingTodoMinimized) {
                     todoMinimized.classList.remove('no-transition');
+                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
+                    layoutChanged = true;
+                }
+                if (layoutChanged) {
+                    applyWidgetLayoutState('todo');
                 }
                 isDraggingTodo = false;
                 isDraggingTodoMinimized = false;
+                isResizingTodo = false;
+                resizeDirectionTodo = null;
             });
+
+            // Handle window resize to keep widgets within viewport bounds
+            window.addEventListener('resize', function() {
+                const widgets = [
+                    { type: 'pomodoro', id: 'pomodoro-widget' },
+                    { type: 'todo', id: 'todo-widget' }
+                ];
+
+                widgets.forEach(({ type, id }) => {
+                    const layout = widgetLayoutState[type];
+                    const element = document.getElementById(id);
+
+                    // Only constrain visible, non-minimized widgets
+                    if (!layout || layout.isMinimized || !element || element.style.display === 'none') {
+                        return;
+                    }
+
+                    const rect = element.getBoundingClientRect();
+                    const constrained = constrainToViewport(element, rect.left, rect.top);
+
+                    // Only update if position changed
+                    if (constrained.left !== rect.left || constrained.top !== rect.top) {
+                        element.style.left = constrained.left + 'px';
+                        element.style.top = constrained.top + 'px';
+                        syncWidgetRectToLayout(type);
+                    }
+                });
+            });
+
+            applyWidgetLayoutState('pomodoro');
+            applyWidgetLayoutState('todo');
         }
 
         function toggleMinimize() {
-            const widget = document.getElementById('pomodoro-widget');
-            const minimized = document.getElementById('pomodoro-minimized');
+            const layout = widgetLayoutState.pomodoro;
+            if (!layout) {
+                return;
+            }
 
-            if (widget.style.display === 'none') {
-                widget.style.display = 'flex';
-                minimized.style.display = 'none';
+            if (layout.isMinimized) {
+                syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
+                layout.isMinimized = false;
             } else {
-                widget.style.display = 'none';
-                minimized.style.display = 'flex';
+                syncWidgetRectToLayout('pomodoro');
+                layout.isMinimized = true;
+            }
+
+            applyWidgetLayoutState('pomodoro');
+
+            // Ensure widget stays within viewport after maximizing
+            if (!layout.isMinimized) {
+                const widget = document.getElementById('pomodoro-widget');
+                if (widget && widget.style.display !== 'none') {
+                    const rect = widget.getBoundingClientRect();
+                    const constrained = constrainToViewport(widget, rect.left, rect.top);
+
+                    if (constrained.left !== rect.left || constrained.top !== rect.top) {
+                        widget.style.left = constrained.left + 'px';
+                        widget.style.top = constrained.top + 'px';
+                        syncWidgetRectToLayout('pomodoro');
+                    }
+                }
             }
         }
 
@@ -4767,8 +5019,10 @@
             // Clear form
             document.getElementById('todo-description').value = '';
             document.getElementById('todo-date').value = '';
-            document.getElementById('todo-no-date').checked = false;
+            const noDateCheckbox = document.getElementById('todo-no-date');
+            noDateCheckbox.checked = noDate;
             document.getElementById('todo-priority').value = 'medium';
+            handleNoDateToggle();
         }
 
         function deleteTodoTask(id) {
@@ -4926,15 +5180,34 @@
         }
 
         function toggleTodoMinimize() {
-            const widget = document.getElementById('todo-widget');
-            const minimized = document.getElementById('todo-minimized');
+            const layout = widgetLayoutState.todo;
+            if (!layout) {
+                return;
+            }
 
-            if (widget.style.display === 'none') {
-                widget.style.display = 'flex';
-                minimized.style.display = 'none';
+            if (layout.isMinimized) {
+                syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
+                layout.isMinimized = false;
             } else {
-                widget.style.display = 'none';
-                minimized.style.display = 'flex';
+                syncWidgetRectToLayout('todo');
+                layout.isMinimized = true;
+            }
+
+            applyWidgetLayoutState('todo');
+
+            // Ensure widget stays within viewport after maximizing
+            if (!layout.isMinimized) {
+                const widget = document.getElementById('todo-widget');
+                if (widget && widget.style.display !== 'none') {
+                    const rect = widget.getBoundingClientRect();
+                    const constrained = constrainToViewport(widget, rect.left, rect.top);
+
+                    if (constrained.left !== rect.left || constrained.top !== rect.top) {
+                        widget.style.left = constrained.left + 'px';
+                        widget.style.top = constrained.top + 'px';
+                        syncWidgetRectToLayout('todo');
+                    }
+                }
             }
         }
 
@@ -5011,9 +5284,17 @@
                 list.addEventListener('dragover', handleTodoDragOver);
                 list.addEventListener('drop', handleTodoDrop);
                 list.addEventListener('dragend', handleTodoDragEnd);
-                list.addEventListener('dragenter', handleTodoDragEnter);
-                list.addEventListener('dragleave', handleTodoDragLeave);
             });
+
+            // Keep browser cursor state synced even when hovering nested elements
+            if (!todoGlobalDragOverAttached) {
+                document.addEventListener('dragover', handleTodoGlobalDragOver, true);
+                todoGlobalDragOverAttached = true;
+            }
+            if (!todoGlobalDragEnterAttached) {
+                document.addEventListener('dragenter', handleTodoGlobalDragEnter, true);
+                todoGlobalDragEnterAttached = true;
+            }
         }
 
         function handleTodoDragStart(e) {
@@ -5022,11 +5303,13 @@
 
             draggedTodoElement = todoItem;
             draggedTodoId = todoItem.getAttribute('data-todo-id');
-            draggedFromList = todoItem.parentElement.getAttribute('data-list-type');
 
             todoItem.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', todoItem.innerHTML);
+            // Setting payload keeps browsers from falling back to "no-drop" cursor
+            // (Firefox/Safari treat empty dataTransfer as a forbidden drag).
+            e.dataTransfer.setData('text/plain', draggedTodoId);
+            e.dataTransfer.setData('text/html', todoItem.outerHTML);
         }
 
         function handleTodoDragOver(e) {
@@ -5034,33 +5317,20 @@
             e.dataTransfer.dropEffect = 'move';
 
             const list = e.currentTarget;
-            const listType = list.getAttribute('data-list-type');
             const afterElement = getDragAfterElement(list, e.clientY);
+            if (!list.querySelector('.todo-item')) {
+                const emptyState = list.querySelector('.todo-empty-state');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+            }
 
             if (afterElement == null) {
-                if (list.children.length === 0 || !list.querySelector('.todo-item')) {
-                    // Empty list or only has empty state
-                    list.innerHTML = '';
-                }
                 if (draggedTodoElement) {
                     list.appendChild(draggedTodoElement);
                 }
             } else {
                 list.insertBefore(draggedTodoElement, afterElement);
-            }
-        }
-
-        function handleTodoDragEnter(e) {
-            const todoItem = e.target.closest('.todo-item');
-            if (todoItem && todoItem !== draggedTodoElement) {
-                todoItem.classList.add('drag-over');
-            }
-        }
-
-        function handleTodoDragLeave(e) {
-            const todoItem = e.target.closest('.todo-item');
-            if (todoItem) {
-                todoItem.classList.remove('drag-over');
             }
         }
 
@@ -5072,11 +5342,6 @@
             const listType = list.getAttribute('data-list-type');
 
             if (!draggedTodoId) return;
-
-            // Remove drag-over class from all items
-            list.querySelectorAll('.todo-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
 
             // Update task's dueDate based on which list it was dropped into
             const task = todoTasks.find(t => t.id === draggedTodoId);
@@ -5091,17 +5356,7 @@
                     }
                 }
 
-                // Update order based on new position in list
-                const newOrder = [];
-                list.querySelectorAll('.todo-item').forEach((item, index) => {
-                    const id = item.getAttribute('data-todo-id');
-                    const t = todoTasks.find(task => task.id === id);
-                    if (t) {
-                        t.order = index;
-                        newOrder.push(t);
-                    }
-                });
-
+                rebuildTodoOrderFromDOM();
                 saveTodoTasks();
                 renderTodoTasks();
             }
@@ -5113,14 +5368,79 @@
                 todoItem.classList.remove('dragging');
             }
 
-            // Clear all drag-over classes
-            document.querySelectorAll('.todo-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
-
             draggedTodoElement = null;
             draggedTodoId = null;
-            draggedFromList = null;
+        }
+
+        function handleTodoGlobalDragOver(e) {
+            if (!draggedTodoElement) {
+                return;
+            }
+            if (!e.target || typeof e.target.closest !== 'function') {
+                return;
+            }
+            const list = e.target.closest('.todo-list');
+            if (!list) {
+                return;
+            }
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleTodoGlobalDragEnter(e) {
+            if (!draggedTodoElement) {
+                return;
+            }
+            if (!e.target || typeof e.target.closest !== 'function') {
+                return;
+            }
+            if (!e.target.closest('.todo-list')) {
+                return;
+            }
+            e.preventDefault();
+            if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = 'move';
+            }
+        }
+
+        function rebuildTodoOrderFromDOM() {
+            const datedList = document.getElementById('todo-dated-list');
+            const undatedList = document.getElementById('todo-undated-list');
+
+            if (!datedList || !undatedList) {
+                return;
+            }
+
+            const orderedIds = [
+                ...datedList.querySelectorAll('.todo-item'),
+                ...undatedList.querySelectorAll('.todo-item')
+            ].map(item => item.getAttribute('data-todo-id'));
+
+            if (orderedIds.length === 0) {
+                return;
+            }
+
+            const tasksById = new Map(todoTasks.map(task => [task.id, task]));
+            const reorderedTasks = [];
+
+            orderedIds.forEach((id, index) => {
+                const task = tasksById.get(id);
+                if (!task) {
+                    return;
+                }
+                task.order = index;
+                reorderedTasks.push(task);
+                tasksById.delete(id);
+            });
+
+            if (tasksById.size > 0) {
+                tasksById.forEach(task => {
+                    task.order = reorderedTasks.length;
+                    reorderedTasks.push(task);
+                });
+            }
+
+            todoTasks = reorderedTasks;
         }
 
         function getDragAfterElement(container, y) {
@@ -5215,10 +5535,10 @@
                     const target = e.target;
                     if (target.classList.contains('edit-project-btn')) {
                         const index = parseInt(target.getAttribute('data-index'));
-                        editProject(index);
+                        projectManager.edit(index);
                     } else if (target.classList.contains('delete-project-btn')) {
                         const index = parseInt(target.getAttribute('data-index'));
-                        deleteProject(index);
+                        projectManager.delete(index);
                     }
                 });
             }
@@ -5227,10 +5547,10 @@
                     const target = e.target;
                     if (target.classList.contains('edit-task-type-btn')) {
                         const index = parseInt(target.getAttribute('data-index'));
-                        editTaskType(index);
+                        taskTypeManager.edit(index);
                     } else if (target.classList.contains('delete-task-type-btn')) {
                         const index = parseInt(target.getAttribute('data-index'));
-                        deleteTaskType(index);
+                        taskTypeManager.delete(index);
                     }
                 });
             }
@@ -5373,11 +5693,11 @@
                     addModalProject();
                 }
             });
-            document.getElementById('add-task-type-btn').addEventListener('click', addTaskType);
-            document.getElementById('cancel-task-type-btn').addEventListener('click', cancelTaskTypeEdit);
+            document.getElementById('add-task-type-btn').addEventListener('click', () => taskTypeManager.add());
+            document.getElementById('cancel-task-type-btn').addEventListener('click', () => taskTypeManager.cancel());
             document.getElementById('task-type-name').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    addTaskType();
+                    taskTypeManager.add();
                 }
             });
         }
@@ -5434,6 +5754,7 @@
 
         function initApp() {
             initDOMCache();
+            loadWidgetLayoutState();
             loadEntries();
             loadProjects();
             updateProjectSelect();
