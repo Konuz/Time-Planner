@@ -53,6 +53,19 @@
             transition: none !important;
         }
 
+        /* Hide widgets during initial page load to prevent flashing */
+        .preload .pomodoro-widget,
+        .preload #pomodoro-widget,
+        .preload .todo-widget,
+        .preload #todo-widget,
+        .preload .pomodoro-minimized,
+        .preload #pomodoro-minimized,
+        .preload .todo-minimized,
+        .preload #todo-minimized {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
         .no-transition {
             transition: none !important;
         }
@@ -1736,23 +1749,14 @@
 <body class="preload">
     <script>
         // Set initial language values immediately to prevent flashing
+        // This script runs synchronously before any DOM rendering
         (function() {
             try {
                 const storedLang = localStorage.getItem('app-language');
-                const currentLang = ['pl', 'en'].includes(storedLang) ? storedLang : 'en';
-                document.documentElement.lang = currentLang;
-
-                // Wait for DOM to be ready, then set language button text
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const langBtn = document.getElementById('language-btn');
-                        if (langBtn && !langBtn.textContent) {
-                            langBtn.textContent = currentLang.toUpperCase();
-                        }
-                    });
-                }
+                window.__INITIAL_LANG__ = ['pl', 'en'].includes(storedLang) ? storedLang : 'en';
+                document.documentElement.lang = window.__INITIAL_LANG__;
             } catch (e) {
-                // If localStorage is not available, use default
+                window.__INITIAL_LANG__ = 'en';
             }
         })();
     </script>
@@ -1762,7 +1766,7 @@
         <header>
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <h1 data-i18n="app.title">TIME PLANNER</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language"></button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language"><script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script></button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -5917,6 +5921,8 @@
             }
         }
 
+        let appInitialized = false;
+
         function initApp() {
             initDOMCache();
             // Update UI language FIRST to prevent flashing of default text
@@ -5943,16 +5949,26 @@
             renderEntries();
             updateSummary();
             updateMonthEndWarning();
+
+            appInitialized = true;
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
+
+        // Remove preload class only after both app is initialized and window is fully loaded
         window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.body.classList.remove('preload');
-                if (typeof updatePomodoroDisplay === 'function') {
-                    updatePomodoroDisplay();
+            const removePreload = function() {
+                if (appInitialized) {
+                    document.body.classList.remove('preload');
+                    if (typeof updatePomodoroDisplay === 'function') {
+                        updatePomodoroDisplay();
+                    }
+                } else {
+                    // If app not initialized yet, wait a bit longer
+                    setTimeout(removePreload, 50);
                 }
-            }, 100);
+            };
+            setTimeout(removePreload, 50);
         });
     </script>
 </body>
