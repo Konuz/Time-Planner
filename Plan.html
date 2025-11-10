@@ -491,6 +491,7 @@
             margin-left: auto;
             margin-right: 8px;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         .pomodoro-minimize-btn:hover {
@@ -639,7 +640,7 @@
             color: white;
             margin-top: 8px;
             width: 100%;
-            border-radius: 4px;
+            border-radius: 8px;
             transition: background 0.2s ease;
         }
 
@@ -695,13 +696,25 @@
             }
         }
 
+        .pomodoro-widget input:not([type="checkbox"]),
+        .pomodoro-widget select,
+        .pomodoro-widget textarea,
+        .todo-widget input:not([type="checkbox"]),
+        .todo-widget select,
+        .todo-widget textarea {
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+        }
+
         .timer-task-input input {
             width: 100%;
             padding: 10px;
-            background-color: var(--bg-light);
+            background-color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            color: var(--text-color);
+            color: var(--bg-dark);
             font-size: 14px;
         }
 
@@ -929,7 +942,7 @@
             left: 20px;
             width: 350px;
             min-width: 300px;
-            max-width: 700px;
+            max-width: 640px;
             background: var(--bg-lighter);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -991,6 +1004,7 @@
             margin-left: auto;
             margin-right: 8px;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         .todo-minimize-btn:hover {
@@ -1037,9 +1051,9 @@
         #todo-description {
             padding: 10px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-medium);
-            color: var(--text-light);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--bg-dark);
             font-size: 14px;
             width: 100%;
         }
@@ -1052,9 +1066,9 @@
         #todo-priority {
             padding: 8px 40px 8px 8px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-medium);
-            color: var(--text-light);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--bg-dark);
             font-size: 14px;
             appearance: none;
             -webkit-appearance: none;
@@ -1067,9 +1081,9 @@
         #todo-date {
             padding: 8px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-medium);
-            color: var(--text-light);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--bg-dark);
             font-size: 14px;
         }
 
@@ -1093,10 +1107,10 @@
         #add-todo-btn {
             flex: 1;
             padding: 10px 20px;
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
@@ -1104,16 +1118,16 @@
         }
 
         #add-todo-btn:hover {
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         .delete-all-btn {
             flex: 1;
             padding: 10px 20px;
-            background: #dc3545;
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
@@ -1121,7 +1135,7 @@
         }
 
         .delete-all-btn:hover {
-            background: #c82333;
+            opacity: 0.9;
         }
 
         .todo-section {
@@ -1133,7 +1147,7 @@
 
         .todo-section summary {
             background: var(--bg-medium);
-            padding: 12px 15px;
+            padding: 8px 15px;
             cursor: pointer;
             font-weight: 600;
             color: var(--text-light);
@@ -1236,7 +1250,7 @@
             height: 24px;
             min-width: 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             display: flex;
@@ -4283,7 +4297,7 @@
         function initDragAndResize() {
             const widget = document.getElementById('pomodoro-widget');
             const header = document.getElementById('pomodoro-header');
-            const resizeHandles = document.querySelectorAll('.resize-handle');
+            const resizeHandles = widget.querySelectorAll('.resize-handle');
             header.addEventListener('mousedown', function(e) {
                 if (e.target.classList.contains('pomodoro-minimize-btn')) {
                     return;
@@ -4556,11 +4570,11 @@
                     let newTop = startTop;
 
                     if (resizeDirectionTodo.includes('e')) {
-                        newWidth = Math.max(300, Math.min(700, startWidth + deltaX));
+                        newWidth = Math.max(300, Math.min(640, startWidth + deltaX));
                     }
                     if (resizeDirectionTodo.includes('w')) {
                         const proposedWidth = startWidth - deltaX;
-                        newWidth = Math.max(300, Math.min(700, proposedWidth));
+                        newWidth = Math.max(300, Math.min(640, proposedWidth));
                         const widthDiff = startWidth - newWidth;
                         newLeft = startLeft + widthDiff;
                     }
