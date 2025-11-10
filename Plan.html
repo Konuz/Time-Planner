@@ -719,6 +719,11 @@
 
         .timer-task-input input:focus {
             outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
+        }
+
+        .timer-task-input input.empty-field:focus {
             border-color: #ff6b6b;
             box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
         }
@@ -1735,7 +1740,7 @@
                         <th data-i18n="table.taskType">Rodzaj zadania</th>
                         <th data-i18n="table.project">Projekt</th>
                         <th data-i18n="table.hours">Godziny</th>
-                        <th data-i18n="table.number">Numer</th>
+                        <th data-i18n="table.number">Numer/Nazwa</th>
                         <th data-i18n="table.actions">Akcje</th>
                     </tr>
                 </thead>
@@ -2323,7 +2328,7 @@
                 'table.taskType': 'Rodzaj zadania',
                 'table.project': 'Projekt',
                 'table.hours': 'Godziny',
-                'table.number': 'Numer',
+                'table.number': 'Numer/Nazwa',
                 'table.actions': 'Akcje',
                 'summary.title': 'Podsumowanie',
                 'summary.currentMonth': 'Aktualny miesiąc:',
@@ -2503,7 +2508,7 @@
                 'table.taskType': 'Task type',
                 'table.project': 'Project',
                 'table.hours': 'Hours',
-                'table.number': 'Number',
+                'table.number': 'Number/Name',
                 'table.actions': 'Actions',
 
                 // Summary
@@ -4348,7 +4353,9 @@
         // Start new task (clear task number and reset elapsed time)
         function startNewTask() {
             const resetForNewTask = () => {
-                document.getElementById('timer-task-number').value = '';
+                const timerTaskInput = document.getElementById('timer-task-number');
+                timerTaskInput.value = '';
+                timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
                 pomodoroState.currentTaskNumber = '';
                 pomodoroState.elapsedTime = 0;
                 updatePomodoroDisplay();
@@ -5267,6 +5274,7 @@
             const timerTaskInput = document.getElementById('timer-task-number');
             if (timerTaskInput) {
                 timerTaskInput.value = task.description;
+                timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
                 timerTaskInput.focus();
             }
 
@@ -5516,7 +5524,24 @@
                 }
             });
             initDragAndResize();
-            document.getElementById('timer-task-number').addEventListener('change', function() {
+
+            // Update empty-field class based on input value
+            const timerTaskInput = document.getElementById('timer-task-number');
+            const updateEmptyFieldClass = () => {
+                if (timerTaskInput.value.trim() === '') {
+                    timerTaskInput.classList.add('empty-field');
+                } else {
+                    timerTaskInput.classList.remove('empty-field');
+                }
+            };
+
+            // Initial check
+            updateEmptyFieldClass();
+
+            // Update on input
+            timerTaskInput.addEventListener('input', updateEmptyFieldClass);
+
+            timerTaskInput.addEventListener('change', function() {
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
