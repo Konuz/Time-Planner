@@ -53,6 +53,31 @@
             transition: none !important;
         }
 
+        /* Hide entire container during preload to prevent any flashing */
+        .preload .container {
+            opacity: 0 !important;
+        }
+
+        /* Hide widgets during initial page load to prevent flashing */
+        .preload .pomodoro-widget,
+        .preload #pomodoro-widget,
+        .preload .todo-widget,
+        .preload #todo-widget,
+        .preload .pomodoro-minimized,
+        .preload #pomodoro-minimized,
+        .preload .todo-minimized,
+        .preload #todo-minimized {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Hide all translatable content during preload to prevent Polish text flashing */
+        .preload [data-i18n],
+        .preload [data-i18n-title],
+        .preload [data-i18n-placeholder] {
+            opacity: 0 !important;
+        }
+
         .no-transition {
             transition: none !important;
         }
@@ -1734,13 +1759,66 @@
     </style>
 </head>
 <body class="preload">
+    <script>
+        // Set initial values immediately to prevent flashing
+        // This script runs synchronously before any DOM rendering
+        (function() {
+            try {
+                const storedLang = localStorage.getItem('app-language');
+                window.__INITIAL_LANG__ = ['pl', 'en'].includes(storedLang) ? storedLang : 'en';
+                document.documentElement.lang = window.__INITIAL_LANG__;
+            } catch (e) {
+                window.__INITIAL_LANG__ = 'en';
+            }
+
+            // Load section visibility state
+            try {
+                const stored = localStorage.getItem('section-visibility');
+                window.__SECTION_VISIBILITY__ = stored ? JSON.parse(stored) : {
+                    'entry-form': true,
+                    'entries-list': true,
+                    'project-management': true,
+                    'summary': true
+                };
+            } catch (e) {
+                window.__SECTION_VISIBILITY__ = {
+                    'entry-form': true,
+                    'entries-list': true,
+                    'project-management': true,
+                    'summary': true
+                };
+            }
+
+            // Restore scroll position IMMEDIATELY (synchronously)
+            try {
+                const scrollData = sessionStorage.getItem('scrollPosition');
+                if (scrollData) {
+                    window.__SCROLL_POS__ = JSON.parse(scrollData);
+                }
+            } catch (e) {
+                // Ignore scroll restoration errors
+            }
+
+            // Save scroll position before page unload
+            window.addEventListener('beforeunload', function() {
+                try {
+                    sessionStorage.setItem('scrollPosition', JSON.stringify({
+                        x: window.scrollX || window.pageXOffset || 0,
+                        y: window.scrollY || window.pageYOffset || 0
+                    }));
+                } catch (e) {
+                    // Ignore save errors
+                }
+            });
+        })();
+    </script>
     <div id="pomodoro-notification" class="pomodoro-notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <div class="container">
         <header>
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
-            <h1 data-i18n="app.title">GODZINY PRACY</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">EN</button>
+            <h1 data-i18n="app.title">TIME PLANNER</h1>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language"><script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script></button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -1756,18 +1834,30 @@
                 <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;" data-i18n="section.visibility">Widoczność sekcji:</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;" role="group" aria-label="Przełączniki widoczności sekcji">
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entry-form" checked aria-label="Pokaż/ukryj sekcję dodawania wpisu">
+                        <input type="checkbox" id="toggle-entry-form" aria-label="Pokaż/ukryj sekcję dodawania wpisu">
                         <span style="margin-left: 8px;" data-i18n="section.addEntry">Dodaj nowy wpis</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-entries-list" checked aria-label="Pokaż/ukryj listę wpisów">
+                        <input type="checkbox" id="toggle-entries-list" aria-label="Pokaż/ukryj listę wpisów">
                         <span style="margin-left: 8px;" data-i18n="section.entriesList">Lista wpisów</span>
                     </label>
                     <label style="display: flex; align-items: center; justify-content: center;">
-                        <input type="checkbox" id="toggle-summary" checked aria-label="Pokaż/ukryj podsumowanie">
+                        <input type="checkbox" id="toggle-summary" aria-label="Pokaż/ukryj podsumowanie">
                         <span style="margin-left: 8px;" data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
+                <script>
+                    // Set checkbox states immediately from loaded data
+                    (function() {
+                        if (window.__SECTION_VISIBILITY__) {
+                            var vis = window.__SECTION_VISIBILITY__;
+                            ['entry-form', 'entries-list', 'summary'].forEach(function(name) {
+                                var cb = document.getElementById('toggle-' + name);
+                                if (cb) cb.checked = vis[name] !== false;
+                            });
+                        }
+                    })();
+                </script>
             </div>
         </section>
 
@@ -2247,6 +2337,7 @@
         let startHeight = 0;
 
         const TODO_STORAGE_KEY = 'todo-tasks';
+        const WIDGET_LAYOUT_STATE_KEY = 'widget-layout-state';
         let todoTasks = []; // { id, description, priority, dueDate, createdAt, order }
         let isDraggingTodo = false;
         let isDraggingTodoMinimized = false;
@@ -2270,7 +2361,7 @@
                 minimizedLeft: null,
                 minimizedRight: 0,
                 minimizedTop: 0,
-                isMinimized: false
+                isMinimized: true
             },
             todo: {
                 left: 0,
@@ -3026,7 +3117,31 @@
         }
 
         function loadWidgetLayoutState() {
-            widgetLayoutState = getDefaultWidgetLayoutState();
+            try {
+                const stored = localStorage.getItem(WIDGET_LAYOUT_STATE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    // Merge loaded state with defaults to ensure all properties exist
+                    const defaults = getDefaultWidgetLayoutState();
+                    widgetLayoutState = {
+                        pomodoro: { ...defaults.pomodoro, ...parsed.pomodoro },
+                        todo: { ...defaults.todo, ...parsed.todo }
+                    };
+                } else {
+                    widgetLayoutState = getDefaultWidgetLayoutState();
+                }
+            } catch (error) {
+                console.warn('Error loading widget layout state:', error);
+                widgetLayoutState = getDefaultWidgetLayoutState();
+            }
+        }
+
+        function saveWidgetLayoutState() {
+            try {
+                safeLocalStorageSave(WIDGET_LAYOUT_STATE_KEY, widgetLayoutState, 300);
+            } catch (error) {
+                console.warn('Error saving widget layout state:', error);
+            }
         }
 
         function getWidgetElements(type) {
@@ -4648,6 +4763,7 @@
                 }
                 if (layoutChanged) {
                     applyWidgetLayoutState('pomodoro');
+                    saveWidgetLayoutState();
                 }
                 isDragging = false;
                 isDraggingMinimized = false;
@@ -4867,6 +4983,7 @@
                 }
                 if (layoutChanged) {
                     applyWidgetLayoutState('todo');
+                    saveWidgetLayoutState();
                 }
                 isDraggingTodo = false;
                 isDraggingTodoMinimized = false;
@@ -5017,6 +5134,9 @@
                     }
                 }
             }
+
+            // Save the layout state after toggling
+            saveWidgetLayoutState();
         }
 
         function loadTodoTasks() {
@@ -5290,6 +5410,9 @@
                     }
                 }
             }
+
+            // Save the layout state after toggling
+            saveWidgetLayoutState();
         }
 
         function handleTodoSuccess(id) {
@@ -5632,10 +5755,6 @@
             });
 
             // Minimized timer is updated by updatePomodoroDisplay() (called from timerTick)
-
-            // Start minimized by default
-            toggleMinimize();
-
         }
 
         function setupEventDelegation() {
@@ -5866,8 +5985,12 @@
             }
         }
 
+        let appInitialized = false;
+
         function initApp() {
             initDOMCache();
+            // Update UI language FIRST to prevent flashing of default text
+            updateUILanguage();
             loadWidgetLayoutState();
             loadEntries();
             loadProjects();
@@ -5889,18 +6012,44 @@
             setupUIHandlers();
             renderEntries();
             updateSummary();
-            updateUILanguage();
             updateMonthEndWarning();
+
+            appInitialized = true;
         }
 
-        document.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+
+            // Restore scroll position immediately after DOM is ready
+            if (window.__SCROLL_POS__) {
+                const scrollPos = window.__SCROLL_POS__;
+                // Force scroll restoration with multiple attempts
+                window.scrollTo(scrollPos.x, scrollPos.y);
+                requestAnimationFrame(function() {
+                    window.scrollTo(scrollPos.x, scrollPos.y);
+                });
+            }
+        });
+
+        // Remove preload class only after both app is initialized and window is fully loaded
         window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.body.classList.remove('preload');
-                if (typeof updatePomodoroDisplay === 'function') {
-                    updatePomodoroDisplay();
+            const removePreload = function() {
+                if (appInitialized) {
+                    // One more scroll restoration attempt before showing content
+                    if (window.__SCROLL_POS__) {
+                        window.scrollTo(window.__SCROLL_POS__.x, window.__SCROLL_POS__.y);
+                    }
+
+                    document.body.classList.remove('preload');
+                    if (typeof updatePomodoroDisplay === 'function') {
+                        updatePomodoroDisplay();
+                    }
+                } else {
+                    // If app not initialized yet, wait a bit longer
+                    setTimeout(removePreload, 50);
                 }
-            }, 100);
+            };
+            setTimeout(removePreload, 50);
         });
     </script>
 </body>
