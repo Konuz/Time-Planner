@@ -719,8 +719,13 @@
 
         .timer-task-input input:focus {
             outline: none;
+            border-color: #37b24d;
+            box-shadow: none;
+        }
+
+        .timer-task-input input.empty-field:focus {
             border-color: #ff6b6b;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+            box-shadow: none;
         }
 
         .pomodoro-stats {
@@ -1031,7 +1036,13 @@
 
         #todo-description:focus {
             outline: none;
-            border-color: #66BB6A;
+            border-color: #37b24d;
+            box-shadow: none;
+        }
+
+        #todo-description.empty-field:focus {
+            border-color: #ff6b6b;
+            box-shadow: none;
         }
 
         #todo-priority {
@@ -1157,8 +1168,10 @@
         }
 
         .todo-item.dragging {
-            opacity: 0.5;
+            opacity: 0.1;
             cursor: grabbing;
+            transform: scale(0.95);
+            transition: none;
         }
 
         .todo-priority-flag {
@@ -1398,6 +1411,10 @@
             background-color: var(--primary-dark);
         }
 
+        .language-button svg {
+            display: block;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -1623,7 +1640,19 @@
         <header>
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <h1 data-i18n="app.title">GODZINY PRACY</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">🌐</button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Left bubble with Latin letter -->
+                    <rect x="2" y="8" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
+                    <path d="M 4 15 L 2 17 L 4 16" fill="currentColor" opacity="0.9"/>
+                    <text x="6.5" y="13.5" font-size="5" fill="white" font-weight="bold" text-anchor="middle">A</text>
+
+                    <!-- Right bubble with Chinese character -->
+                    <rect x="13" y="3" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
+                    <path d="M 20 10 L 22 12 L 20 11" fill="currentColor" opacity="0.9"/>
+                    <text x="17.5" y="8.2" font-size="5" fill="white" font-weight="bold" text-anchor="middle">文</text>
+                </svg>
+            </button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -1682,7 +1711,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="task-number" data-i18n="form.taskNumber">Numer zadania:</label>
+                    <label for="task-number" data-i18n="form.taskNumber">Numer lub nazwa zadania:</label>
                     <input type="text" id="task-number" name="task-number" required aria-describedby="task-number-feedback" aria-required="true">
                     <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
                 </div>
@@ -1733,7 +1762,7 @@
                         <th data-i18n="table.taskType">Rodzaj zadania</th>
                         <th data-i18n="table.project">Projekt</th>
                         <th data-i18n="table.hours">Godziny</th>
-                        <th data-i18n="table.number">Numer</th>
+                        <th data-i18n="table.number">Numer/Nazwa</th>
                         <th data-i18n="table.actions">Akcje</th>
                     </tr>
                 </thead>
@@ -1773,7 +1802,7 @@
                     <h3 data-i18n="info.section.overviewTitle">Rejestrowanie zadań</h3>
                     <p data-i18n="info.intro">Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.</p>
                     <ol>
-                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.</li>
+                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.</li>
                         <li data-i18n="info.section.overviewStep2">Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.</li>
                         <li data-i18n="info.section.overviewStep3">Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.</li>
                         <li data-i18n="info.section.overviewStep4">Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.</li>
@@ -1796,10 +1825,10 @@
                     <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
-                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
+                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
                         <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie”, wyświetli się informacja o dodaniu wpisu.</li>
                         <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.</li>
-                        <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
+                        <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
                     </ol>
                     <div class="info-note" data-i18n="info.section.pomodoroNote">Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.</div>
                 </div>
@@ -1929,9 +1958,9 @@
             </div>
 
             <div class="timer-task-input">
-                <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer zadania:</label>
+                <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer lub nazwa zadania:</label>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer zadania">
+                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer lub nazwa zadania">
                     <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center; font-size: 18px;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✓</button>
                 </div>
             </div>
@@ -2134,6 +2163,7 @@
         let resizeDirectionTodo = null;
         let draggedTodoElement = null;
         let draggedTodoId = null;
+        let draggedTodoSourceListType = null;
         let todoGlobalDragOverAttached = false;
         let todoGlobalDragEnterAttached = false;
         let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
@@ -2306,7 +2336,7 @@
                 'form.project': 'Projekt:',
                 'form.selectProject': '-- Wybierz projekt --',
                 'form.hours': 'Liczba przepracowanych godzin (max 8):',
-                'form.taskNumber': 'Numer zadania:',
+                'form.taskNumber': 'Numer lub nazwa zadania:',
                 'form.addButton': 'Dodaj wpis',
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
@@ -2320,7 +2350,7 @@
                 'table.taskType': 'Rodzaj zadania',
                 'table.project': 'Projekt',
                 'table.hours': 'Godziny',
-                'table.number': 'Numer',
+                'table.number': 'Numer/Nazwa',
                 'table.actions': 'Akcje',
                 'summary.title': 'Podsumowanie',
                 'summary.currentMonth': 'Aktualny miesiąc:',
@@ -2347,7 +2377,7 @@
                 'pomodoro.start': 'Start',
                 'pomodoro.pause': 'Pauza',
                 'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Numer zadania:',
+                'pomodoro.taskNumber': 'Numer lub nazwa zadania:',
                 'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
                 'pomodoro.newTask': 'Nowe',
                 'pomodoro.session': 'Sesja:',
@@ -2361,8 +2391,8 @@
                 'pomodoro.longBreakDuration': 'min - Długa przerwa',
                 'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
                 'pomodoro.autoStartBreak': 'Auto-start przerwy',
-                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer zadania',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer zadania aby zapisać czas pracy',
+                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer lub nazwę zadania',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer lub nazwę zadania aby zapisać czas pracy',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
                 'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.',
                 'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
@@ -2378,7 +2408,7 @@
                 'info.title': 'Jak korzystać z Time Planner',
                 'info.intro': 'Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.',
                 'info.section.overviewTitle': 'Rejestrowanie zadań',
-                'info.section.overviewStep1': 'W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer zadania.',
+                'info.section.overviewStep1': 'W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.',
                 'info.section.overviewStep2': 'Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.',
                 'info.section.overviewStep3': 'Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.',
                 'info.section.overviewStep4': 'Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.',
@@ -2387,10 +2417,10 @@
                 'info.section.overviewStep7': 'Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.',
                 'info.section.pomodoroTitle': 'Tryb Pomodoro',
                 'info.section.pomodoroIntro': 'Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.',
-                'info.section.pomodoroStep1': 'Wpisz numer zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
+                'info.section.pomodoroStep1': 'Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
                 'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie”, wyświetli się informacja o dodaniu wpisu.',
                 'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
-                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
+                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
                 'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.',
                 'info.section.todoTitle': 'Lista To-Do',
                 'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
@@ -2419,7 +2449,7 @@
                 'validation.enterHours': 'Podaj liczbę godzin',
                 'validation.hoursGreaterThanZero': 'Liczba godzin musi być co najmniej 0,25',
                 'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
-                'validation.enterTaskNumber': 'Podaj numer zadania',
+                'validation.enterTaskNumber': 'Podaj numer lub nazwę zadania',
                 'month.january': 'Styczeń',
                 'month.february': 'Luty',
                 'month.march': 'Marzec',
@@ -2482,7 +2512,7 @@
                 'form.project': 'Project:',
                 'form.selectProject': '-- Select project --',
                 'form.hours': 'Number of hours worked (max 8):',
-                'form.taskNumber': 'Task number:',
+                'form.taskNumber': 'Task number or name:',
                 'form.addButton': 'Add entry',
                 'form.updateButton': 'Update entry',
                 'form.clearButton': 'Clear',
@@ -2500,7 +2530,7 @@
                 'table.taskType': 'Task type',
                 'table.project': 'Project',
                 'table.hours': 'Hours',
-                'table.number': 'Number',
+                'table.number': 'Number/Name',
                 'table.actions': 'Actions',
 
                 // Summary
@@ -2533,7 +2563,7 @@
                 'pomodoro.start': 'Start',
                 'pomodoro.pause': 'Pause',
                 'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Task number:',
+                'pomodoro.taskNumber': 'Task number or name:',
                 'pomodoro.completeTask': 'Complete task, start new (session continuity)',
                 'pomodoro.newTask': 'New',
                 'pomodoro.session': 'Session:',
@@ -2549,8 +2579,8 @@
                 'pomodoro.autoStartBreak': 'Auto-start break',
 
                 // Pomodoro notifications
-                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number to save work time',
+                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
+                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
                 'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 15 min). Entry not added.',
                 'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 15 min). Timer still running - continue working or enter new task!',
@@ -2566,7 +2596,7 @@
                 'info.title': 'How to use Time Planner',
                 'info.intro': 'This page helps you plan work, track time, and remember your breaks.',
                 'info.section.overviewTitle': 'Tracking tasks',
-                'info.section.overviewStep1': 'In Settings, enter your Projects and Tasks, then fill in the Date, Task type, Project, and Task number fields.',
+                'info.section.overviewStep1': 'In Settings, enter your Projects and Tasks, then fill in the Date, Task type, Project, and Task number or name fields.',
                 'info.section.overviewStep2': 'Enter the number of worked hours or use Pomodoro mode to calculate them automatically.',
                 'info.section.overviewStep3': 'Click "Add entry" to save your time in the table below.',
                 'info.section.overviewStep4': 'Use the toggles above the form to show or hide the sections you need.',
@@ -2575,10 +2605,10 @@
                 'info.section.overviewStep7': 'The "Export data" button downloads a CSV file with the current month hours.',
                 'info.section.pomodoroTitle': 'Pomodoro mode',
                 'info.section.pomodoroIntro': 'The Pomodoro timer keeps you focused with short work cycles.',
-                'info.section.pomodoroStep1': 'Enter the task number inside the Pomodoro panel and press Start to begin the countdown.',
+                'info.section.pomodoroStep1': 'Enter the task number or name inside the Pomodoro panel and press Start to begin the countdown.',
                 'info.section.pomodoroStep2': 'When work ends, click “Complete task” or accept the prompt to add an entry.',
                 'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
-                'info.section.pomodoroStep4': 'Every new session with the same task number appends the tracked minutes to the existing entry so you keep the full history.',
+                'info.section.pomodoroStep4': 'Every new session with the same task number or name appends the tracked minutes to the existing entry so you keep the full history.',
                 'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
                 'info.section.todoTitle': 'To-Do list',
                 'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
@@ -2611,7 +2641,7 @@
                 'validation.enterHours': 'Enter number of hours',
                 'validation.hoursGreaterThanZero': 'Number of hours must be at least 0.25',
                 'validation.hoursMaxEight': 'Maximum number of hours is 8',
-                'validation.enterTaskNumber': 'Enter task number',
+                'validation.enterTaskNumber': 'Enter task number or name',
 
                 // Months
                 'month.january': 'January',
@@ -3763,7 +3793,7 @@
             
             const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
-            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer zadania\n';
+            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
@@ -4345,7 +4375,9 @@
         // Start new task (clear task number and reset elapsed time)
         function startNewTask() {
             const resetForNewTask = () => {
-                document.getElementById('timer-task-number').value = '';
+                const timerTaskInput = document.getElementById('timer-task-number');
+                timerTaskInput.value = '';
+                timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
                 pomodoroState.currentTaskNumber = '';
                 pomodoroState.elapsedTime = 0;
                 updatePomodoroDisplay();
@@ -5020,7 +5052,9 @@
             renderTodoTasks();
 
             // Clear form
-            document.getElementById('todo-description').value = '';
+            const todoDescInput = document.getElementById('todo-description');
+            todoDescInput.value = '';
+            todoDescInput.dispatchEvent(new Event('input')); // Update empty-field class
             document.getElementById('todo-date').value = '';
             const noDateCheckbox = document.getElementById('todo-no-date');
             noDateCheckbox.checked = noDate;
@@ -5103,25 +5137,30 @@
 
             const priorityFlag = document.createElement('div');
             priorityFlag.className = `todo-priority-flag priority-${task.priority}`;
+            priorityFlag.setAttribute('draggable', 'false');
 
             const contentText = document.createElement('div');
             contentText.className = 'todo-content-text';
+            contentText.setAttribute('draggable', 'false');
 
             const description = document.createElement('div');
             description.className = 'todo-description';
             description.textContent = task.description;
+            description.setAttribute('draggable', 'false');
 
             contentText.appendChild(description);
 
             if (task.dueDate) {
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'todo-date';
+                dateDiv.setAttribute('draggable', 'false');
 
                 if (isOverdue(task.dueDate)) {
                     const overdueIcon = document.createElement('span');
                     overdueIcon.className = 'overdue-icon';
                     overdueIcon.textContent = '⚠️';
                     overdueIcon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+                    overdueIcon.setAttribute('draggable', 'false');
                     dateDiv.appendChild(overdueIcon);
                 }
 
@@ -5133,12 +5172,14 @@
 
             const actions = document.createElement('div');
             actions.className = 'todo-actions';
+            actions.setAttribute('draggable', 'false');
 
             const successBtn = document.createElement('button');
             successBtn.className = 'todo-btn todo-success';
             successBtn.textContent = '✓';
             successBtn.setAttribute('title', t('todo.complete') || 'Zakończ sukcesem');
             successBtn.setAttribute('aria-label', t('todo.complete') || 'Zakończ sukcesem');
+            successBtn.setAttribute('draggable', 'false');
             successBtn.onclick = () => handleTodoSuccess(task.id);
 
             const cancelBtn = document.createElement('button');
@@ -5146,6 +5187,7 @@
             cancelBtn.textContent = '✕';
             cancelBtn.setAttribute('title', t('todo.cancel') || 'Anuluj');
             cancelBtn.setAttribute('aria-label', t('todo.cancel') || 'Anuluj');
+            cancelBtn.setAttribute('draggable', 'false');
             cancelBtn.onclick = () => deleteTodoTask(task.id);
 
             const moveBtn = document.createElement('button');
@@ -5153,6 +5195,7 @@
             moveBtn.textContent = '→';
             moveBtn.setAttribute('title', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
             moveBtn.setAttribute('aria-label', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
+            moveBtn.setAttribute('draggable', 'false');
             moveBtn.onclick = () => handleTodoMoveToPomodoro(task.id);
 
             actions.appendChild(successBtn);
@@ -5255,6 +5298,7 @@
             const timerTaskInput = document.getElementById('timer-task-number');
             if (timerTaskInput) {
                 timerTaskInput.value = task.description;
+                timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
                 timerTaskInput.focus();
             }
 
@@ -5307,6 +5351,10 @@
             draggedTodoElement = todoItem;
             draggedTodoId = todoItem.getAttribute('data-todo-id');
 
+            // Store the source list type to prevent cross-section dragging
+            const sourceList = todoItem.closest('.todo-list');
+            draggedTodoSourceListType = sourceList ? sourceList.getAttribute('data-list-type') : null;
+
             todoItem.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             // Setting payload keeps browsers from falling back to "no-drop" cursor
@@ -5317,9 +5365,18 @@
 
         function handleTodoDragOver(e) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
 
             const list = e.currentTarget;
+            const targetListType = list.getAttribute('data-list-type');
+
+            // Prevent dragging between different sections (dated vs undated)
+            if (draggedTodoSourceListType && targetListType !== draggedTodoSourceListType) {
+                e.dataTransfer.dropEffect = 'none';
+                return;
+            }
+
+            e.dataTransfer.dropEffect = 'move';
+
             const afterElement = getDragAfterElement(list, e.clientY);
             if (!list.querySelector('.todo-item')) {
                 const emptyState = list.querySelector('.todo-empty-state');
@@ -5346,19 +5403,14 @@
 
             if (!draggedTodoId) return;
 
-            // Update task's dueDate based on which list it was dropped into
+            // Prevent dropping in different section types
+            if (draggedTodoSourceListType && listType !== draggedTodoSourceListType) {
+                return;
+            }
+
+            // Only rebuild order, don't change task's dueDate since we're staying in the same section
             const task = todoTasks.find(t => t.id === draggedTodoId);
             if (task) {
-                if (listType === 'undated') {
-                    // Moved to undated section
-                    task.dueDate = null;
-                } else if (listType === 'dated') {
-                    // Moved to dated section - if it doesn't have a date, set it to today
-                    if (!task.dueDate) {
-                        task.dueDate = new Date().toISOString().split('T')[0];
-                    }
-                }
-
                 rebuildTodoOrderFromDOM();
                 saveTodoTasks();
                 renderTodoTasks();
@@ -5373,6 +5425,7 @@
 
             draggedTodoElement = null;
             draggedTodoId = null;
+            draggedTodoSourceListType = null;
         }
 
         function handleTodoGlobalDragOver(e) {
@@ -5495,7 +5548,24 @@
                 }
             });
             initDragAndResize();
-            document.getElementById('timer-task-number').addEventListener('change', function() {
+
+            // Update empty-field class based on input value
+            const timerTaskInput = document.getElementById('timer-task-number');
+            const updateEmptyFieldClass = () => {
+                if (timerTaskInput.value.trim() === '') {
+                    timerTaskInput.classList.add('empty-field');
+                } else {
+                    timerTaskInput.classList.remove('empty-field');
+                }
+            };
+
+            // Initial check
+            updateEmptyFieldClass();
+
+            // Update on input
+            timerTaskInput.addEventListener('input', updateEmptyFieldClass);
+
+            timerTaskInput.addEventListener('change', function() {
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
                     if (pomodoroState.elapsedTime > 0) {
@@ -5752,6 +5822,24 @@
             if (noDateCheckbox) {
                 noDateCheckbox.addEventListener('change', handleNoDateToggle);
                 handleNoDateToggle(); // Set initial state
+            }
+
+            // Update empty-field class for todo description
+            const todoDescInput = document.getElementById('todo-description');
+            if (todoDescInput) {
+                const updateTodoDescEmptyClass = () => {
+                    if (todoDescInput.value.trim() === '') {
+                        todoDescInput.classList.add('empty-field');
+                    } else {
+                        todoDescInput.classList.remove('empty-field');
+                    }
+                };
+
+                // Initial check
+                updateTodoDescEmptyClass();
+
+                // Update on input
+                todoDescInput.addEventListener('input', updateTodoDescEmptyClass);
             }
         }
 
