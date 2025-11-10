@@ -2134,6 +2134,7 @@
         let resizeDirectionTodo = null;
         let draggedTodoElement = null;
         let draggedTodoId = null;
+        let draggedTodoSourceListType = null;
         let todoGlobalDragOverAttached = false;
         let todoGlobalDragEnterAttached = false;
         let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
@@ -5316,6 +5317,10 @@
             draggedTodoElement = todoItem;
             draggedTodoId = todoItem.getAttribute('data-todo-id');
 
+            // Store the source list type to prevent cross-section dragging
+            const sourceList = todoItem.closest('.todo-list');
+            draggedTodoSourceListType = sourceList ? sourceList.getAttribute('data-list-type') : null;
+
             todoItem.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             // Setting payload keeps browsers from falling back to "no-drop" cursor
@@ -5326,9 +5331,18 @@
 
         function handleTodoDragOver(e) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
 
             const list = e.currentTarget;
+            const targetListType = list.getAttribute('data-list-type');
+
+            // Prevent dragging between different sections (dated vs undated)
+            if (draggedTodoSourceListType && targetListType !== draggedTodoSourceListType) {
+                e.dataTransfer.dropEffect = 'none';
+                return;
+            }
+
+            e.dataTransfer.dropEffect = 'move';
+
             const afterElement = getDragAfterElement(list, e.clientY);
             if (!list.querySelector('.todo-item')) {
                 const emptyState = list.querySelector('.todo-empty-state');
@@ -5355,19 +5369,14 @@
 
             if (!draggedTodoId) return;
 
-            // Update task's dueDate based on which list it was dropped into
+            // Prevent dropping in different section types
+            if (draggedTodoSourceListType && listType !== draggedTodoSourceListType) {
+                return;
+            }
+
+            // Only rebuild order, don't change task's dueDate since we're staying in the same section
             const task = todoTasks.find(t => t.id === draggedTodoId);
             if (task) {
-                if (listType === 'undated') {
-                    // Moved to undated section
-                    task.dueDate = null;
-                } else if (listType === 'dated') {
-                    // Moved to dated section - if it doesn't have a date, set it to today
-                    if (!task.dueDate) {
-                        task.dueDate = new Date().toISOString().split('T')[0];
-                    }
-                }
-
                 rebuildTodoOrderFromDOM();
                 saveTodoTasks();
                 renderTodoTasks();
@@ -5382,6 +5391,7 @@
 
             draggedTodoElement = null;
             draggedTodoId = null;
+            draggedTodoSourceListType = null;
         }
 
         function handleTodoGlobalDragOver(e) {
