@@ -423,21 +423,20 @@
 
         .pomodoro-widget {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 0;
+            right: 0;
             width: 320px;
             min-width: 280px;
             max-width: 640px;
             min-height: 400px;
             background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 9999;
-            border: 1px solid var(--border-color);
             transition: box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 40px);
+            max-height: 100vh;
             will-change: transform;
             overflow: hidden;
         }
@@ -450,7 +449,7 @@
         .pomodoro-header {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
             padding: 8px 16px;
-            border-radius: 16px 16px 0 0;
+            border-radius: 12px 12px 0 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -503,7 +502,7 @@
             flex: 1;
             min-height: 0;
             scrollbar-gutter: stable;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 12px 12px;
         }
 
         .pomodoro-content::-webkit-scrollbar {
@@ -802,8 +801,8 @@
 
         .pomodoro-minimized {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 0;
+            right: 0;
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
@@ -915,8 +914,8 @@
         @media (max-width: 768px) {
             .pomodoro-widget {
                 width: 280px;
-                top: 10px;
-                right: 10px;
+                top: 0;
+                right: 0;
             }
 
             .timer-display {
@@ -924,8 +923,8 @@
             }
 
             .pomodoro-minimized {
-                top: 10px;
-                right: 10px;
+                top: 0;
+                right: 0;
                 width: 80px;
                 height: 50px;
             }
@@ -942,18 +941,18 @@
         /* ===== TODO WIDGET STYLES ===== */
         .todo-widget {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
             width: 350px;
             min-width: 300px;
             max-width: 640px;
             background: var(--bg-lighter);
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 40px);
+            max-height: 100vh;
             will-change: transform;
             overflow: hidden;
         }
@@ -966,7 +965,7 @@
         .todo-header {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
             padding: 8px 16px;
-            border-radius: 16px 16px 0 0;
+            border-radius: 12px 12px 0 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -993,7 +992,7 @@
             flex: 1;
             min-height: 0;
             scrollbar-gutter: stable;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 12px 12px;
         }
 
         .todo-content::-webkit-scrollbar {
@@ -1271,8 +1270,8 @@
 
         .todo-minimized {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
@@ -1319,13 +1318,13 @@
         @media (max-width: 768px) {
             .todo-widget {
                 width: 300px;
-                top: 10px;
-                left: 10px;
+                top: 0;
+                left: 0;
             }
 
             .todo-minimized {
-                top: 10px;
-                left: 10px;
+                top: 0;
+                left: 0;
                 width: 60px;
                 height: 60px;
             }
@@ -1640,19 +1639,7 @@
         <header>
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <h1 data-i18n="app.title">GODZINY PRACY</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Left bubble with Latin letter -->
-                    <rect x="2" y="8" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
-                    <path d="M 4 15 L 2 17 L 4 16" fill="currentColor" opacity="0.9"/>
-                    <text x="6.5" y="13.5" font-size="5" fill="white" font-weight="bold" text-anchor="middle">A</text>
-
-                    <!-- Right bubble with Chinese character -->
-                    <rect x="13" y="3" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
-                    <path d="M 20 10 L 22 12 L 20 11" fill="currentColor" opacity="0.9"/>
-                    <text x="17.5" y="8.2" font-size="5" fill="white" font-weight="bold" text-anchor="middle">文</text>
-                </svg>
-            </button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">EN</button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -2176,24 +2163,24 @@
         const getDefaultWidgetLayoutState = () => ({
             pomodoro: {
                 left: null,
-                right: 20,
-                top: 20,
+                right: 0,
+                top: 0,
                 width: null,
                 height: null,
                 minimizedLeft: null,
-                minimizedRight: 20,
-                minimizedTop: 20,
+                minimizedRight: 0,
+                minimizedTop: 0,
                 isMinimized: false
             },
             todo: {
-                left: 20,
+                left: 0,
                 right: null,
-                top: 20,
+                top: 0,
                 width: null,
                 height: null,
-                minimizedLeft: 20,
+                minimizedLeft: 0,
                 minimizedRight: null,
-                minimizedTop: 20,
+                minimizedTop: 0,
                 isMinimized: true
             }
         });
@@ -2342,7 +2329,7 @@
             console.warn('Unable to access localStorage for language settings:', error);
         }
 
-        let currentLanguage = SUPPORTED_LANGUAGES.includes(storedLanguage) ? storedLanguage : 'pl';
+        let currentLanguage = SUPPORTED_LANGUAGES.includes(storedLanguage) ? storedLanguage : 'en';
 
         if (storedLanguage && storedLanguage !== currentLanguage) {
             try {
@@ -2745,6 +2732,12 @@
             try {
                 // Update document language
                 document.documentElement.lang = currentLanguage;
+
+                // Update language button text
+                const languageBtn = document.getElementById('language-btn');
+                if (languageBtn) {
+                    languageBtn.textContent = currentLanguage.toUpperCase();
+                }
 
                 // Single DOM traversal for all i18n elements (optimized from 3 separate queries)
                 document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
