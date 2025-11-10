@@ -1405,6 +1405,10 @@
             background-color: var(--primary-dark);
         }
 
+        .language-button svg {
+            display: block;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -1630,7 +1634,19 @@
         <header>
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <h1 data-i18n="app.title">GODZINY PRACY</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">🔤</button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Left bubble with Latin letter -->
+                    <rect x="2" y="8" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
+                    <path d="M 4 15 L 2 17 L 4 16" fill="currentColor" opacity="0.9"/>
+                    <text x="6.5" y="13.5" font-size="5" fill="white" font-weight="bold" text-anchor="middle">A</text>
+
+                    <!-- Right bubble with Chinese character -->
+                    <rect x="13" y="3" width="9" height="7" rx="2" fill="currentColor" opacity="0.9"/>
+                    <path d="M 20 10 L 22 12 L 20 11" fill="currentColor" opacity="0.9"/>
+                    <text x="17.5" y="8.2" font-size="5" fill="white" font-weight="bold" text-anchor="middle">文</text>
+                </svg>
+            </button>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
