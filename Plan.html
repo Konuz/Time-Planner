@@ -3288,7 +3288,14 @@
 
         const saveTimers = {};
 
-        // Safe localStorage save with error handling and debouncing
+        /**
+         * Safe localStorage save with debouncing and quota error handling
+         * Debounces rapid saves to prevent performance issues
+         * Handles quota exceeded errors gracefully
+         * @param {string} key - localStorage key
+         * @param {*} data - Data to serialize and save (must be JSON-serializable)
+         * @param {number} debounceMs - Debounce delay in milliseconds (default: 500ms)
+         */
         function safeLocalStorageSave(key, data, debounceMs = DEBOUNCE_DELAY_MS) {
             if (saveTimers[key]) {
                 clearTimeout(saveTimers[key]);
@@ -3441,7 +3448,16 @@
             }
         }
 
-        // Constrain widget position and size to viewport boundaries
+        /**
+         * Constrain widget position and size to viewport boundaries
+         * Ensures widgets stay fully visible within the browser window
+         * @param {HTMLElement} element - Widget element to constrain
+         * @param {number} proposedLeft - Proposed left position in pixels
+         * @param {number} proposedTop - Proposed top position in pixels
+         * @param {number} [proposedWidth] - Proposed width (optional, defaults to element width)
+         * @param {number} [proposedHeight] - Proposed height (optional, defaults to element height)
+         * @returns {Object} Constrained position and size {left, top, width, height}
+         */
         function constrainToViewport(element, proposedLeft, proposedTop, proposedWidth, proposedHeight) {
             const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
             const viewportHeight = document.documentElement.clientHeight || window.innerHeight || 0;
@@ -4031,6 +4047,12 @@
         function deleteModalProject(index) { modalProjectManager.delete(index); }
         function cancelModalProjectEdit() { modalProjectManager.cancel(); }
 
+        /**
+         * Add a new time entry to the timesheet
+         * Creates a unique ID, validates the entry, and updates storage
+         * @param {Object} entry - Entry object with date, taskType, client, hours, taskNumber
+         * @throws {ValidationError} if entry validation fails
+         */
         function addEntry(entry) {
             try {
                 // Security: Runtime validation to prevent console manipulation
@@ -4093,6 +4115,13 @@
             updateSummary();
         }
 
+        /**
+         * Edit an existing entry by ID
+         * Validates the updated entry and synchronizes both array and map storage
+         * @param {number} id - Unique entry ID
+         * @param {Object} updatedEntry - Updated entry data
+         * @throws {ValidationError} if validation fails
+         */
         function editEntry(id, updatedEntry) {
             try {
                 // Security: Runtime validation to prevent console manipulation
@@ -4213,6 +4242,12 @@
             return row;
         }
 
+        /**
+         * Render timesheet entries table with filtering and pagination
+         * Applies date and task type filters, sorts by date descending
+         * Implements pagination (20 entries by default, expandable to show all)
+         * Uses DocumentFragment for performance optimization
+         */
         function renderEntries() {
             try {
                 const currentDate = new Date();
@@ -4369,6 +4404,16 @@
             });
         }
 
+        /**
+         * Validate entry form fields with comprehensive constraint checking
+         * Validates:
+         * - Date is selected and not more than 365 days in the future
+         * - Task type is selected
+         * - Project/client is selected
+         * - Hours are between 0.25 and 8
+         * - Task number is provided
+         * @returns {boolean} True if all fields are valid, false otherwise
+         */
         function validateForm() {
             let isValid = true;
 
@@ -4432,6 +4477,11 @@
             return isValid;
         }
 
+        /**
+         * Load Pomodoro timer state and settings from localStorage
+         * Automatically resets daily statistics if date has changed
+         * Restores timer settings (durations, sound, auto-start preferences)
+         */
         function loadPomodoroData() {
             const stored = localStorage.getItem(POMODORO_STORAGE_KEY);
             if (stored) {
@@ -4466,6 +4516,11 @@
             updatePomodoroStats();
         }
 
+        /**
+         * Save Pomodoro daily statistics to localStorage
+         * Stores session counts, break counts, total hours, and current date
+         * Used to persist progress across page refreshes
+         */
         function savePomodoroData() {
             const today = new Date().toDateString();
             const data = {
@@ -4648,6 +4703,10 @@
             domCache.pomodoroToday.textContent = `${todayTimeFormatted} (${pomodoroState.todayPomodoros} 🍅)`;
         }
 
+        /**
+         * Timer tick handler - runs every second when timer is active
+         * Decrements remaining time and tracks elapsed work time
+         */
         function timerTick() {
             if (!pomodoroState.isRunning) return;
             pomodoroState.timeRemaining--;
@@ -4662,6 +4721,15 @@
             }
         }
 
+        /**
+         * Handle timer completion - triggered when countdown reaches zero
+         * Processes work sessions:
+         * - Plays notification sound and shows browser notification
+         * - Records work time automatically if 90%+ of session completed
+         * - Updates session counters and daily statistics
+         * - Switches to appropriate break mode (short/long)
+         * - Auto-starts break if enabled in settings
+         */
         function timerComplete() {
             pomodoroState.isRunning = false;
             clearInterval(pomodoroTimer);
@@ -4736,6 +4804,10 @@
             updatePomodoroDisplay();
         }
 
+        /**
+         * Start the Pomodoro timer
+         * Initializes interval timer and updates UI state
+         */
         function startTimer() {
             if (pomodoroState.isRunning) return;
 
@@ -4795,6 +4867,19 @@
             document.getElementById('timer-pause').style.display = 'none';
         }
 
+        /**
+         * Record work time from Pomodoro timer to timesheet entries
+         * Complex logic that handles:
+         * - Merging time with existing entries for the same task on the same day
+         * - Creating new entries if task doesn't exist
+         * - Rounding work time (drops <5min, rounds to 0.5h or 1h increments)
+         * - Task number persistence for continuous work
+         * @param {Object} options - Configuration options
+         * @param {boolean} options.clearTaskNumber - Clear task number after recording (task completion)
+         * @param {number|null} options.elapsedSecondsOverride - Override elapsed time (used by timerComplete)
+         * @param {boolean} options.suppressNotification - Skip showing notification
+         * @returns {Object|boolean} Recording details or false if failed
+         */
         function recordPomodoroWork({ clearTaskNumber = false, elapsedSecondsOverride = null, suppressNotification = false } = {}) {
             const taskInput = document.getElementById('timer-task-number');
             const inputValue = taskInput.value.trim();
@@ -4972,6 +5057,14 @@
             recordPomodoroWork({ clearTaskNumber: true });
         }
 
+        /**
+         * Initialize drag and resize functionality for Pomodoro widget
+         * Sets up mouse event handlers for:
+         * - Dragging widget by header (with viewport constraints)
+         * - Resizing widget via corner/edge handles (min/max size limits)
+         * - Dragging minimized widget button
+         * - Preventing transitions during drag/resize for smooth UX
+         */
         function initDragAndResize() {
             const widget = document.getElementById('pomodoro-widget');
             const header = document.getElementById('pomodoro-header');
@@ -5491,6 +5584,12 @@
             safeLocalStorageSave(TODO_STORAGE_KEY, todoTasks);
         }
 
+        /**
+         * Add a new To-Do task with automatic date-based sorting
+         * Tasks with due dates are automatically inserted in chronological order
+         * Tasks without dates are appended to the end
+         * @returns {void}
+         */
         function addTodoTask() {
             const description = document.getElementById('todo-description').value.trim();
             const priority = document.getElementById('todo-priority').value;
@@ -5803,6 +5902,11 @@
             }
         }
 
+        /**
+         * Initialize drag-and-drop functionality for To-Do lists
+         * Sets up event listeners for both dated and undated task lists
+         * Prevents cross-section dragging (dated tasks stay in dated section, etc.)
+         */
         function initTodoDragDrop() {
             const datedList = document.getElementById('todo-dated-list');
             const undatedList = document.getElementById('todo-undated-list');
@@ -5875,6 +5979,12 @@
             }
         }
 
+        /**
+         * Handle drop event for To-Do drag-and-drop
+         * Validates drop target, prevents cross-section drops,
+         * rebuilds task order from DOM, and persists changes
+         * @param {DragEvent} e - Drop event
+         */
         function handleTodoDrop(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -6299,6 +6409,16 @@
 
         let appInitialized = false;
 
+        /**
+         * Main application initialization function
+         * Orchestrates the complete application startup sequence:
+         * 1. DOM cache initialization for performance
+         * 2. UI language setup (prevents text flashing)
+         * 3. Data loading (entries, projects, task types, todos)
+         * 4. Widget layout restoration
+         * 5. Event handler setup
+         * 6. Initial render of all UI components
+         */
         function initApp() {
             initDOMCache();
             // Update UI language FIRST to prevent flashing of default text
