@@ -567,28 +567,6 @@
             border-radius: 0 0 12px 12px;
         }
 
-        .pomodoro-content::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .pomodoro-content::-webkit-scrollbar-track {
-            background: var(--bg-light);
-            border-radius: 4px;
-        }
-
-        .pomodoro-content::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .pomodoro-content::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color) !important;
-        }
-
-        .pomodoro-content::-webkit-scrollbar-thumb:active {
-            background: var(--primary-color) !important;
-        }
-
         .pomodoro-display {
             text-align: center;
             margin-bottom: 20px;
@@ -977,21 +955,24 @@
             cursor: nesw-resize;
         }
 
-        /* Przesunięcie prawych uchwytów resize, żeby nie kolidowały ze scrollbarem */
+        /* Disable pointer events on east resize handle to allow scrollbar interaction */
         .pomodoro-widget .resize-handle-e,
         .todo-widget .resize-handle-e {
             right: 8px;
             width: 8px;
+            pointer-events: none;
         }
 
         .pomodoro-widget .resize-handle-ne,
         .todo-widget .resize-handle-ne {
             right: 8px;
+            pointer-events: auto;
         }
 
         .pomodoro-widget .resize-handle-se,
         .todo-widget .resize-handle-se {
             right: 8px;
+            pointer-events: auto;
         }
 
         @media (max-width: 768px) {
@@ -1074,28 +1055,6 @@
             min-height: 0;
             scrollbar-gutter: stable;
             border-radius: 0 0 12px 12px;
-        }
-
-        .todo-content::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .todo-content::-webkit-scrollbar-track {
-            background: var(--bg-light);
-            border-radius: 4px;
-        }
-
-        .todo-content::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .todo-content::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color) !important;
-        }
-
-        .todo-content::-webkit-scrollbar-thumb:active {
-            background: var(--primary-color) !important;
         }
 
         .todo-add-form {
@@ -1499,6 +1458,43 @@
             display: block;
         }
 
+        /* Unified scrollbar styling for all scrollable containers */
+        .pomodoro-content::-webkit-scrollbar,
+        .todo-content::-webkit-scrollbar,
+        .info-modal-body::-webkit-scrollbar,
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-track,
+        .todo-content::-webkit-scrollbar-track,
+        .info-modal-body::-webkit-scrollbar-track,
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb,
+        .todo-content::-webkit-scrollbar-thumb,
+        .info-modal-body::-webkit-scrollbar-thumb,
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb:hover,
+        .todo-content::-webkit-scrollbar-thumb:hover,
+        .info-modal-body::-webkit-scrollbar-thumb:hover,
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        .pomodoro-content::-webkit-scrollbar-thumb:active,
+        .todo-content::-webkit-scrollbar-thumb:active,
+        .modal-body::-webkit-scrollbar-thumb:active {
+            background: var(--primary-color);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -1546,24 +1542,6 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-
-        .info-modal-body::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .info-modal-body::-webkit-scrollbar-track {
-            background: var(--bg-light);
-            border-radius: 4px;
-        }
-
-        .info-modal-body::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .info-modal-body::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
         }
 
         .info-section h3 {
@@ -1628,28 +1606,6 @@
             overflow-y: auto;
             flex: 1;
             scrollbar-gutter: stable;
-        }
-
-        .modal-body::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .modal-body::-webkit-scrollbar-track {
-            background: var(--bg-light);
-            border-radius: 4px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color) !important;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb:active {
-            background: var(--primary-color) !important;
         }
 
         .modal-footer {
@@ -1771,7 +1727,6 @@
                 window.__INITIAL_LANG__ = 'en';
             }
 
-            // Load section visibility state
             try {
                 const stored = localStorage.getItem('section-visibility');
                 window.__SECTION_VISIBILITY__ = stored ? JSON.parse(stored) : {
@@ -1795,9 +1750,7 @@
                 if (scrollData) {
                     window.__SCROLL_POS__ = JSON.parse(scrollData);
                 }
-            } catch (e) {
-                // Ignore scroll restoration errors
-            }
+            } catch (e) {}
 
             // Save scroll position before page unload
             window.addEventListener('beforeunload', function() {
@@ -1806,9 +1759,7 @@
                         x: window.scrollX || window.pageXOffset || 0,
                         y: window.scrollY || window.pageYOffset || 0
                     }));
-                } catch (e) {
-                    // Ignore save errors
-                }
+                } catch (e) {}
             });
         })();
     </script>
@@ -1847,7 +1798,6 @@
                     </label>
                 </div>
                 <script>
-                    // Set checkbox states immediately from loaded data
                     (function() {
                         if (window.__SECTION_VISIBILITY__) {
                             var vis = window.__SECTION_VISIBILITY__;
@@ -2424,7 +2374,13 @@
 
             taskTypeName: null,
             addTaskTypeBtn: null,
-            cancelTaskTypeBtn: null
+            cancelTaskTypeBtn: null,
+
+            languageBtn: null,
+            applyBtn: null,
+            submitButton: null,
+            entryFormHeading: null,
+            entryForm: null
         };
 
         function initDOMCache() {
@@ -2492,6 +2448,12 @@
             domCache.filterAllTasks = document.getElementById('filter-all-tasks');
             domCache.taskTypeFiltersContainer = document.getElementById('task-type-filters-container');
             domCache.monthEndWarning = document.getElementById('month-end-warning');
+
+            domCache.languageBtn = document.getElementById('language-btn');
+            domCache.applyBtn = document.getElementById('modal-apply-btn');
+            domCache.submitButton = document.querySelector('#timesheet-form button[type="submit"]');
+            domCache.entryFormHeading = document.querySelector('.entry-form h2');
+            domCache.entryForm = document.querySelector('.entry-form');
         }
 
         const SUPPORTED_LANGUAGES = ['pl', 'en'];
@@ -2895,9 +2857,8 @@
             try {
                 document.documentElement.lang = currentLanguage;
 
-                const languageBtn = document.getElementById('language-btn');
-                if (languageBtn) {
-                    languageBtn.textContent = currentLanguage.toUpperCase();
+                if (domCache.languageBtn) {
+                    domCache.languageBtn.textContent = currentLanguage.toUpperCase();
                 }
 
                 document.querySelectorAll('[data-i18n], [data-i18n-title], [data-i18n-placeholder]').forEach(element => {
@@ -3336,19 +3297,18 @@
         }
 
         function updateProjectSelect() {
-            const clientSelect = document.getElementById('client');
-            const currentValue = clientSelect.value;
+            const currentValue = domCache.client.value;
 
-            clientSelect.innerHTML = `<option value="">${t('form.selectProject')}</option>`;
+            domCache.client.innerHTML = `<option value="">${t('form.selectProject')}</option>`;
             projects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project;
                 option.textContent = project;
-                clientSelect.appendChild(option);
+                domCache.client.appendChild(option);
             });
 
             if (projects.includes(currentValue)) {
-                clientSelect.value = currentValue;
+                domCache.client.value = currentValue;
             }
         }
 
@@ -3484,19 +3444,18 @@
         }
 
         function updateTaskTypeSelect() {
-            const taskTypeSelect = document.getElementById('task-type');
-            const currentValue = taskTypeSelect.value;
+            const currentValue = domCache.taskType.value;
 
-            taskTypeSelect.innerHTML = `<option value="">${t('form.selectTaskType')}</option>`;
+            domCache.taskType.innerHTML = `<option value="">${t('form.selectTaskType')}</option>`;
             taskTypes.forEach(taskType => {
                 const option = document.createElement('option');
                 option.value = taskType;
                 option.textContent = taskType;
-                taskTypeSelect.appendChild(option);
+                domCache.taskType.appendChild(option);
             });
 
             if (taskTypes.includes(currentValue)) {
-                taskTypeSelect.value = currentValue;
+                domCache.taskType.value = currentValue;
             }
         }
 
@@ -3574,7 +3533,6 @@
                 }
 
                 if (target.dataset.taskType) {
-                    // Check if all are selected or none are selected
                     const allChecked = taskTypes.every(tt => {
                         const fid = `filter-${tt.toLowerCase().replace(/\s+/g, '-')}`;
                         const el = document.getElementById(fid);
@@ -3620,9 +3578,8 @@
         });
 
         function updateApplyButtonState() {
-            const applyBtn = document.getElementById('modal-apply-btn');
-            if (applyBtn) {
-                applyBtn.disabled = !hasUnsavedChanges;
+            if (domCache.applyBtn) {
+                domCache.applyBtn.disabled = !hasUnsavedChanges;
             }
         }
 
@@ -3669,8 +3626,7 @@
         }
 
         function openSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = 'block';
+            domCache.settingsModal.style.display = 'block';
             switchTab('projects-tab');
             renderModalProjects();
             renderTaskTypes();
@@ -3680,8 +3636,7 @@
         }
 
         function closeSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = 'none';
+            domCache.settingsModal.style.display = 'none';
             cancelModalProjectEdit();
             taskTypeManager.cancel();
             markAsSaved();
@@ -3937,19 +3892,18 @@
             domCache.hours.value = entry.hours;
             domCache.taskNumber.value = entry.taskNumber;
 
-            const submitButton = document.querySelector('#timesheet-form button[type="submit"]');
-            submitButton.textContent = t('form.updateButton');
-            submitButton.dataset.editId = id;
+            domCache.submitButton.textContent = t('form.updateButton');
+            domCache.submitButton.dataset.editId = id;
 
-            document.querySelector('.entry-form h2').textContent = t('form.editEntry');
-            document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth' });
+            domCache.entryFormHeading.textContent = t('form.editEntry');
+            domCache.entryForm.scrollIntoView({ behavior: 'smooth' });
         }
 
         function resetForm() {
             document.getElementById('timesheet-form').reset();
-            document.querySelector('#timesheet-form button[type="submit"]').textContent = t('form.addButton');
-            document.querySelector('#timesheet-form button[type="submit"]').removeAttribute('data-edit-id');
-            document.querySelector('.entry-form h2').textContent = t('form.addEntry');
+            domCache.submitButton.textContent = t('form.addButton');
+            domCache.submitButton.removeAttribute('data-edit-id');
+            domCache.entryFormHeading.textContent = t('form.addEntry');
             setFieldError(domCache.date, domCache.dateFeedback);
             setFieldError(domCache.taskType, domCache.taskTypeFeedback);
             setFieldError(domCache.client, domCache.clientFeedback);
@@ -5135,7 +5089,6 @@
                 }
             }
 
-            // Save the layout state after toggling
             saveWidgetLayoutState();
         }
 
@@ -5196,7 +5149,6 @@
                     todoTasks.splice(insertIndex, 0, newTask);
                 }
 
-                // Reorder all tasks
                 todoTasks.forEach((task, index) => {
                     task.order = index;
                 });
@@ -5207,7 +5159,6 @@
             saveTodoTasks();
             renderTodoTasks();
 
-            // Clear form
             const todoDescInput = document.getElementById('todo-description');
             todoDescInput.value = '';
             todoDescInput.dispatchEvent(new Event('input')); // Update empty-field class
@@ -5254,15 +5205,12 @@
             const datedList = document.getElementById('todo-dated-list');
             const undatedList = document.getElementById('todo-undated-list');
 
-            // Clear lists
             datedList.innerHTML = '';
             undatedList.innerHTML = '';
 
-            // Separate tasks
             const datedTasks = todoTasks.filter(task => task.dueDate);
             const undatedTasks = todoTasks.filter(task => !task.dueDate);
 
-            // Render dated tasks
             if (datedTasks.length === 0) {
                 datedList.innerHTML = `<div class="todo-empty-state" data-i18n="todo.noDatedTasks">Brak zadań z terminem</div>`;
             } else {
@@ -5411,7 +5359,6 @@
                 }
             }
 
-            // Save the layout state after toggling
             saveWidgetLayoutState();
         }
 
@@ -5423,7 +5370,6 @@
 
             openConfirmDialog(confirmMessage,
                 function() {
-                    // Fill task number field in main form
                     const taskNumberInput = document.getElementById('task-number');
                     if (taskNumberInput) {
                         taskNumberInput.value = task.description;
@@ -5433,14 +5379,12 @@
                     // Store the task ID to delete after entry is created
                     pendingTodoForEntry = id;
 
-                    // Scroll to form
                     const entryForm = document.getElementById('section-entry-form');
                     if (entryForm) {
                         entryForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 },
                 function() {
-                    // Just delete the task
                     todoTasks = todoTasks.filter(t => t.id !== id);
                     saveTodoTasks();
                     renderTodoTasks();
@@ -5452,7 +5396,6 @@
             const task = todoTasks.find(t => t.id === id);
             if (!task) return;
 
-            // Copy description to Pomodoro task number field
             const timerTaskInput = document.getElementById('timer-task-number');
             if (timerTaskInput) {
                 timerTaskInput.value = task.description;
@@ -5460,7 +5403,6 @@
                 timerTaskInput.focus();
             }
 
-            // Show notification
             const message = t('todo.movedToPomodoro') || 'Zadanie przeniesione do Pomodoro';
             showNotification(message);
 
@@ -5721,10 +5663,7 @@
                 }
             };
 
-            // Initial check
             updateEmptyFieldClass();
-
-            // Update on input
             timerTaskInput.addEventListener('input', updateEmptyFieldClass);
 
             timerTaskInput.addEventListener('change', function() {
@@ -5869,33 +5808,27 @@
                 });
             });
             window.addEventListener('click', function(event) {
-                const modal = document.getElementById('settings-modal');
-                if (event.target === modal) {
+                if (event.target === domCache.settingsModal) {
                     closeSettingsModal();
                 }
-                const infoModalElement = document.getElementById('info-modal');
-                if (event.target === infoModalElement) {
+                if (event.target === domCache.infoModal) {
                     closeInfoModal();
                 }
-                const confirmModalElement = document.getElementById('confirm-modal');
-                if (event.target === confirmModalElement) {
+                if (event.target === domCache.confirmModal) {
                     triggerConfirmCancel();
                 }
             });
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
-                    const confirmModalElement = document.getElementById('confirm-modal');
-                    if (confirmModalElement.style.display === 'block') {
+                    if (domCache.confirmModal.style.display === 'block') {
                         triggerConfirmCancel();
                         return;
                     }
-                    const infoModalElement = document.getElementById('info-modal');
-                    if (infoModalElement.style.display === 'block') {
+                    if (domCache.infoModal.style.display === 'block') {
                         closeInfoModal();
                         return;
                     }
-                    const modal = document.getElementById('settings-modal');
-                    if (modal.style.display === 'block') {
+                    if (domCache.settingsModal.style.display === 'block') {
                         closeSettingsModal();
                     }
                 }
@@ -5977,10 +5910,7 @@
                     }
                 };
 
-                // Initial check
                 updateTodoEmptyFieldClass();
-
-                // Update on input
                 todoDescriptionInput.addEventListener('input', updateTodoEmptyFieldClass);
             }
         }
