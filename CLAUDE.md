@@ -4,15 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Time Planner is a bilingual (Polish/English) single-page web application for tracking work hours with an integrated Pomodoro timer. The entire application is contained in a single self-contained HTML file (Plan.html) with embedded CSS and JavaScript.
+Time Planner is a multilingual (6 languages) time tracking application with an integrated Pomodoro timer and TODO list, built as both a standalone HTML file and a Tauri desktop application.
+
+**Dual Architecture**:
+- **Standalone HTML**: `Plan.html` - self-contained single-file application (legacy)
+- **Tauri Desktop**: `src/index.html` → compiled to native Windows/Linux/macOS executable
+
+**Supported Languages**: Polski (PL), English (EN), Deutsch (DE), Español (ES), Italiano (IT), Français (FR)
 
 ## Architecture
 
-### Single-File Structure
-The application follows a monolithic single-file architecture:
+### Dual Build System
+
+**Source Architecture** (src/index.html):
 - **HTML**: Semantic structure with ARIA accessibility attributes
-- **CSS**: Embedded styles using CSS custom properties for theming (lines 11-1632)
-- **JavaScript**: Vanilla JS with no external dependencies (lines 2070-5785)
+- **CSS**: Embedded styles using CSS custom properties for theming
+- **JavaScript**: Vanilla JS with no external dependencies
+- **Assets**: Local fonts (src/fonts/) and translation files (src/translations/)
+
+**Build Output** (src-dist/index.html):
+- **Automated Minification**: `build-minify.js` compresses HTML/CSS/JS
+- **Size Reduction**: 276,043 bytes → 146,896 bytes (47% reduction)
+- **Optimization Settings**:
+  - `collapseWhitespace: true` - removes unnecessary whitespace
+  - `minifyCSS: true` - compresses embedded CSS
+  - `minifyJS: true` - compresses embedded JavaScript
+  - `removeComments: true` - strips all HTML/CSS/JS comments
+  - `removeAttributeQuotes: true` - removes unnecessary attribute quotes
+- **Asset Copying**: Fonts and translations automatically copied to src-dist/
+
+**Legacy Standalone** (Plan.html):
+- Single-file HTML application without build process
+- Kept for backward compatibility and standalone browser use
+- No minification, includes all assets inline
 
 ### State Management
 All application state is managed through browser localStorage:
@@ -55,11 +79,40 @@ Key architectural pattern: Dual data structures for entries:
 - Draggable/resizable widget with minimize functionality
 - Auto-sorting by date for dated tasks
 
-**Internationalization** (lines 2316-2683):
-- Translation system via `translations` object with `t(key, params)` function
-- Supported languages: Polish, English (default)
-- Dynamic UI updates via `data-i18n` and `data-i18n-title` attributes
-- Language stored in localStorage as `app-language`
+**Internationalization System**:
+
+**6 Supported Languages**:
+- 🇵🇱 Polski (PL) - embedded in HTML
+- 🇬🇧 English (EN) - embedded in HTML
+- 🇩🇪 Deutsch (DE) - lazy loaded
+- 🇪🇸 Español (ES) - lazy loaded
+- 🇮🇹 Italiano (IT) - lazy loaded
+- 🇫🇷 Français (FR) - lazy loaded
+
+**Translation Architecture**:
+- **Files**: `src/translations/{lang}.json` - 180+ keys per language
+- **Lazy Loading**: `loadTranslations(langCode)` - async fetch with error handling
+- **Translation Function**: `t(key, params)` - supports parameter interpolation
+  ```javascript
+  t("pomodoro.notif.timeAdded", { task: "ABC-123", hours: 2.5 })
+  // → "Time added: ABC-123 (+2.5h)" (EN)
+  // → "Czas dodany: ABC-123 (+2.5h)" (PL)
+  ```
+- **Dynamic Updates**: `updateUILanguage()` - applies translations to all `data-i18n` elements
+- **Attributes**: `data-i18n="key"` (text content), `data-i18n-title="key"` (title attribute)
+
+**UI Components**:
+- **Language Dropdown**: Flag-based selector with animated menu (CSS lines 1446-1557)
+- **SUPPORTED_LANGUAGES**: Array of language objects with code, name, and flag emoji
+- **Storage**: Current language persisted to `localStorage['app-language']`
+- **Fallback**: Falls back to Polish (PL) if translation loading fails
+
+**Translation Loading Flow**:
+1. Page loads → Check `localStorage['app-language']` or default to PL
+2. PL/EN available immediately (embedded in HTML)
+3. User selects DE/ES/IT/FR → `fetch('translations/{lang}.json')`
+4. On success: Cache in `translations` object, update UI
+5. On error: Log error, fallback to PL, show console warning
 
 **Data Export** (lines 3936-3998):
 - CSV export for current month's entries
@@ -75,11 +128,13 @@ Key architectural pattern: Dual data structures for entries:
 - `sanitizeString()`: Removes all HTML tags using `.replace(/<[^>]*>/g, '')`
 - `ValidationError`: Custom error class with context for debugging
 
-**Content Security Policy** (line 7):
-- CSP meta tag implements defense-in-depth against XSS
-- `script-src 'self' 'unsafe-inline'` - only own scripts allowed
-- `connect-src 'none'` - blocks external connections
-- `object-src 'none'` - disables plugins
+**Content Security Policy**:
+- **Tauri CSP** (src-tauri/tauri.conf.json): Managed by Tauri for desktop app
+  - `connect-src 'self' asset: https://asset.localhost` - allows local file fetching for translations
+  - `script-src 'self' 'unsafe-inline'` - only bundled scripts allowed
+  - `font-src 'self' data:` - local fonts from src/fonts/
+- **HTML CSP** (legacy Plan.html line 7): Meta tag for browser version
+  - `connect-src 'none'` - blocks external connections (standalone mode)
 
 **XSS Prevention Pattern**:
 ```javascript
@@ -182,13 +237,62 @@ Both Pomodoro and TODO widgets support:
 - This prevents the 8px-wide resize handle from blocking the 8px-wide scrollbar
 - All scrollbar CSS is unified in lines 1461-1496 to avoid duplication
 
-## Development Workflow
+## Build System & Development Workflow
+
+### Tauri Desktop Application
+
+**Build Pipeline** (automated minification):
+1. **Source**: `src/index.html` (276KB unminified)
+2. **Process**: `build-minify.js` - HTML/CSS/JS compression via html-minifier-terser
+3. **Output**: `src-dist/index.html` (147KB - 47% reduction)
+4. **Assets Copied**: `src/fonts/` → `src-dist/fonts/`, `src/translations/` → `src-dist/translations/`
+
+**Common Commands**:
+```bash
+# Development mode (with auto-rebuild on changes)
+npm run dev              # Runs build-minify.js, then tauri dev
+npm run tauri:dev        # Alias for above
+
+# Production build (creates native executable)
+npm run build            # Runs build-minify.js, then tauri build
+npm run tauri:build      # Alias for above
+
+# Manual minification only (without Tauri)
+npm run build:minify     # Runs build-minify.js standalone
+```
+
+**Output Locations**:
+- **Development**: Opens app window with DevTools support (F12 enabled via `withGlobalTauri: true`)
+- **Production Build**: `src-tauri/target/release/bundle/`
+  - Windows: `time-planner.exe` (~12-15MB with embedded WebView2 bootstrapper)
+  - Linux: `.deb`, `.rpm`, `.AppImage` packages
+  - macOS: `.app` and `.dmg` files
+
+**Build Configuration**:
+- `src-tauri/tauri.conf.json`: Window settings, CSP policy, bundle configuration
+- `src-tauri/Cargo.toml`: Rust dependencies, optimization flags (strip, LTO, opt-level="z")
+- `package.json`: npm scripts and dependencies
+
+**Important Notes**:
+- **WSL Build = Linux binaries**: Build in Windows PowerShell for Windows `.exe`
+- **Single Instance**: Plugin prevents multiple windows (focuses existing window)
+- **Offline Ready**: All assets bundled, no external dependencies (local fonts, no CDN)
+- **File Export Permissions**: CSV export configured for $DOWNLOAD, $DOCUMENT, $DESKTOP directories
 
 ### Testing Changes
-1. Open Plan.html in browser (no build step required)
+
+**Standalone HTML** (legacy):
+1. Open `Plan.html` directly in browser (no build step required)
 2. Open browser DevTools console for debugging
 3. Check localStorage in Application tab for state inspection
-4. Test both Polish and English translations
+4. Test all 6 language modes (PL, EN, DE, ES, IT, FR)
+
+**Tauri Application**:
+1. Run `npm run dev` to start development mode with hot reload
+2. Press F12 to open DevTools in Tauri window
+3. Test native features: window controls, file system access, single instance
+4. Verify minification: Check `src-dist/index.html` size reduction
+5. Test all 6 languages with lazy loading (check Console for "✅ Translations loaded")
 
 ### Debugging Storage Issues
 ```javascript
@@ -204,9 +308,33 @@ localStorage.removeItem('todo-tasks');
 ```
 
 ### Adding New Translations
-1. Add key to both `translations.pl` and `translations.en` objects (lines 2316-2683)
+1. Add translation key to ALL 6 language files in `src/translations/`:
+   - `pl.json` (Polski)
+   - `en.json` (English)
+   - `de.json` (Deutsch)
+   - `es.json` (Español)
+   - `it.json` (Italiano)
+   - `fr.json` (Français)
 2. Add `data-i18n="key"` or `data-i18n-title="key"` attribute to HTML element
 3. Call `updateUILanguage()` if adding dynamically
+4. Test all languages: Dropdown menu allows switching between all 6 languages
+5. Verify lazy loading: Check browser Console for "✅ Translations loaded: {lang}"
+
+**Translation File Structure**:
+```json
+{
+  "app.title": "TIME PLANNER",
+  "app.settings": "Settings",
+  "pomodoro.notif.workComplete": "Work time complete! Time for a break."
+}
+```
+
+**Parameter Interpolation**:
+```javascript
+// Translation with parameters: "Time added: {task} (+{hours}h)"
+t("pomodoro.notif.timeAdded", { task: "ABC-123", hours: 2.5 })
+// Output: "Time added: ABC-123 (+2.5h)"
+```
 
 ### Modifying Storage Schema
 When changing data structures:
@@ -260,8 +388,31 @@ When changing data structures:
 - Focus management for modals and interactive elements
 - Tooltips for long text fields: All table cells with text content have `title` attribute for hover preview
 
-## Recent Security Improvements (2025-11-11)
+## Recent Major Changes
 
+### v1.0.3 (2025-11-13) - Tauri Build System + 6 Languages
+**Build Pipeline**:
+- Added automated HTML/CSS/JS minification (47% size reduction: 276KB → 147KB)
+- Integrated `build-minify.js` with Tauri `beforeDevCommand` and `beforeBuildCommand`
+- Created `src-dist/` output directory with minified assets
+
+**Internationalization Expansion**:
+- Expanded from 2 languages (PL, EN) to 6 languages (PL, EN, DE, ES, IT, FR)
+- Implemented lazy loading system: only PL/EN embedded, DE/ES/IT/FR loaded on demand
+- Created 6 JSON translation files in `src/translations/` (180+ keys each)
+- Replaced 2-state button with dropdown language selector (flags + language names)
+- Added CSS animations and ARIA accessibility for dropdown menu
+
+**Enhanced File System Permissions**:
+- Added `fs:allow-write-text-file` and `fs:allow-truncate` capabilities
+- Extended fs:scope for CSV export to $DOWNLOAD, $DOCUMENT, $DESKTOP directories
+
+**UI/UX Improvements**:
+- Standardized border-radius to 8px across all components
+- Enhanced task type dropdown styling with flexbox and hover effects
+- Improved button typography (14px → 16px font-size, font-weight: 600)
+
+### v1.0.0 (2025-11-11) - Security Hardening
 **Priority 1 XSS Fixes Implemented:**
 1. Added `EntryValidator` class with comprehensive validation and sanitization
 2. Implemented Content Security Policy (CSP) meta tag
@@ -272,7 +423,6 @@ When changing data structures:
 
 **Backup Files**:
 - `Plan-backup-2025-11-11.html`: Pre-security-fixes version
-- Production version: `Plan.html` (current, security-hardened)
 
 **Breaking Changes**: None - all changes are backward compatible with existing localStorage data
 
@@ -293,13 +443,18 @@ When changing data structures:
 **Regression Testing Checklist**:
 - [ ] Add/Edit/Clone/Delete entries work correctly
 - [ ] Form validation shows errors for invalid data (hours >8, empty fields)
-- [ ] Language switching (PL ⇄ EN) updates all UI elements
+- [ ] Language switching (all 6 languages) updates all UI elements
+- [ ] Language dropdown shows flags and language names correctly
+- [ ] Lazy loading works: DE/ES/IT/FR load on first selection (check Console)
 - [ ] Filters work (month, week, task type multi-select)
 - [ ] Summary calculates total hours correctly
 - [ ] Pomodoro timer creates timesheet entries
 - [ ] TODO widget integrates with Pomodoro and timesheet
-- [ ] CSV export generates correct file
+- [ ] CSV export generates correct file (test file permissions in Tauri)
 - [ ] Tooltips show full text on hover for long entries
+- [ ] Tauri build: Single instance works (2nd launch focuses existing window)
+- [ ] Tauri build: DevTools (F12) opens correctly
+- [ ] Minification: Verify 47% size reduction in src-dist/
 
 **Test Files**:
 - `SECURITY_TEST_REPORT.md`: Comprehensive security test results
