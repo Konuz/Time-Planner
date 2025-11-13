@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Security: Content Security Policy - Defense in depth against XSS -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none';">
+    <!-- CSP is now managed by Tauri configuration (tauri.conf.json) -->
     <title>Time Planner</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231976d2' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Local Roboto fonts for offline functionality */
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --primary-color: #1976d2;
             --primary-dark: #1565c0;
@@ -1444,22 +1465,29 @@
             background-color: #c82333;
         }
 
-        .language-button {
+        /* Language dropdown container */
+        .language-dropdown {
             position: absolute;
             top: 15px;
             right: 65px;
+            display: inline-block;
+        }
+
+        .language-button {
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 4px;
             width: 40px;
             height: 40px;
-            font-size: 20px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
         }
 
         .language-button:hover {
@@ -1468,6 +1496,86 @@
 
         .language-button svg {
             display: block;
+        }
+
+        /* Language dropdown menu */
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            min-width: 180px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .language-menu.show {
+            display: block;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .language-option:hover {
+            background-color: var(--bg-light);
+        }
+
+        .language-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .language-option.active:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .language-flag {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .language-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .language-code {
+            font-size: 12px;
+            color: var(--text-medium);
+            text-transform: uppercase;
+        }
+
+        .language-option.active .language-code {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* Unified scrollbar styling for all scrollable containers */
@@ -1733,7 +1841,9 @@
         (function() {
             try {
                 const storedLang = localStorage.getItem('app-language');
-                window.__INITIAL_LANG__ = ['pl', 'en'].includes(storedLang) ? storedLang : 'en';
+                // Use same language list as SUPPORTED_LANGUAGE_CODES to prevent mismatch
+                const supportedLangs = ['pl', 'en', 'de', 'es', 'it', 'fr'];
+                window.__INITIAL_LANG__ = supportedLangs.includes(storedLang) ? storedLang : 'en';
                 document.documentElement.lang = window.__INITIAL_LANG__;
             } catch (e) {
                 window.__INITIAL_LANG__ = 'en';
@@ -1782,7 +1892,12 @@
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <button class="delete-all-button" id="delete-all-btn" aria-label="Usuń wszystkie wpisy / Delete all entries" data-i18n-title="app.deleteAll" title="Usuń wszystkie wpisy">🗑️</button>
             <h1 data-i18n="app.title">TIME PLANNER</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language"><script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script></button>
+            <div class="language-dropdown">
+                <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" aria-haspopup="true" aria-expanded="false" data-i18n-title="app.language" title="Zmień język / Change language">
+                    <script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script>
+                </button>
+                <div class="language-menu" id="language-menu" role="menu"></div>
+            </div>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -2229,7 +2344,7 @@
 
     <script>
         // ============================================================================
-        // EntryValidator - Runtime validation and sanitization
+        // Security: EntryValidator - Runtime validation and sanitization
         // ============================================================================
 
         /**
@@ -2277,6 +2392,7 @@
                 }
 
                 // Validate required fields
+                // Note: 'date' is optional here because addEntry() adds it automatically
                 const required = ['taskType', 'client', 'hours', 'taskNumber'];
                 for (const field of required) {
                     if (!entry[field] && entry[field] !== 0) {
@@ -2544,7 +2660,7 @@
 
         const TODO_STORAGE_KEY = 'todo-tasks';
         const WIDGET_LAYOUT_STATE_KEY = 'widget-layout-state';
-        let todoTasks = [];
+        let todoTasks = []; // { id, description, priority, dueDate, createdAt, order }
         let isDraggingTodo = false;
         let isDraggingTodoMinimized = false;
         let todoMinimizedDragMoved = false;
@@ -2555,7 +2671,7 @@
         let draggedTodoSourceListType = null;
         let todoGlobalDragOverAttached = false;
         let todoGlobalDragEnterAttached = false;
-        let pendingTodoForEntry = null;
+        let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
 
         const getDefaultWidgetLayoutState = () => ({
             pomodoro: {
@@ -2710,8 +2826,17 @@
             domCache.entryForm = document.querySelector('.entry-form');
         }
 
-        const SUPPORTED_LANGUAGES = ['pl', 'en', 'de', 'es', 'fr', 'it'];
-        const SUPPORTED_LANGUAGE_CODES = ['pl', 'en', 'de', 'es', 'fr', 'it'];
+        // Supported languages configuration
+        const SUPPORTED_LANGUAGES = [
+            { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+            { code: 'en', name: 'English', flag: '🇬🇧' },
+            { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+            { code: 'es', name: 'Español', flag: '🇪🇸' },
+            { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+            { code: 'fr', name: 'Français', flag: '🇫🇷' }
+        ];
+
+        const SUPPORTED_LANGUAGE_CODES = SUPPORTED_LANGUAGES.map(lang => lang.code);
         let storedLanguage = null;
 
         try {
@@ -2720,16 +2845,33 @@
             console.warn('Unable to access localStorage for language settings:', error);
         }
 
-        let currentLanguage = SUPPORTED_LANGUAGE_CODES.includes(storedLanguage) ? storedLanguage : 'en';
-
-        if (storedLanguage && storedLanguage !== currentLanguage) {
-            try {
-                localStorage.setItem('app-language', currentLanguage);
-            } catch (error) {
-                console.warn('Unable to persist corrected language setting:', error);
+        // Synchronize with __INITIAL_LANG__ if available (set in inline script)
+        // This ensures consistency between initial HTML lang attribute and currentLanguage
+        let currentLanguage;
+        if (window.__INITIAL_LANG__ && SUPPORTED_LANGUAGE_CODES.includes(window.__INITIAL_LANG__)) {
+            currentLanguage = window.__INITIAL_LANG__;
+            // Ensure localStorage matches if it was different
+            if (storedLanguage !== currentLanguage) {
+                try {
+                    localStorage.setItem('app-language', currentLanguage);
+                } catch (error) {
+                    console.warn('Unable to persist corrected language setting:', error);
+                }
+            }
+        } else {
+            // Fallback to localStorage validation
+            currentLanguage = SUPPORTED_LANGUAGE_CODES.includes(storedLanguage) ? storedLanguage : 'en';
+            
+            if (storedLanguage && storedLanguage !== currentLanguage) {
+                try {
+                    localStorage.setItem('app-language', currentLanguage);
+                } catch (error) {
+                    console.warn('Unable to persist corrected language setting:', error);
+                }
             }
         }
 
+        // Translations cache - lazy loaded
         const translations = {
             pl: {
                 'app.title': 'TIME PLANNER',
@@ -2771,16 +2913,17 @@
                 'summary.currentMonth': 'Aktualny miesiąc:',
                 'summary.totalHours': 'Całkowita liczba godzin:',
                 'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
+                'export.filenamePrefix': 'ewidencja_godzin',
                 'settings.title': 'Ustawienia',
                 'settings.projects': 'Projekty',
                 'settings.tasks': 'Zadania',
                 'settings.projectName': 'Nazwa projektu:',
                 'settings.addProject': 'Dodaj projekt',
+                'settings.deleteAllProjects': 'Usuń wszystkie',
                 'settings.cancel': 'Anuluj',
                 'settings.discard': 'Anuluj',
                 'settings.taskType': 'Rodzaj zadania:',
                 'settings.addTask': 'Dodaj zadanie',
-                'settings.deleteAllProjects': 'Usuń wszystkie',
                 'settings.deleteAllTasks': 'Usuń wszystkie',
                 'settings.apply': 'Zastosuj',
                 'settings.ok': 'OK',
@@ -2868,9 +3011,6 @@
                 'msg.settingsCancelled': 'Zmiany anulowane',
                 'msg.storageQuotaExceeded': 'Pamięć przeglądarki jest pełna. Wyeksportuj dane i usuń starsze wpisy.',
                 'msg.storageSaveFailed': 'Nie można zapisać danych. Sprawdź ustawienia przeglądarki.',
-                'error.validation': 'Błąd walidacji: {message}',
-                'error.addEntry': 'Błąd podczas dodawania wpisu. Spróbuj ponownie.',
-                'error.editEntry': 'Błąd podczas edycji wpisu. Spróbuj ponownie.',
                 'validation.selectDate': 'Wybierz datę',
                 'validation.selectTaskType': 'Wybierz rodzaj zadania',
                 'validation.selectProject': 'Wybierz projekt',
@@ -2922,6 +3062,7 @@
                 'app.title': 'TIME PLANNER',
                 'app.settings': 'Settings',
                 'app.info': 'Guide',
+                'app.deleteAll': 'Delete all entries',
                 'app.language': 'Change language / Zmień język',
                 'warning.endOfMonth': 'End of month approaching!',
 
@@ -2962,6 +3103,7 @@
                 'summary.currentMonth': 'Current month:',
                 'summary.totalHours': 'Total hours:',
                 'summary.export': 'Export current month data (CSV)',
+                'export.filenamePrefix': 'timesheet',
 
                 'settings.title': 'Settings',
                 'settings.projects': 'Projects',
@@ -3063,9 +3205,6 @@
                 'msg.settingsCancelled': 'Changes cancelled',
                 'msg.storageQuotaExceeded': 'Storage is full. Please export your data and remove old entries.',
                 'msg.storageSaveFailed': 'Unable to save data. Please check your browser settings.',
-                'error.validation': 'Validation error: {message}',
-                'error.addEntry': 'Error while adding entry. Please try again.',
-                'error.editEntry': 'Error while editing entry. Please try again.',
 
                 'validation.selectDate': 'Select date',
                 'validation.selectTaskType': 'Select task type',
@@ -3142,8 +3281,7 @@
 
         function t(key, params = {}) {
             const languageData = translations[currentLanguage];
-            // Use English as fallback instead of Polish for better international support
-            const fallbackData = translations['en'] || translations['pl'];
+            const fallbackData = translations['pl'];
 
             let text = (languageData && languageData[key]) ||
                 (fallbackData && fallbackData[key]) ||
@@ -3235,13 +3373,79 @@
             });
         }
 
-        async function changeLanguage(newLang) {
-            if (!newLang) {
-                // Toggle between pl and en for backward compatibility
-                newLang = currentLanguage === 'pl' ? 'en' : 'pl';
+        // Initialize language dropdown
+        function initLanguageDropdown() {
+            const menu = document.getElementById('language-menu');
+            const btn = document.getElementById('language-btn');
+
+            if (!menu || !btn) return;
+
+            // Populate menu with language options
+            menu.innerHTML = '';
+            SUPPORTED_LANGUAGES.forEach(lang => {
+                const option = document.createElement('button');
+                option.className = 'language-option';
+                option.setAttribute('role', 'menuitem');
+                option.setAttribute('data-lang', lang.code);
+                if (lang.code === currentLanguage) {
+                    option.classList.add('active');
+                }
+
+                option.innerHTML = `
+                    <span class="language-flag">${lang.flag}</span>
+                    <span class="language-name">${lang.name}</span>
+                    <span class="language-code">${lang.code}</span>
+                `;
+
+                option.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await changeLanguage(lang.code);
+                    closeLanguageMenu();
+                });
+
+                menu.appendChild(option);
+            });
+
+            // Toggle dropdown on button click
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleLanguageMenu();
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('.language-dropdown');
+                if (dropdown && !dropdown.contains(e.target)) {
+                    closeLanguageMenu();
+                }
+            });
+        }
+
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('language-menu');
+            const btn = document.getElementById('language-btn');
+            if (!menu || !btn) return;
+
+            const isOpen = menu.classList.contains('show');
+            if (isOpen) {
+                closeLanguageMenu();
+            } else {
+                menu.classList.add('show');
+                btn.setAttribute('aria-expanded', 'true');
             }
-            
-            if (newLang === currentLanguage) return;
+        }
+
+        function closeLanguageMenu() {
+            const menu = document.getElementById('language-menu');
+            const btn = document.getElementById('language-btn');
+            if (!menu || !btn) return;
+
+            menu.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        async function changeLanguage(newLang) {
+            if (!newLang || newLang === currentLanguage) return;
 
             try {
                 // Load translations if not already loaded
@@ -3249,10 +3453,15 @@
 
                 // Update current language
                 currentLanguage = newLang;
-            localStorage.setItem('app-language', currentLanguage);
+                localStorage.setItem('app-language', currentLanguage);
 
                 // Update UI
-            updateUILanguage();
+                updateUILanguage();
+
+                // Update dropdown active state
+                document.querySelectorAll('.language-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.getAttribute('data-lang') === newLang);
+                });
 
                 console.log(`✅ Language changed to: ${newLang}`);
             } catch (error) {
@@ -3396,6 +3605,7 @@
                         showStorageError(t('msg.storageSaveFailed'));
                     }
                 } finally {
+                    // Always clean up timer reference to prevent memory leak
                     delete saveTimers[key];
                 }
             }, debounceMs);
@@ -3710,6 +3920,8 @@
             try {
                 const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
+                // Security: Validate and sanitize entries from localStorage
+                // This prevents XSS attacks via localStorage manipulation
                 const validEntries = storedEntries.filter(rawEntry => {
                     try {
                         // Sanitize and validate each entry
@@ -3753,6 +3965,7 @@
             const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
             const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [];
 
+            // Security: Sanitize project names from localStorage
             const sanitizedProjects = loadedProjects
                 .map(p => EntryValidator.sanitizeString(p))
                 .filter(p => p.length > 0); // Remove empty strings
@@ -3804,11 +4017,13 @@
                 const itemCard = document.createElement('div');
                 itemCard.className = 'project-card';
 
+                // Safe: Use textContent for user data to prevent XSS
                 const itemSpan = document.createElement('span');
                 itemSpan.textContent = item;
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'project-actions';
+                // Security: Use createElement instead of innerHTML to prevent XSS
                 const editBtn = document.createElement('button');
                 editBtn.className = `project-action-btn ${config.editBtnClass}`;
                 editBtn.setAttribute('data-index', index);
@@ -3914,6 +4129,7 @@
             const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
             const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [];
 
+            // Security: Sanitize task type names from localStorage
             const sanitizedTaskTypes = loadedTaskTypes
                 .map(t => EntryValidator.sanitizeString(t))
                 .filter(t => t.length > 0); // Remove empty strings
@@ -3972,6 +4188,7 @@
                 filterStates[taskType] = filterElement ? filterElement.checked : true;
             });
 
+            // Security: Use createElement instead of innerHTML to prevent XSS
             domCache.taskTypeFiltersContainer.innerHTML = '';
 
             // Create "Select all" filter
@@ -4010,6 +4227,7 @@
                 checkbox.setAttribute('data-task-type', taskType);
                 checkbox.checked = isChecked;
 
+                // Security: Use textContent to prevent XSS from user-controlled taskType
                 const taskTypeText = document.createTextNode(' ');
                 const taskTypeSpan = document.createTextNode(taskType);
 
@@ -4025,6 +4243,7 @@
             initTaskTypeFilterListeners();
         }
 
+        // Event delegation handler for task type filters (prevents memory leaks)
         let taskTypeFilterHandler = null;
 
         function initTaskTypeFilterListeners() {
@@ -4033,6 +4252,7 @@
                 domCache.taskTypeFiltersContainer.removeEventListener('change', taskTypeFilterHandler);
             }
 
+            // Single event delegation handler for all checkboxes (memory leak fix)
             taskTypeFilterHandler = function(event) {
                 const target = event.target;
                 if (target.type !== 'checkbox') return;
@@ -4253,6 +4473,7 @@
          */
         function addEntry(entry) {
             try {
+                // Security: Runtime validation to prevent console manipulation
                 EntryValidator.validate(entry);
 
                 const newEntry = {
@@ -4266,6 +4487,7 @@
                 renderEntries();
                 updateSummary();
 
+                // Delete pending Todo task if this entry was created from a Todo
                 if (pendingTodoForEntry) {
                     todoTasks = todoTasks.filter(t => t.id !== pendingTodoForEntry);
                     pendingTodoForEntry = null;
@@ -4340,6 +4562,7 @@
          */
         function editEntry(id, updatedEntry) {
             try {
+                // Security: Runtime validation to prevent console manipulation
                 EntryValidator.validate(updatedEntry);
 
                 const existingEntry = entriesMap.get(id);
@@ -4362,10 +4585,7 @@
             } catch (error) {
                 console.error('❌ Error editing entry:', error);
                 if (error instanceof ValidationError) {
-                    alert(
-                        t('error.validation', { message: error.message }) ||
-                        'Błąd walidacji: ' + error.message
-                    );
+                    alert(t('error.validation') || 'Błąd walidacji: ' + error.message);
                 } else {
                     alert(t('error.editEntry') || 'Błąd podczas edycji wpisu. Spróbuj ponownie.');
                 }
@@ -4436,6 +4656,7 @@
             }
 
             const actionsCell = document.createElement('td');
+            // Security: Use createElement instead of innerHTML to prevent XSS
             const editBtn = document.createElement('button');
             editBtn.className = 'action-btn edit-btn';
             editBtn.setAttribute('data-id', entry.id);
@@ -4571,17 +4792,88 @@
                 return;
             }
             
-            const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
-            const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
+            // Use current language for month name and filename prefix
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 
+                          currentLanguage === 'de' ? 'de-DE' :
+                          currentLanguage === 'es' ? 'es-ES' :
+                          currentLanguage === 'it' ? 'it-IT' :
+                          currentLanguage === 'fr' ? 'fr-FR' : 'en-US';
+            const month = currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+            const filenamePrefix = t('export.filenamePrefix') || (currentLanguage === 'pl' ? 'ewidencja_godzin' : 'timesheet');
+            const filename = `${filenamePrefix}_${month.replace(/\s+/g, '_')}.csv`;
             let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania\n';
             currentMonthEntries.forEach(entry => {
                 csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
             });
+            
+            // Check if running in Tauri with dialog and fs plugins
+            if (window.__TAURI__ && window.__TAURI__.dialog && window.__TAURI__.fs) {
+                // Use Tauri API for file download
+                try {
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    blob.arrayBuffer().then(buffer => {
+                        const uint8Array = new Uint8Array(buffer);
+                        // Use Tauri dialog to save file
+                        window.__TAURI__.dialog.save({
+                            defaultPath: filename,
+                            filters: [{
+                                name: 'CSV',
+                                extensions: ['csv']
+                            }]
+                        }).then(filePath => {
+                            if (filePath) {
+                                window.__TAURI__.fs.writeFile({
+                                    path: filePath,
+                                    contents: uint8Array
+                                }).then(() => {
+                                    showNotification(t('msg.exportSuccess') || 'Plik został zapisany', 2000);
+                                }).catch(err => {
+                                    console.error('Tauri file write error:', err);
+                                    showNotification('Błąd zapisu pliku', 3000);
+                                    // Fallback to standard method
+                                    downloadFileStandard(csvContent, filename);
+                                });
+                            }
+                        }).catch(err => {
+                            // User cancelled dialog, ignore
+                            if (err && err !== 'User cancelled' && err.message !== 'User cancelled') {
+                                console.error('Tauri dialog error:', err);
+                                // Fallback to standard method
+                                downloadFileStandard(csvContent, filename);
+                            }
+                        });
+                    }).catch(err => {
+                        console.error('Blob conversion error:', err);
+                        showNotification('Błąd konwersji danych', 3000);
+                        // Fallback to standard method
+                        downloadFileStandard(csvContent, filename);
+                    });
+                } catch (err) {
+                    console.error('Tauri API error:', err);
+                    // Fallback to standard method
+                    downloadFileStandard(csvContent, filename);
+                }
+            } else {
+                // Standard browser download (works in both browser and Tauri without plugins)
+                downloadFileStandard(csvContent, filename);
+            }
+        }
+        
+        function downloadFileStandard(csvContent, filename) {
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.setAttribute('download', filename);
+            link.style.display = 'none';
+            document.body.appendChild(link);
             link.click();
+            // Clean up after download
+            setTimeout(() => {
+                if (document.body.contains(link)) {
+                    document.body.removeChild(link);
+                }
+                URL.revokeObjectURL(link.href);
+            }, 100);
         }
 
         function setFieldError(input, feedbackElement, messageKey) {
@@ -6098,6 +6390,7 @@
             const message = t('todo.movedToPomodoro') || 'Zadanie przeniesione do Pomodoro';
             showNotification(message);
 
+            // Note: Task is NOT deleted from todo list
         }
 
         function handleNoDateToggle() {
@@ -6322,6 +6615,12 @@
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
             switchMode('work');
+
+            // Fix for Tauri: Explicitly set button visibility on initialization
+            // Inline HTML style="display: none;" doesn't work reliably in WebView2
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+
             setTimeout(() => {
                 timerDisplay.classList.remove('no-transition');
                 progressCircle.classList.remove('no-transition');
@@ -6525,7 +6824,10 @@
             document.getElementById('confirm-accept').addEventListener('click', triggerConfirmAccept);
             document.getElementById('confirm-cancel').addEventListener('click', triggerConfirmCancel);
             document.getElementById('confirm-close').addEventListener('click', triggerConfirmCancel);
-            document.getElementById('language-btn').addEventListener('click', changeLanguage);
+
+            // Initialize language dropdown
+            initLanguageDropdown();
+
             document.querySelectorAll('.modal-tab').forEach(tabButton => {
                 tabButton.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
@@ -6624,6 +6926,7 @@
                 handleNoDateToggle(); // Set initial state
             }
 
+            // Update empty-field class for todo description
             const todoDescriptionInput = document.getElementById('todo-description');
             if (todoDescriptionInput) {
                 const updateTodoEmptyFieldClass = () => {

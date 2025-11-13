@@ -1,0 +1,1 @@
+{"main":{"identifier":"main","description":"Main capabilities for Time Planner","local":true,"windows":["*"],"permissions":["core:default","dialog:allow-save","dialog:default","fs:allow-read-file","fs:allow-write-file","fs:allow-read-dir","fs:scope-download"]}}
