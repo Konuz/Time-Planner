@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Security: Content Security Policy - Defense in depth against XSS -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none';">
+    <!-- Note: frame-ancestors directive removed - only works in HTTP headers, not <meta> tags -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; base-uri 'self'; form-action 'self'; object-src 'none';">
     <title>Time Planner</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231976d2' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,6 +34,11 @@
             --text-light: #fff;
             --border-color: #5f5f5f;
             --border-radius: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 20px;
             --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
@@ -182,12 +188,29 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-size: 16px;
             transition: var(--transition);
         }
 
-        input:focus, select:focus {
+        /* WCAG 2.2 AA Focus Indicators */
+        /* Use :focus-visible to show indicators only for keyboard navigation */
+
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
+        }
+
+        button:focus-visible, .button:focus-visible,
+        a:focus-visible, [role="button"]:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Maintain existing behavior for non-keyboard focus (mouse clicks) */
+        input:focus:not(:focus-visible), select:focus:not(:focus-visible) {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
@@ -208,7 +231,7 @@
             color: var(--text-light);
             border: none;
             padding: 12px 20px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
@@ -423,7 +446,7 @@
             color: var(--text-light);
             border: none;
             padding: 10px 30px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
@@ -437,7 +460,7 @@
         .project-card {
             background-color: var(--bg-light);
             padding: 15px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -476,6 +499,16 @@
         }
 
         .task-type-dropdown summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px;
+            background-color: var(--bg-highlight);
+            border-radius: var(--border-radius);
+            list-style: none;
+            font-weight: 600;
+            cursor: pointer;
             user-select: none;
             transition: var(--transition);
         }
@@ -484,6 +517,7 @@
             background-color: var(--bg-light);
         }
 
+        .task-type-dropdown summary::marker,
         .task-type-dropdown summary::-webkit-details-marker {
             display: none;
         }
@@ -496,6 +530,14 @@
 
         .task-type-dropdown[open] .dropdown-arrow {
             transform: rotate(180deg);
+        }
+
+        .task-type-filters {
+            margin-top: 12px;
+            padding-left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         @media (max-width: 768px) {
@@ -530,37 +572,42 @@
             }
         }
 
-        .pomodoro-widget {
+        /* Shared widget base styles */
+        .widget {
             position: fixed;
             top: 0;
-            right: 0;
-            width: 320px;
             min-width: 280px;
             max-width: 640px;
-            min-height: 400px;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            z-index: 9999;
-            transition: box-shadow 0.3s ease;
+            border-radius: var(--border-radius-lg);
             display: flex;
             flex-direction: column;
             max-height: 100vh;
             will-change: transform;
             overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .pomodoro-widget {
+            right: 0;
+            width: 320px;
+            min-height: 400px;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
         }
 
         .pomodoro-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
 
-        .pomodoro-header {
+        /* Shared widget header styles */
+        .widget-header {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
-            padding: 8px 16px;
-            border-radius: 12px 12px 0 0;
+            padding: var(--spacing-sm) 16px;
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-sm);
             cursor: move;
             user-select: none;
         }
@@ -569,7 +616,8 @@
             font-size: 20px;
         }
 
-        .pomodoro-title {
+        /* Shared widget title styles */
+        .widget-title {
             flex: 1;
             font-weight: 700;
             color: white;
@@ -603,14 +651,21 @@
             opacity: 0.7;
         }
 
-        .pomodoro-content {
-            padding: 20px;
+        .widget-minimize-btn:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Shared widget content styles */
+        .widget-content {
+            padding: var(--spacing-lg);
             overflow-y: auto;
             overflow-x: hidden;
             flex: 1;
             min-height: 0;
             scrollbar-gutter: stable;
-            border-radius: 0 0 12px 12px;
+            border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
         }
 
         .pomodoro-display {
@@ -806,15 +861,21 @@
             font-size: 14px;
         }
 
-        .timer-task-input input:focus {
-            outline: none;
+        .timer-task-input input:focus-visible {
+            outline: 2px solid #37b24d;
+            outline-offset: 2px;
             border-color: #37b24d;
-            box-shadow: none;
         }
 
-        .timer-task-input input.empty-field:focus {
+        .timer-task-input input.empty-field:focus-visible {
+            outline: 2px solid #ff6b6b;
+            outline-offset: 2px;
             border-color: #ff6b6b;
-            box-shadow: none;
+        }
+
+        /* Remove outline for mouse clicks only */
+        .timer-task-input input:focus:not(:focus-visible) {
+            outline: none;
         }
 
         .pomodoro-stats {
@@ -880,7 +941,7 @@
             padding: 6px;
             background-color: var(--bg-highlight);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             color: var(--text-color);
             font-size: 12px;
         }
@@ -1022,58 +1083,20 @@
         }
 
         .todo-widget {
-            position: fixed;
-            top: 0;
             left: 0;
             width: 350px;
             min-width: 300px;
-            max-width: 640px;
             background: var(--bg-lighter);
-            border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            max-height: 100vh;
-            will-change: transform;
-            overflow: hidden;
         }
 
         .todo-widget:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .todo-header {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
-            padding: 8px 16px;
-            border-radius: 12px 12px 0 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: move;
-            user-select: none;
-        }
-
         .todo-icon {
             font-size: 20px;
-        }
-
-        .todo-title {
-            flex: 1;
-            font-weight: 700;
-            color: white;
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-
-        .todo-content {
-            padding: 20px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            flex: 1;
-            min-height: 0;
-            scrollbar-gutter: stable;
-            border-radius: 0 0 12px 12px;
         }
 
         .todo-add-form {
@@ -1096,15 +1119,21 @@
             width: 100%;
         }
 
-        #todo-description:focus {
-            outline: none;
+        #todo-description:focus-visible {
+            outline: 2px solid #37b24d;
+            outline-offset: 2px;
             border-color: #37b24d;
-            box-shadow: none;
         }
 
-        #todo-description.empty-field:focus {
+        #todo-description.empty-field:focus-visible {
+            outline: 2px solid #ff6b6b;
+            outline-offset: 2px;
             border-color: #ff6b6b;
-            box-shadow: none;
+        }
+
+        /* Remove outline for mouse clicks only */
+        #todo-description:focus:not(:focus-visible) {
+            outline: none;
         }
 
         #todo-priority {
@@ -1156,8 +1185,8 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             transition: opacity 0.2s ease;
         }
 
@@ -1171,7 +1200,7 @@
             background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
             color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
@@ -1385,7 +1414,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1400,6 +1429,11 @@
             background-color: var(--primary-dark);
         }
 
+        .settings-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
         .info-button {
             position: absolute;
             top: 15px;
@@ -1407,7 +1441,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1422,6 +1456,11 @@
             background-color: var(--primary-dark);
         }
 
+        .info-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
         .delete-all-button {
             position: absolute;
             top: 15px;
@@ -1429,7 +1468,7 @@
             background-color: var(--error-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1444,6 +1483,11 @@
             background-color: #c82333;
         }
 
+        .delete-all-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
         .language-button {
             position: absolute;
             top: 15px;
@@ -1451,7 +1495,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1464,6 +1508,11 @@
 
         .language-button:hover {
             background-color: var(--primary-dark);
+        }
+
+        .language-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
         }
 
         .language-button svg {
@@ -1714,7 +1763,6 @@
 
         .modal-tab.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
         }
 
         .tab-content {
@@ -1723,6 +1771,19 @@
 
         .tab-content.active {
             display: block;
+        }
+
+        #modal-projects-container,
+        #task-types-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        #modal-projects-container .project-card,
+        #task-types-container .project-card {
+            width: auto;
+            min-width: 0;
         }
     </style>
 </head>
@@ -1782,7 +1843,16 @@
             <button class="info-button" id="info-btn" aria-label="Instrukcja / Guide" data-i18n-title="app.info" title="Instrukcja">ℹ️</button>
             <button class="delete-all-button" id="delete-all-btn" aria-label="Usuń wszystkie wpisy / Delete all entries" data-i18n-title="app.deleteAll" title="Usuń wszystkie wpisy">🗑️</button>
             <h1 data-i18n="app.title">TIME PLANNER</h1>
-            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language"><script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script></button>
+            <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" data-i18n-title="app.language" title="Zmień język / Change language">EN</button>
+            <script>
+                // Set initial button text immediately to prevent flashing
+                (function() {
+                    const btn = document.getElementById('language-btn');
+                    if (btn && window.__INITIAL_LANG__) {
+                        btn.textContent = window.__INITIAL_LANG__.toUpperCase();
+                    }
+                })();
+            </script>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
         </header>
 
@@ -1885,11 +1955,11 @@
                     </label>
                 </div>
                 <details class="task-type-dropdown" open>
-                    <summary style="font-weight: 600; cursor: pointer; padding: 8px; background-color: var(--bg-highlight); border-radius: var(--border-radius); list-style: none; display: flex; align-items: center; justify-content: space-between;">
+                    <summary>
                         <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
                         <span class="dropdown-arrow">▼</span>
                     </summary>
-                    <div id="task-type-filters-container" style="margin-top: 10px; padding-left: 10px;">
+                    <div id="task-type-filters-container" class="task-type-filters">
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
@@ -1958,7 +2028,7 @@
                     <ol>
                         <li data-i18n="info.section.todoStep1">Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").</li>
                         <li data-i18n="info.section.todoStep2">Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.</li>
-                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem" i „bez terminu".</li>
+                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.</li>
                         <li data-i18n="info.section.todoStep4">Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.</li>
                     </ol>
                 </div>
@@ -2010,7 +2080,7 @@
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
-                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                                 
                             </div>
                         </div>
@@ -2031,7 +2101,7 @@
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
-                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                                 
                             </div>
                         </div>
@@ -2063,7 +2133,7 @@
         </div>
     </div>
 
-    <div id="pomodoro-widget" class="pomodoro-widget" role="region" aria-label="Timer Pomodoro">
+    <div id="pomodoro-widget" class="widget pomodoro-widget" role="region" aria-label="Timer Pomodoro">
         
         <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
@@ -2074,12 +2144,12 @@
         <div class="resize-handle resize-handle-se" data-direction="se" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-sw" data-direction="sw" aria-hidden="true"></div>
 
-        <div id="pomodoro-header" class="pomodoro-header">
+        <div id="pomodoro-header" class="widget-header pomodoro-header">
             <span class="pomodoro-icon" aria-hidden="true">🍅</span>
-            <span class="pomodoro-title" data-i18n="pomodoro.title">POMODORO</span>
+            <span class="widget-title pomodoro-title" data-i18n="pomodoro.title">POMODORO</span>
             <button id="pomodoro-minimize" class="widget-minimize-btn pomodoro-minimize-btn" aria-label="Minimalizuj timer Pomodoro">−</button>
         </div>
-        <div id="pomodoro-content" class="pomodoro-content">
+        <div id="pomodoro-content" class="widget-content pomodoro-content">
             <div class="pomodoro-display">
                 <div class="timer-circle-container">
                     <svg class="timer-circle" viewBox="0 0 200 200" aria-hidden="true">
@@ -2163,7 +2233,7 @@
         <span class="minimized-icon" aria-hidden="true">🍅</span>
     </div>
 
-    <div id="todo-widget" class="todo-widget" role="region" aria-label="Lista To-Do" style="display: none;">
+    <div id="todo-widget" class="widget todo-widget" role="region" aria-label="Lista To-Do" style="display: none;">
         
         <div class="resize-handle resize-handle-n" data-direction="n" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-s" data-direction="s" aria-hidden="true"></div>
@@ -2174,13 +2244,13 @@
         <div class="resize-handle resize-handle-se" data-direction="se" aria-hidden="true"></div>
         <div class="resize-handle resize-handle-sw" data-direction="sw" aria-hidden="true"></div>
 
-        <div id="todo-header" class="todo-header">
+        <div id="todo-header" class="widget-header todo-header">
             <span class="todo-icon" aria-hidden="true">📋</span>
-            <span class="todo-title" data-i18n="todo.title">TO-DO</span>
+            <span class="widget-title todo-title" data-i18n="todo.title">TO-DO</span>
             <button id="todo-minimize" class="widget-minimize-btn todo-minimize-btn" aria-label="Minimalizuj listę To-Do">−</button>
         </div>
 
-        <div id="todo-content" class="todo-content">
+        <div id="todo-content" class="widget-content todo-content">
             
             <div class="todo-add-form">
                 <input type="text" id="todo-description" placeholder="Opis zadania..." data-i18n-placeholder="todo.descriptionPlaceholder" aria-label="Opis zadania">
@@ -2760,6 +2830,8 @@
                 'entries.taskTypeFilter': 'Rodzaj zadania',
                 'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
                 'entries.showAll': 'Pokaż wszystkie wpisy',
+                'entries.showLimited': 'Pokaż tylko {limit} wpisów',
+                'entries.showAllCount': 'Pokaż wszystkie wpisy ({count})',
                 'entries.noResults': 'Brak wpisów spełniających kryteria filtrowania',
                 'table.date': 'Data',
                 'table.taskType': 'Rodzaj zadania',
@@ -2771,6 +2843,7 @@
                 'summary.currentMonth': 'Aktualny miesiąc:',
                 'summary.totalHours': 'Całkowita liczba godzin:',
                 'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
+                'csv.headers': 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania',
                 'settings.title': 'Ustawienia',
                 'settings.projects': 'Projekty',
                 'settings.tasks': 'Zadania',
@@ -2782,6 +2855,8 @@
                 'settings.addTask': 'Dodaj zadanie',
                 'settings.deleteAllProjects': 'Usuń wszystkie',
                 'settings.deleteAllTasks': 'Usuń wszystkie',
+                'settings.noProjects': 'Brak projektów',
+                'settings.noTasks': 'Brak zadań',
                 'settings.apply': 'Zastosuj',
                 'settings.ok': 'OK',
                 'confirm.title': 'Potwierdzenie',
@@ -2846,7 +2921,7 @@
                 'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
                 'info.section.todoStep1': 'Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").',
                 'info.section.todoStep2': 'Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.',
-                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem" i „bez terminu".',
+                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.',
                 'info.section.todoStep4': 'Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.',
                 'info.close': 'Zamknij instrukcję',
                 'msg.enterProjectName': 'Podaj nazwę projektu',
@@ -2859,6 +2934,11 @@
                 'msg.confirmDeleteAllTasks': 'Czy na pewno usunąć wszystkie zadania? Ta operacja jest nieodwracalna.',
                 'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
                 'msg.noDataToExport': 'Brak danych do eksportu',
+                'msg.exportSuccess': 'Plik CSV został zapisany',
+                'msg.exportError': 'Błąd podczas zapisu pliku CSV',
+                'msg.exportCanceled': 'Anulowano wybór pliku',
+                'msg.exportErrorTitle': 'Błąd zapisu CSV:',
+                'msg.exportErrorDetails': 'Proszę sprawdzić:\n- Czy folder docelowy istnieje\n- Czy masz uprawnienia do zapisu\n- Czy plik nie jest otwarty w innym programie',
                 'msg.noEntriesToDelete': 'Brak wpisów do usunięcia',
                 'msg.confirmDeleteAllEntries': 'Czy na pewno usunąć wszystkie wpisy ({count})? Ta operacja jest nieodwracalna.',
                 'msg.allEntriesDeleted': 'Wszystkie wpisy zostały usunięte',
@@ -2871,6 +2951,7 @@
                 'error.validation': 'Błąd walidacji: {message}',
                 'error.addEntry': 'Błąd podczas dodawania wpisu. Spróbuj ponownie.',
                 'error.editEntry': 'Błąd podczas edycji wpisu. Spróbuj ponownie.',
+                'error.renderEntries': 'Błąd podczas wyświetlania wpisów. Odśwież stronę.',
                 'validation.selectDate': 'Wybierz datę',
                 'validation.selectTaskType': 'Wybierz rodzaj zadania',
                 'validation.selectProject': 'Wybierz projekt',
@@ -2922,6 +3003,7 @@
                 'app.title': 'TIME PLANNER',
                 'app.settings': 'Settings',
                 'app.info': 'Guide',
+                'app.deleteAll': 'Delete all entries',
                 'app.language': 'Change language / Zmień język',
                 'warning.endOfMonth': 'End of month approaching!',
 
@@ -2949,6 +3031,8 @@
                 'entries.taskTypeFilter': 'Task type',
                 'entries.selectDeselectAll': 'Select/Deselect all',
                 'entries.showAll': 'Show all entries',
+                'entries.showLimited': 'Show only {limit} entries',
+                'entries.showAllCount': 'Show all entries ({count})',
                 'entries.noResults': 'No entries match the current filters',
 
                 'table.date': 'Date',
@@ -2962,6 +3046,7 @@
                 'summary.currentMonth': 'Current month:',
                 'summary.totalHours': 'Total hours:',
                 'summary.export': 'Export current month data (CSV)',
+                'csv.headers': 'Date,Task type,Project,Hours,Task number or name',
 
                 'settings.title': 'Settings',
                 'settings.projects': 'Projects',
@@ -2973,6 +3058,8 @@
                 'settings.taskType': 'Task type:',
                 'settings.addTask': 'Add task',
                 'settings.deleteAllTasks': 'Delete all',
+                'settings.noProjects': 'No projects',
+                'settings.noTasks': 'No tasks',
                 'settings.discard': 'Cancel',
                 'settings.apply': 'Apply',
                 'settings.ok': 'OK',
@@ -3040,7 +3127,7 @@
                 'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
                 'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority and due date (or enable "No date").',
                 'info.section.todoStep2': 'Use the form buttons to add tasks or remove them all; every task is saved automatically in your browser.',
-                'info.section.todoStep3': 'Drag items to reorder them or move them between the dated and undated sections.',
+                'info.section.todoStep3': 'Drag items to reorder them within sections.',
                 'info.section.todoStep4': 'The ✓, ✕ and → buttons complete, cancel or send the task to Pomodoro so the timer picks up its number.',
                 'info.close': 'Close guide',
 
@@ -3054,6 +3141,11 @@
                 'msg.confirmDeleteAllTasks': 'Are you sure you want to delete all tasks? This operation cannot be undone.',
                 'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
                 'msg.noDataToExport': 'No data to export',
+                'msg.exportSuccess': 'CSV file has been saved',
+                'msg.exportError': 'Error saving CSV file',
+                'msg.exportCanceled': 'File selection canceled',
+                'msg.exportErrorTitle': 'CSV save error:',
+                'msg.exportErrorDetails': 'Please check:\n- If the target folder exists\n- If you have write permissions\n- If the file is not open in another program',
                 'msg.noEntriesToDelete': 'No entries to delete',
                 'msg.confirmDeleteAllEntries': 'Are you sure you want to delete all entries ({count})? This operation cannot be undone.',
                 'msg.allEntriesDeleted': 'All entries have been deleted',
@@ -3066,6 +3158,7 @@
                 'error.validation': 'Validation error: {message}',
                 'error.addEntry': 'Error while adding entry. Please try again.',
                 'error.editEntry': 'Error while editing entry. Please try again.',
+                'error.renderEntries': 'Error displaying entries. Please refresh the page.',
 
                 'validation.selectDate': 'Select date',
                 'validation.selectTaskType': 'Select task type',
@@ -3158,6 +3251,12 @@
 
         function updateUILanguage() {
             try {
+                // Validate currentLanguage is a string
+                if (typeof currentLanguage !== 'string') {
+                    console.error('Invalid currentLanguage type:', typeof currentLanguage);
+                    currentLanguage = 'en'; // Fallback to English
+                }
+
                 document.documentElement.lang = currentLanguage;
 
                 if (domCache.languageBtn) {
@@ -3236,11 +3335,13 @@
         }
 
         async function changeLanguage(newLang) {
-            if (!newLang) {
+            // If called from event listener, newLang will be an Event object
+            // Check if it's a valid language code string
+            if (!newLang || typeof newLang !== 'string' || !SUPPORTED_LANGUAGE_CODES.includes(newLang)) {
                 // Toggle between pl and en for backward compatibility
                 newLang = currentLanguage === 'pl' ? 'en' : 'pl';
             }
-            
+
             if (newLang === currentLanguage) return;
 
             try {
@@ -3312,10 +3413,14 @@
         }
 
         function getMonthName(date) {
-            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 
+                          currentLanguage === 'de' ? 'de-DE' :
+                          currentLanguage === 'es' ? 'es-ES' :
+                          currentLanguage === 'it' ? 'it-IT' :
+                          currentLanguage === 'fr' ? 'fr-FR' : 'en-US';
             const monthName = date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
-            // Capitalize first letter for Polish language
-            if (currentLanguage === 'pl' && monthName.length > 0) {
+            // Capitalize first letter for all languages
+            if (monthName.length > 0) {
                 return monthName.charAt(0).toUpperCase() + monthName.slice(1);
             }
             return monthName;
@@ -3746,6 +3851,7 @@
         }
 
         function saveEntries() {
+            clearFilterCache(); // Invalidate filter cache when entries change
             safeLocalStorageSave(STORAGE_KEY, entries);
         }
 
@@ -3796,7 +3902,10 @@
             config.container.innerHTML = '';
 
             if (items.length === 0) {
-                config.container.innerHTML = `<p style="text-align: center; color: var(--text-color);">${config.emptyMessage}</p>`;
+                const emptyText = typeof config.emptyMessage === 'string' && config.emptyMessage.startsWith('settings.') 
+                    ? t(config.emptyMessage) 
+                    : config.emptyMessage;
+                config.container.innerHTML = `<p style="text-align: center; color: var(--text-color);">${emptyText}</p>`;
                 return;
             }
 
@@ -3956,7 +4065,7 @@
         function renderTaskTypes() {
             renderItemsList(taskTypes, {
                 container: domCache.taskTypesContainer,
-                emptyMessage: 'Brak typów zadań',
+                emptyMessage: 'settings.noTasks',
                 editBtnClass: 'edit-task-type-btn',
                 deleteBtnClass: 'delete-task-type-btn'
             });
@@ -4234,7 +4343,7 @@
         function renderModalProjects() {
             renderItemsList(projects, {
                 container: domCache.modalProjectsContainer,
-                emptyMessage: 'Brak projektów',
+                emptyMessage: 'settings.noProjects',
                 editBtnClass: 'modal-edit-project-btn',
                 deleteBtnClass: 'modal-delete-project-btn'
             });
@@ -4372,22 +4481,46 @@
             }
         }
 
+        // Memoization cache for filter operations
+        let filterCache = {
+            dateKey: null,
+            dateResult: null,
+            taskTypeKey: null,
+            taskTypeResult: null
+        };
+
         function filterEntriesByDate(entries, currentDate) {
             const filterCurrentMonth = domCache.filterCurrentMonth.checked;
             const filterCurrentWeek = domCache.filterCurrentWeek.checked;
 
+            // Generate cache key from inputs
+            const cacheKey = `${entries.length}-${filterCurrentMonth}-${filterCurrentWeek}-${currentDate.toDateString()}`;
+
+            // Return cached result if inputs haven't changed
+            if (filterCache.dateKey === cacheKey && filterCache.dateResult) {
+                return filterCache.dateResult;
+            }
+
             // If both filters are unchecked, show no entries
             if (!filterCurrentMonth && !filterCurrentWeek) {
+                filterCache.dateKey = cacheKey;
+                filterCache.dateResult = [];
                 return [];
             }
 
+            let result;
             if (filterCurrentWeek) {
-                return entries.filter(entry => isSameWeek(entry.date, currentDate));
+                result = entries.filter(entry => isSameWeek(entry.date, currentDate));
             } else if (filterCurrentMonth) {
-                return entries.filter(entry => isSameMonth(entry.date, currentDate));
+                result = entries.filter(entry => isSameMonth(entry.date, currentDate));
+            } else {
+                result = entries;
             }
-            
-            return entries;
+
+            // Cache the result
+            filterCache.dateKey = cacheKey;
+            filterCache.dateResult = result;
+            return result;
         }
 
         function filterEntriesByTaskType(entries) {
@@ -4399,11 +4532,36 @@
                 filterStates[taskType] = filterElement ? filterElement.checked : true;
             });
 
-            return entries.filter(entry => {
+            // Generate cache key from inputs
+            const filterStatesKey = JSON.stringify(filterStates);
+            const cacheKey = `${entries.length}-${filterStatesKey}`;
+
+            // Return cached result if inputs haven't changed
+            if (filterCache.taskTypeKey === cacheKey && filterCache.taskTypeResult) {
+                return filterCache.taskTypeResult;
+            }
+
+            // Perform filtering
+            const result = entries.filter(entry => {
                 return filterStates[entry.taskType] !== undefined
                     ? filterStates[entry.taskType]
                     : true;
             });
+
+            // Cache the result
+            filterCache.taskTypeKey = cacheKey;
+            filterCache.taskTypeResult = result;
+            return result;
+        }
+
+        // Clear filter cache when entries are modified
+        function clearFilterCache() {
+            filterCache = {
+                dateKey: null,
+                dateResult: null,
+                taskTypeKey: null,
+                taskTypeResult: null
+            };
         }
 
         function createEntryRow(entry) {
@@ -4484,8 +4642,8 @@
                 if (totalEntries > ENTRIES_LIMIT) {
                     domCache.showMoreBtn.style.display = 'inline-block';
                     domCache.showMoreBtn.textContent = showAllEntries ?
-                        `Pokaż tylko ${ENTRIES_LIMIT} wpisów` :
-                        `Pokaż wszystkie wpisy (${totalEntries})`;
+                        t('entries.showLimited', { limit: ENTRIES_LIMIT }) :
+                        t('entries.showAllCount', { count: totalEntries });
                 } else {
                     domCache.showMoreBtn.style.display = 'none';
                 }
@@ -4508,15 +4666,14 @@
                     });
                 }
 
-                // Single DOM update
-                domCache.entriesBody.innerHTML = '';
-                domCache.entriesBody.appendChild(fragment);
+                // Single DOM update - replaceChildren is more efficient than innerHTML + appendChild
+                domCache.entriesBody.replaceChildren(fragment);
             } catch (error) {
                 console.error('Error rendering entries:', error);
                 domCache.entriesBody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 20px; color: var(--error-color);">
-                            Błąd podczas wyświetlania wpisów. Odśwież stronę.
+                            ${t('error.renderEntries')}
                         </td>
                     </tr>`;
             }
@@ -4562,26 +4719,97 @@
             domCache.totalHours.textContent = totalHours.toFixed(2);
         }
 
-        function exportData() {
+        // Escape CSV value according to RFC 4180
+        function escapeCsvValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            const str = String(value);
+            // If value contains comma, quote, or newline, wrap in quotes and escape quotes
+            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        async function exportData() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
-            
+
             if (currentMonthEntries.length === 0) {
                 showNotification(t('msg.noDataToExport'), 3000);
                 return;
             }
-            
+
             const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
-            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania\n';
+            
+            // Build CSV content with UTF-8 BOM for proper encoding recognition
+            const headers = t('csv.headers').split(',');
+            const escapedHeaders = headers.map(h => escapeCsvValue(h.trim())).join(',');
+            let csvContent = '\uFEFF' + escapedHeaders + '\n'; // UTF-8 BOM + headers
+            
             currentMonthEntries.forEach(entry => {
-                csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
+                const row = [
+                    escapeCsvValue(formatDate(entry.date)),
+                    escapeCsvValue(entry.taskType),
+                    escapeCsvValue(entry.client || ''),
+                    escapeCsvValue(entry.hours),
+                    escapeCsvValue(entry.taskNumber)
+                ].join(',');
+                csvContent += row + '\n';
             });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', filename);
-            link.click();
+
+            // Check if running in Tauri
+            if (window.__TAURI__ && window.__TAURI__.dialog && window.__TAURI__.fs) {
+                try {
+                    // Use Tauri API for file save dialog
+                    const filePath = await window.__TAURI__.dialog.save({
+                        defaultPath: filename,
+                        filters: [{
+                            name: 'CSV',
+                            extensions: ['csv']
+                        }]
+                    });
+
+                    if (filePath) {
+                        // Detailed logging for debugging
+                        console.log('📁 File path selected:', filePath);
+                        console.log('📄 File path type:', typeof filePath);
+                        console.log('📦 CSV content length:', csvContent.length);
+
+                        // Write file using Tauri FS API
+                        await window.__TAURI__.fs.writeTextFile(filePath, csvContent);
+                        showNotification(t('msg.exportSuccess'), 3000);
+                    } else {
+                        showNotification(t('msg.exportCanceled'), 2000);
+                    }
+                } catch (error) {
+                    // Enhanced error reporting for production debugging
+                    console.error('Tauri file write error:', error);
+
+                    // Build detailed error message for user
+                    let errorMsg = t('msg.exportErrorTitle') + '\n';
+                    errorMsg += `Typ: ${error.name || 'Unknown'}\n`;
+                    errorMsg += `Wiadomość: ${error.message || error.toString()}\n`;
+
+                    if (error.code) {
+                        errorMsg += `Kod: ${error.code}\n`;
+                    }
+
+                    // Show detailed error in alert (since console is unavailable)
+                    alert(errorMsg + '\n\n' + t('msg.exportErrorDetails'));
+
+                    showNotification(t('msg.exportError'), 3000);
+                }
+            } else {
+                // Fallback to browser blob download for HTML version
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', filename);
+                link.click();
+            }
         }
 
         function setFieldError(input, feedbackElement, messageKey) {
@@ -5105,68 +5333,71 @@
          * @param {boolean} options.suppressNotification - Skip showing notification
          * @returns {Object|boolean} Recording details or false if failed
          */
-        function recordPomodoroWork({ clearTaskNumber = false, elapsedSecondsOverride = null, suppressNotification = false } = {}) {
-            const taskInput = document.getElementById('timer-task-number');
-            const inputValue = taskInput.value.trim();
-            const taskNumber = inputValue || pomodoroState.currentTaskNumber;
-
+        // Helper: Validate pomodoro input data
+        function validatePomodoroInput(taskNumber, elapsedSeconds, clearTaskNumber) {
             if (!taskNumber) {
                 showNotification(t('pomodoro.notif.enterTaskNumber'));
-                return false;
+                return { valid: false };
             }
-
-            const elapsedSeconds = elapsedSecondsOverride !== null ? elapsedSecondsOverride : pomodoroState.elapsedTime;
 
             if (elapsedSeconds === 0) {
                 showNotification(t('pomodoro.notif.timerNotStarted'));
-                return false;
+                return { valid: false };
             }
 
             const roundedHours = roundWorkTime(elapsedSeconds);
-
             if (roundedHours === 0) {
                 const messageKey = clearTaskNumber ? 'pomodoro.notif.insufficientTimeContinue' : 'pomodoro.notif.insufficientTime';
                 showNotification(t(messageKey), clearTaskNumber ? 4000 : 3000);
-                return false;
+                return { valid: false };
             }
 
-            const today = new Date();
-            const todayISO = today.toISOString().split('T')[0];
+            return { valid: true, roundedHours };
+        }
 
-            const existingEntryIndex = entries.findIndex(entry => {
+        // Helper: Find existing entry for today
+        function findTodayEntry(taskNumber, todayISO) {
+            return entries.findIndex(entry => {
                 const entryDate = entry.date.toISOString().split('T')[0];
                 return entry.taskNumber === taskNumber && entryDate === todayISO;
             });
+        }
 
-            const timeFormatted = formatSeconds(elapsedSeconds, true);
-            let notificationMessage;
-
+        // Helper: Update existing or create new entry
+        function updateOrCreateEntry(taskNumber, roundedHours, existingEntryIndex) {
             if (existingEntryIndex !== -1) {
                 entries[existingEntryIndex].hours += roundedHours;
                 entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
-                notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: roundedHours })
-                    : t('pomodoro.notif.timeAddedContinue', { task: taskNumber, time: timeFormatted });
-            } else {
-                const newEntry = {
-                    id: Date.now(),
-                    date: new Date(),
-                    taskType: '',
-                    client: '',
-                    hours: roundedHours,
-                    taskNumber: taskNumber
-                };
-                entries.push(newEntry);
-                entriesMap.set(newEntry.id, newEntry);
-                notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: roundedHours })
-                    : t('pomodoro.notif.entryAddedContinue', { task: taskNumber, time: timeFormatted });
+                return { isNew: false, entry: entries[existingEntryIndex] };
             }
 
-            saveEntries();
-            renderEntries();
-            updateSummary();
+            const newEntry = {
+                id: Date.now(),
+                date: new Date(),
+                taskType: '',
+                client: '',
+                hours: roundedHours,
+                taskNumber: taskNumber
+            };
+            entries.push(newEntry);
+            entriesMap.set(newEntry.id, newEntry);
+            return { isNew: true, entry: newEntry };
+        }
 
+        // Helper: Get notification message based on operation type
+        function getPomodoroNotification(isNewEntry, clearTask, taskNumber, hours, timeFormatted) {
+            if (isNewEntry) {
+                return clearTask
+                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours })
+                    : t('pomodoro.notif.entryAddedContinue', { task: taskNumber, time: timeFormatted });
+            }
+            return clearTask
+                ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours })
+                : t('pomodoro.notif.timeAddedContinue', { task: taskNumber, time: timeFormatted });
+        }
+
+        // Helper: Cleanup pomodoro state after recording
+        function cleanupPomodoroState(clearTaskNumber, taskNumber, taskInput, inputValue) {
             if (clearTaskNumber) {
                 taskInput.value = '';
                 pomodoroState.currentTaskNumber = '';
@@ -5176,20 +5407,44 @@
                     taskInput.value = taskNumber;
                 }
             }
-
             pomodoroState.elapsedTime = 0;
             updatePomodoroDisplay();
+        }
 
-            if (!suppressNotification && notificationMessage) {
-                showNotification(notificationMessage, 3000);
+        // Main function: Record pomodoro work session
+        function recordPomodoroWork({ clearTaskNumber = false, elapsedSecondsOverride = null, suppressNotification = false } = {}) {
+            const taskInput = document.getElementById('timer-task-number');
+            const inputValue = taskInput.value.trim();
+            const taskNumber = inputValue || pomodoroState.currentTaskNumber;
+            const elapsedSeconds = elapsedSecondsOverride !== null ? elapsedSecondsOverride : pomodoroState.elapsedTime;
+
+            // Validation
+            const validation = validatePomodoroInput(taskNumber, elapsedSeconds, clearTaskNumber);
+            if (!validation.valid) return false;
+
+            const { roundedHours } = validation;
+            const todayISO = new Date().toISOString().split('T')[0];
+
+            // Find and update/create entry
+            const existingEntryIndex = findTodayEntry(taskNumber, todayISO);
+            const { isNew } = updateOrCreateEntry(taskNumber, roundedHours, existingEntryIndex);
+
+            // Persist changes
+            saveEntries();
+            renderEntries();
+            updateSummary();
+
+            // Cleanup state
+            cleanupPomodoroState(clearTaskNumber, taskNumber, taskInput, inputValue);
+
+            // Show notification
+            if (!suppressNotification) {
+                const timeFormatted = formatSeconds(elapsedSeconds, true);
+                const message = getPomodoroNotification(isNew, clearTaskNumber, taskNumber, roundedHours, timeFormatted);
+                showNotification(message, 3000);
             }
 
-            return {
-                roundedHours,
-                elapsedSeconds,
-                taskNumber,
-                existingEntry: existingEntryIndex !== -1
-            };
+            return { roundedHours, elapsedSeconds, taskNumber, existingEntry: !isNew };
         }
 
         function startNewTask() {
@@ -5290,16 +5545,24 @@
          * - Dragging minimized widget button
          * - Preventing transitions during drag/resize for smooth UX
          */
-        function initDragAndResize() {
-            const widget = document.getElementById('pomodoro-widget');
-            const header = document.getElementById('pomodoro-header');
-            const resizeHandles = widget.querySelectorAll('.resize-handle');
-            header.addEventListener('mousedown', function(e) {
-                if (e.target.classList.contains('pomodoro-minimize-btn')) {
-                    return;
-                }
+        // Generic widget interaction setup - eliminates code duplication
+        function setupWidgetInteraction(config) {
+            const {
+                widgetId, headerId, minimizedId, minimizeBtnClass,
+                widgetType, minWidth, minHeight, maxWidth,
+                stateFlags // { isDragging, isResizing, isDraggingMinimized, resizeDirection, minimizedDragMoved }
+            } = config;
 
-                isDragging = true;
+            const widget = document.getElementById(widgetId);
+            const header = document.getElementById(headerId);
+            const minimizedWidget = document.getElementById(minimizedId);
+            const resizeHandles = widget.querySelectorAll('.resize-handle');
+
+            // Mouse events - Header drag
+            header.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains(minimizeBtnClass)) return;
+
+                stateFlags.isDragging.value = true;
                 startX = e.clientX;
                 startY = e.clientY;
 
@@ -5310,10 +5573,12 @@
                 widget.classList.add('no-transition');
                 e.preventDefault();
             });
+
+            // Mouse events - Resize handles
             resizeHandles.forEach(handle => {
                 handle.addEventListener('mousedown', function(e) {
-                    isResizing = true;
-                    resizeDirection = this.getAttribute('data-direction');
+                    stateFlags.isResizing.value = true;
+                    stateFlags.resizeDirection.value = this.getAttribute('data-direction');
                     startX = e.clientX;
                     startY = e.clientY;
 
@@ -5328,10 +5593,11 @@
                     e.stopPropagation();
                 });
             });
-            const minimizedWidget = document.getElementById('pomodoro-minimized');
+
+            // Mouse events - Minimized widget drag
             minimizedWidget.addEventListener('mousedown', function(e) {
-                isDraggingMinimized = true;
-                minimizedDragMoved = false;
+                stateFlags.isDraggingMinimized.value = true;
+                stateFlags.minimizedDragMoved.value = false;
                 startX = e.clientX;
                 startY = e.clientY;
 
@@ -5342,59 +5608,54 @@
                 minimizedWidget.classList.add('no-transition');
                 e.preventDefault();
             });
-            document.addEventListener('mousemove', function(e) {
-                if (isDragging) {
+
+            // Global mousemove handler
+            const mouseMoveHandler = function(e) {
+                if (stateFlags.isDragging.value) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
-
                     const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
 
                     widget.style.left = constrained.left + 'px';
                     widget.style.top = constrained.top + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
-                } else if (isDraggingMinimized) {
+                } else if (stateFlags.isDraggingMinimized.value) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
 
                     if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        minimizedDragMoved = true;
+                        stateFlags.minimizedDragMoved.value = true;
                     }
 
                     const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
-
                     minimizedWidget.style.left = constrained.left + 'px';
                     minimizedWidget.style.top = constrained.top + 'px';
                     minimizedWidget.style.right = 'auto';
                     minimizedWidget.style.bottom = 'auto';
-                } else if (isResizing) {
+                } else if (stateFlags.isResizing.value) {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
-                    let newWidth = startWidth;
-                    let newHeight = startHeight;
-                    let newLeft = startLeft;
-                    let newTop = startTop;
-                    if (resizeDirection.includes('e')) {
-                        newWidth = Math.max(280, Math.min(640, startWidth + deltaX));
+                    let newWidth = startWidth, newHeight = startHeight;
+                    let newLeft = startLeft, newTop = startTop;
+
+                    const dir = stateFlags.resizeDirection.value;
+                    if (dir.includes('e')) {
+                        newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + deltaX));
                     }
-                    if (resizeDirection.includes('w')) {
-                        const proposedWidth = startWidth - deltaX;
-                        newWidth = Math.max(280, Math.min(640, proposedWidth));
-                        const widthDiff = startWidth - newWidth;
-                        newLeft = startLeft + widthDiff;
+                    if (dir.includes('w')) {
+                        newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth - deltaX));
+                        newLeft = startLeft + (startWidth - newWidth);
                     }
-                    if (resizeDirection.includes('s')) {
-                        newHeight = Math.max(400, startHeight + deltaY);
+                    if (dir.includes('s')) {
+                        newHeight = Math.max(minHeight, startHeight + deltaY);
                     }
-                    if (resizeDirection.includes('n')) {
-                        const proposedHeight = startHeight - deltaY;
-                        newHeight = Math.max(400, proposedHeight);
-                        const heightDiff = startHeight - newHeight;
-                        newTop = startTop + heightDiff;
+                    if (dir.includes('n')) {
+                        newHeight = Math.max(minHeight, startHeight - deltaY);
+                        newTop = startTop + (startHeight - newHeight);
                     }
 
                     const constrained = constrainToViewport(widget, newLeft, newTop, newWidth, newHeight);
-
                     widget.style.width = constrained.width + 'px';
                     widget.style.height = constrained.height + 'px';
                     widget.style.left = constrained.left + 'px';
@@ -5402,34 +5663,36 @@
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
                 }
-            });
-            document.addEventListener('mouseup', function() {
+            };
+
+            // Global mouseup handler
+            const mouseUpHandler = function() {
                 let layoutChanged = false;
-                if (isDragging || isResizing) {
+                if (stateFlags.isDragging.value || stateFlags.isResizing.value) {
                     widget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('pomodoro');
+                    syncWidgetRectToLayout(widgetType);
                     layoutChanged = true;
                 }
-                if (isDraggingMinimized) {
+                if (stateFlags.isDraggingMinimized.value) {
                     minimizedWidget.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
+                    syncMinimizedRectToLayout(widgetType, { syncWidgetPosition: true });
                     layoutChanged = true;
                 }
                 if (layoutChanged) {
-                    applyWidgetLayoutState('pomodoro');
+                    applyWidgetLayoutState(widgetType);
                     saveWidgetLayoutState();
                 }
-                isDragging = false;
-                isDraggingMinimized = false;
-                isResizing = false;
-                resizeDirection = null;
-            });
-            header.addEventListener('touchstart', function(e) {
-                if (e.target.classList.contains('pomodoro-minimize-btn')) {
-                    return;
-                }
+                stateFlags.isDragging.value = false;
+                stateFlags.isDraggingMinimized.value = false;
+                stateFlags.isResizing.value = false;
+                stateFlags.resizeDirection.value = null;
+            };
 
-                isDragging = true;
+            // Touch events - Header
+            header.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains(minimizeBtnClass)) return;
+
+                stateFlags.isDragging.value = true;
                 const touch = e.touches[0];
                 startX = touch.clientX;
                 startY = touch.clientY;
@@ -5440,9 +5703,11 @@
 
                 widget.classList.add('no-transition');
             });
+
+            // Touch events - Minimized widget
             minimizedWidget.addEventListener('touchstart', function(e) {
-                isDraggingMinimized = true;
-                minimizedDragMoved = false;
+                stateFlags.isDraggingMinimized.value = true;
+                stateFlags.minimizedDragMoved.value = false;
                 const touch = e.touches[0];
                 startX = touch.clientX;
                 startY = touch.clientY;
@@ -5454,279 +5719,105 @@
                 minimizedWidget.classList.add('no-transition');
             });
 
-            document.addEventListener('touchmove', function(e) {
-                if (isDragging) {
+            // Global touchmove handler
+            const touchMoveHandler = function(e) {
+                if (stateFlags.isDragging.value) {
                     const touch = e.touches[0];
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
                     const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
-
                     widget.style.left = constrained.left + 'px';
                     widget.style.top = constrained.top + 'px';
                     widget.style.right = 'auto';
                     widget.style.bottom = 'auto';
-                } else if (isDraggingMinimized) {
+                } else if (stateFlags.isDraggingMinimized.value) {
                     const touch = e.touches[0];
                     const deltaX = touch.clientX - startX;
                     const deltaY = touch.clientY - startY;
 
                     if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        minimizedDragMoved = true;
+                        stateFlags.minimizedDragMoved.value = true;
                     }
 
                     const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
-
                     minimizedWidget.style.left = constrained.left + 'px';
                     minimizedWidget.style.top = constrained.top + 'px';
                     minimizedWidget.style.right = 'auto';
                     minimizedWidget.style.bottom = 'auto';
                 }
-            });
+            };
 
-            document.addEventListener('touchend', function() {
+            // Global touchend handler
+            const touchEndHandler = function() {
                 let layoutChanged = false;
-                if (isDragging || isResizing) {
+                if (stateFlags.isDragging.value || stateFlags.isResizing.value) {
                     widget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('pomodoro');
+                    syncWidgetRectToLayout(widgetType);
                     layoutChanged = true;
                 }
-                if (isDraggingMinimized) {
+                if (stateFlags.isDraggingMinimized.value) {
                     minimizedWidget.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
+                    syncMinimizedRectToLayout(widgetType, { syncWidgetPosition: true });
                     layoutChanged = true;
                 }
                 if (layoutChanged) {
-                    applyWidgetLayoutState('pomodoro');
+                    applyWidgetLayoutState(widgetType);
                 }
-                isDragging = false;
-                isDraggingMinimized = false;
-                isResizing = false;
-                resizeDirection = null;
-            });
+                stateFlags.isDragging.value = false;
+                stateFlags.isDraggingMinimized.value = false;
+                stateFlags.isResizing.value = false;
+                stateFlags.resizeDirection.value = null;
+            };
 
-            const todoWidget = document.getElementById('todo-widget');
-            const todoHeader = document.getElementById('todo-header');
-            const todoResizeHandles = todoWidget.querySelectorAll('.resize-handle');
-            const todoMinimized = document.getElementById('todo-minimized');
+            // Register global handlers
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+            document.addEventListener('touchmove', touchMoveHandler);
+            document.addEventListener('touchend', touchEndHandler);
+        }
 
-            todoHeader.addEventListener('mousedown', function(e) {
-                if (e.target.classList.contains('todo-minimize-btn')) {
-                    return;
-                }
-
-                isDraggingTodo = true;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = todoWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoWidget.classList.add('no-transition');
-                e.preventDefault();
-            });
-
-            todoResizeHandles.forEach(handle => {
-                handle.addEventListener('mousedown', function(e) {
-                    isResizingTodo = true;
-                    resizeDirectionTodo = this.getAttribute('data-direction');
-                    startX = e.clientX;
-                    startY = e.clientY;
-
-                    const rect = todoWidget.getBoundingClientRect();
-                    startWidth = rect.width;
-                    startHeight = rect.height;
-                    startLeft = rect.left;
-                    startTop = rect.top;
-
-                    todoWidget.classList.add('no-transition');
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-
-            todoMinimized.addEventListener('mousedown', function(e) {
-                isDraggingTodoMinimized = true;
-                todoMinimizedDragMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = todoMinimized.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoMinimized.classList.add('no-transition');
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                if (isDraggingTodo) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
-
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
-                } else if (isDraggingTodoMinimized) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        todoMinimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
-
-                    todoMinimized.style.left = constrained.left + 'px';
-                    todoMinimized.style.top = constrained.top + 'px';
-                    todoMinimized.style.right = 'auto';
-                    todoMinimized.style.bottom = 'auto';
-                } else if (isResizingTodo) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-                    let newWidth = startWidth;
-                    let newHeight = startHeight;
-                    let newLeft = startLeft;
-                    let newTop = startTop;
-
-                    if (resizeDirectionTodo.includes('e')) {
-                        newWidth = Math.max(300, Math.min(640, startWidth + deltaX));
-                    }
-                    if (resizeDirectionTodo.includes('w')) {
-                        const proposedWidth = startWidth - deltaX;
-                        newWidth = Math.max(300, Math.min(640, proposedWidth));
-                        const widthDiff = startWidth - newWidth;
-                        newLeft = startLeft + widthDiff;
-                    }
-                    if (resizeDirectionTodo.includes('s')) {
-                        newHeight = Math.max(400, startHeight + deltaY);
-                    }
-                    if (resizeDirectionTodo.includes('n')) {
-                        const proposedHeight = startHeight - deltaY;
-                        newHeight = Math.max(400, proposedHeight);
-                        const heightDiff = startHeight - newHeight;
-                        newTop = startTop + heightDiff;
-                    }
-
-                    const constrained = constrainToViewport(todoWidget, newLeft, newTop, newWidth, newHeight);
-
-                    todoWidget.style.width = constrained.width + 'px';
-                    todoWidget.style.height = constrained.height + 'px';
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
+        // Initialize drag and resize for both widgets
+        function initDragAndResize() {
+            // Setup Pomodoro widget interaction
+            setupWidgetInteraction({
+                widgetId: 'pomodoro-widget',
+                headerId: 'pomodoro-header',
+                minimizedId: 'pomodoro-minimized',
+                minimizeBtnClass: 'pomodoro-minimize-btn',
+                widgetType: 'pomodoro',
+                minWidth: 280,
+                minHeight: 400,
+                maxWidth: 640,
+                stateFlags: {
+                    isDragging: { get value() { return isDragging; }, set value(v) { isDragging = v; } },
+                    isResizing: { get value() { return isResizing; }, set value(v) { isResizing = v; } },
+                    isDraggingMinimized: { get value() { return isDraggingMinimized; }, set value(v) { isDraggingMinimized = v; } },
+                    resizeDirection: { get value() { return resizeDirection; }, set value(v) { resizeDirection = v; } },
+                    minimizedDragMoved: { get value() { return minimizedDragMoved; }, set value(v) { minimizedDragMoved = v; } }
                 }
             });
 
-            document.addEventListener('mouseup', function() {
-                let layoutChanged = false;
-                if (isDraggingTodo || isResizingTodo) {
-                    todoWidget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('todo');
-                    layoutChanged = true;
-                }
-                if (isDraggingTodoMinimized) {
-                    todoMinimized.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('todo');
-                    saveWidgetLayoutState();
-                }
-                isDraggingTodo = false;
-                isDraggingTodoMinimized = false;
-                isResizingTodo = false;
-                resizeDirectionTodo = null;
-            });
-
-            todoHeader.addEventListener('touchstart', function(e) {
-                if (e.target.classList.contains('todo-minimize-btn')) {
-                    return;
-                }
-
-                isDraggingTodo = true;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = todoWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoWidget.classList.add('no-transition');
-            });
-
-            todoMinimized.addEventListener('touchstart', function(e) {
-                isDraggingTodoMinimized = true;
-                todoMinimizedDragMoved = false;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = todoMinimized.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoMinimized.classList.add('no-transition');
-            });
-
-            document.addEventListener('touchmove', function(e) {
-                if (isDraggingTodo) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
-
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
-                } else if (isDraggingTodoMinimized) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        todoMinimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
-
-                    todoMinimized.style.left = constrained.left + 'px';
-                    todoMinimized.style.top = constrained.top + 'px';
-                    todoMinimized.style.right = 'auto';
-                    todoMinimized.style.bottom = 'auto';
+            // Setup TODO widget interaction
+            setupWidgetInteraction({
+                widgetId: 'todo-widget',
+                headerId: 'todo-header',
+                minimizedId: 'todo-minimized',
+                minimizeBtnClass: 'todo-minimize-btn',
+                widgetType: 'todo',
+                minWidth: 300,
+                minHeight: 400,
+                maxWidth: 640,
+                stateFlags: {
+                    isDragging: { get value() { return isDraggingTodo; }, set value(v) { isDraggingTodo = v; } },
+                    isResizing: { get value() { return isResizingTodo; }, set value(v) { isResizingTodo = v; } },
+                    isDraggingMinimized: { get value() { return isDraggingTodoMinimized; }, set value(v) { isDraggingTodoMinimized = v; } },
+                    resizeDirection: { get value() { return resizeDirectionTodo; }, set value(v) { resizeDirectionTodo = v; } },
+                    minimizedDragMoved: { get value() { return todoMinimizedDragMoved; }, set value(v) { todoMinimizedDragMoved = v; } }
                 }
             });
 
-            document.addEventListener('touchend', function() {
-                let layoutChanged = false;
-                if (isDraggingTodo || isResizingTodo) {
-                    todoWidget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('todo');
-                    layoutChanged = true;
-                }
-                if (isDraggingTodoMinimized) {
-                    todoMinimized.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('todo');
-                }
-                isDraggingTodo = false;
-                isDraggingTodoMinimized = false;
-                isResizingTodo = false;
-                resizeDirectionTodo = null;
-            });
-
+            // Window resize handler - ensure widgets stay within viewport
             window.addEventListener('resize', function() {
                 let layoutChanged = false;
                 ['pomodoro', 'todo'].forEach(type => {
@@ -5740,6 +5831,7 @@
                 }
             });
 
+            // Apply initial layout state
             applyWidgetLayoutState('pomodoro');
             applyWidgetLayoutState('todo');
         }

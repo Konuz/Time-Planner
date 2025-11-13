@@ -9,8 +9,21 @@
     "dialog:default",
     "fs:allow-read-file",
     "fs:allow-write-file",
+    "fs:allow-write-text-file",
+    "fs:allow-truncate",
     "fs:allow-read-dir",
-    "fs:scope-download"
+    "fs:scope-download",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$DOWNLOAD/**" },
+        { "path": "$DOCUMENT/**" },
+        { "path": "$DESKTOP/**" },
+        { "path": "$HOME/Documents/**" },
+        { "path": "$HOME/Downloads/**" },
+        { "path": "$HOME/Desktop/**" }
+      ]
+    }
   ]
 }
 

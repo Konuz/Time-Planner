@@ -203,7 +203,7 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-size: 16px;
             transition: var(--transition);
         }
@@ -229,7 +229,7 @@
             color: var(--text-light);
             border: none;
             padding: 12px 20px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
@@ -444,7 +444,7 @@
             color: var(--text-light);
             border: none;
             padding: 10px 30px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
@@ -458,7 +458,7 @@
         .project-card {
             background-color: var(--bg-light);
             padding: 15px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -497,6 +497,16 @@
         }
 
         .task-type-dropdown summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px;
+            background-color: var(--bg-highlight);
+            border-radius: var(--border-radius);
+            list-style: none;
+            font-weight: 600;
+            cursor: pointer;
             user-select: none;
             transition: var(--transition);
         }
@@ -505,6 +515,7 @@
             background-color: var(--bg-light);
         }
 
+        .task-type-dropdown summary::marker,
         .task-type-dropdown summary::-webkit-details-marker {
             display: none;
         }
@@ -517,6 +528,14 @@
 
         .task-type-dropdown[open] .dropdown-arrow {
             transform: rotate(180deg);
+        }
+
+        .task-type-filters {
+            margin-top: 12px;
+            padding-left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         @media (max-width: 768px) {
@@ -901,7 +920,7 @@
             padding: 6px;
             background-color: var(--bg-highlight);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             color: var(--text-color);
             font-size: 12px;
         }
@@ -1177,8 +1196,8 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             transition: opacity 0.2s ease;
         }
 
@@ -1192,7 +1211,7 @@
             background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
             color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
@@ -1406,7 +1425,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1428,7 +1447,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1450,7 +1469,7 @@
             background-color: var(--error-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -1477,7 +1496,7 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 14px;
@@ -1506,7 +1525,7 @@
             min-width: 180px;
             background-color: white;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             display: none;
             z-index: 1000;
@@ -1542,6 +1561,7 @@
             text-align: left;
             font-size: 14px;
             color: var(--text-dark);
+            border-radius: 0;
         }
 
         .language-option:hover {
@@ -1555,12 +1575,6 @@
 
         .language-option.active:hover {
             background-color: var(--primary-dark);
-        }
-
-        .language-flag {
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
         }
 
         .language-name {
@@ -1822,7 +1836,6 @@
 
         .modal-tab.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
         }
 
         .tab-content {
@@ -1831,6 +1844,19 @@
 
         .tab-content.active {
             display: block;
+        }
+
+        #modal-projects-container,
+        #task-types-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        #modal-projects-container .project-card,
+        #task-types-container .project-card {
+            width: auto;
+            min-width: 0;
         }
     </style>
 </head>
@@ -2000,11 +2026,11 @@
                     </label>
                 </div>
                 <details class="task-type-dropdown" open>
-                    <summary style="font-weight: 600; cursor: pointer; padding: 8px; background-color: var(--bg-highlight); border-radius: var(--border-radius); list-style: none; display: flex; align-items: center; justify-content: space-between;">
+                    <summary>
                         <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
                         <span class="dropdown-arrow">▼</span>
                     </summary>
-                    <div id="task-type-filters-container" style="margin-top: 10px; padding-left: 10px;">
+                    <div id="task-type-filters-container" class="task-type-filters">
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
@@ -2073,7 +2099,7 @@
                     <ol>
                         <li data-i18n="info.section.todoStep1">Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").</li>
                         <li data-i18n="info.section.todoStep2">Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.</li>
-                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem" i „bez terminu".</li>
+                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.</li>
                         <li data-i18n="info.section.todoStep4">Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.</li>
                     </ol>
                 </div>
@@ -2125,7 +2151,7 @@
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
-                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                            <div id="modal-projects-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                                 
                             </div>
                         </div>
@@ -2146,7 +2172,7 @@
                             </div>
                         </div>
                         <div class="project-list" style="margin-top: 20px;">
-                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                            <div id="task-types-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                                 
                             </div>
                         </div>
@@ -2925,6 +2951,8 @@
                 'settings.taskType': 'Rodzaj zadania:',
                 'settings.addTask': 'Dodaj zadanie',
                 'settings.deleteAllTasks': 'Usuń wszystkie',
+                'settings.noProjects': 'Brak projektów',
+                'settings.noTasks': 'Brak zadań',
                 'settings.apply': 'Zastosuj',
                 'settings.ok': 'OK',
                 'confirm.title': 'Potwierdzenie',
@@ -2989,7 +3017,7 @@
                 'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
                 'info.section.todoStep1': 'Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").',
                 'info.section.todoStep2': 'Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.',
-                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność i przenosić między sekcjami „z terminem" i „bez terminu".',
+                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.',
                 'info.section.todoStep4': 'Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.',
                 'info.close': 'Zamknij instrukcję',
                 'msg.enterProjectName': 'Podaj nazwę projektu',
@@ -3115,6 +3143,8 @@
                 'settings.taskType': 'Task type:',
                 'settings.addTask': 'Add task',
                 'settings.deleteAllTasks': 'Delete all',
+                'settings.noProjects': 'No projects',
+                'settings.noTasks': 'No tasks',
                 'settings.discard': 'Cancel',
                 'settings.apply': 'Apply',
                 'settings.ok': 'OK',
@@ -3182,7 +3212,7 @@
                 'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
                 'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority and due date (or enable "No date").',
                 'info.section.todoStep2': 'Use the form buttons to add tasks or remove them all; every task is saved automatically in your browser.',
-                'info.section.todoStep3': 'Drag items to reorder them or move them between the dated and undated sections.',
+                'info.section.todoStep3': 'Drag items to reorder them within sections.',
                 'info.section.todoStep4': 'The ✓, ✕ and → buttons complete, cancel or send the task to Pomodoro so the timer picks up its number.',
                 'info.close': 'Close guide',
 
@@ -3392,7 +3422,6 @@
                 }
 
                 option.innerHTML = `
-                    <span class="language-flag">${lang.flag}</span>
                     <span class="language-name">${lang.name}</span>
                     <span class="language-code">${lang.code}</span>
                 `;
@@ -3521,10 +3550,14 @@
         }
 
         function getMonthName(date) {
-            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 
+                          currentLanguage === 'de' ? 'de-DE' :
+                          currentLanguage === 'es' ? 'es-ES' :
+                          currentLanguage === 'it' ? 'it-IT' :
+                          currentLanguage === 'fr' ? 'fr-FR' : 'en-US';
             const monthName = date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
-            // Capitalize first letter for Polish language
-            if (currentLanguage === 'pl' && monthName.length > 0) {
+            // Capitalize first letter for all languages
+            if (monthName.length > 0) {
                 return monthName.charAt(0).toUpperCase() + monthName.slice(1);
             }
             return monthName;
@@ -4009,7 +4042,10 @@
             config.container.innerHTML = '';
 
             if (items.length === 0) {
-                config.container.innerHTML = `<p style="text-align: center; color: var(--text-color);">${config.emptyMessage}</p>`;
+                const emptyText = typeof config.emptyMessage === 'string' && config.emptyMessage.startsWith('settings.') 
+                    ? t(config.emptyMessage) 
+                    : config.emptyMessage;
+                config.container.innerHTML = `<p style="text-align: center; color: var(--text-color);">${emptyText}</p>`;
                 return;
             }
 
@@ -4172,7 +4208,7 @@
         function renderTaskTypes() {
             renderItemsList(taskTypes, {
                 container: domCache.taskTypesContainer,
-                emptyMessage: 'Brak typów zadań',
+                emptyMessage: 'settings.noTasks',
                 editBtnClass: 'edit-task-type-btn',
                 deleteBtnClass: 'delete-task-type-btn'
             });
@@ -4454,7 +4490,7 @@
         function renderModalProjects() {
             renderItemsList(projects, {
                 container: domCache.modalProjectsContainer,
-                emptyMessage: 'Brak projektów',
+                emptyMessage: 'settings.noProjects',
                 editBtnClass: 'modal-edit-project-btn',
                 deleteBtnClass: 'modal-delete-project-btn'
             });
@@ -4783,15 +4819,28 @@
             domCache.totalHours.textContent = totalHours.toFixed(2);
         }
 
-        function exportData() {
+        // Escape CSV value according to RFC 4180
+        function escapeCsvValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            const str = String(value);
+            // If value contains comma, quote, or newline, wrap in quotes and escape quotes
+            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        async function exportData() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
-            
+
             if (currentMonthEntries.length === 0) {
-                showNotification(t('msg.noDataToExport'), 3000);
+                showNotification(t('msg.noDataToExport') || 'Brak danych do eksportu', 3000);
                 return;
             }
-            
+
             // Use current language for month name and filename prefix
             const locale = currentLanguage === 'pl' ? 'pl-PL' : 
                           currentLanguage === 'de' ? 'de-DE' :
@@ -4801,57 +4850,86 @@
             const month = currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
             const filenamePrefix = t('export.filenamePrefix') || (currentLanguage === 'pl' ? 'ewidencja_godzin' : 'timesheet');
             const filename = `${filenamePrefix}_${month.replace(/\s+/g, '_')}.csv`;
-            let csvContent = 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania\n';
-            currentMonthEntries.forEach(entry => {
-                csvContent += `${formatDate(entry.date)},${entry.taskType},${entry.client || ''},${entry.hours},${entry.taskNumber}\n`;
-            });
             
+            // Build CSV content with UTF-8 BOM for proper encoding recognition
+            const headers = (t('csv.headers') || 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania').split(',');
+            const escapedHeaders = headers.map(h => escapeCsvValue(h.trim())).join(',');
+            let csvContent = '\uFEFF' + escapedHeaders + '\n'; // UTF-8 BOM + headers
+            
+            currentMonthEntries.forEach(entry => {
+                const row = [
+                    escapeCsvValue(formatDate(entry.date)),
+                    escapeCsvValue(entry.taskType),
+                    escapeCsvValue(entry.client || ''),
+                    escapeCsvValue(entry.hours),
+                    escapeCsvValue(entry.taskNumber)
+                ].join(',');
+                csvContent += row + '\n';
+            });
+
             // Check if running in Tauri with dialog and fs plugins
             if (window.__TAURI__ && window.__TAURI__.dialog && window.__TAURI__.fs) {
-                // Use Tauri API for file download
                 try {
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    blob.arrayBuffer().then(buffer => {
-                        const uint8Array = new Uint8Array(buffer);
-                        // Use Tauri dialog to save file
-                        window.__TAURI__.dialog.save({
-                            defaultPath: filename,
-                            filters: [{
-                                name: 'CSV',
-                                extensions: ['csv']
-                            }]
-                        }).then(filePath => {
-                            if (filePath) {
-                                window.__TAURI__.fs.writeFile({
-                                    path: filePath,
-                                    contents: uint8Array
-                                }).then(() => {
-                                    showNotification(t('msg.exportSuccess') || 'Plik został zapisany', 2000);
-                                }).catch(err => {
-                                    console.error('Tauri file write error:', err);
-                                    showNotification('Błąd zapisu pliku', 3000);
-                                    // Fallback to standard method
-                                    downloadFileStandard(csvContent, filename);
-                                });
+                    // Use modern Tauri API with async/await
+                    const filePath = await window.__TAURI__.dialog.save({
+                        defaultPath: filename,
+                        filters: [{
+                            name: 'CSV',
+                            extensions: ['csv']
+                        }]
+                    });
+
+                    if (filePath) {
+                        console.log('📁 Wybrano ścieżkę:', filePath);
+                        console.log('📄 Typ ścieżki:', typeof filePath);
+                        console.log('📦 Długość CSV:', csvContent.length);
+
+                        try {
+                            // Use modern writeTextFile API
+                            await window.__TAURI__.fs.writeTextFile(filePath, csvContent);
+                            showNotification(t('msg.exportSuccess') || 'Plik CSV został zapisany', 2000);
+                        } catch (writeError) {
+                            console.error('❌ Błąd zapisu:', writeError);
+
+                            // Detailed error for user (since F12 unavailable)
+                            let errorMsg = '🚨 BŁĄD ZAPISU CSV:\n\n';
+                            errorMsg += `📍 Ścieżka: ${filePath}\n`;
+                            errorMsg += `📛 Typ błędu: ${writeError.name || 'Unknown'}\n`;
+                            errorMsg += `💬 Wiadomość: ${writeError.message || writeError.toString()}\n\n`;
+
+                            if (writeError.code) {
+                                errorMsg += `🔢 Kod: ${writeError.code}\n\n`;
                             }
-                        }).catch(err => {
-                            // User cancelled dialog, ignore
-                            if (err && err !== 'User cancelled' && err.message !== 'User cancelled') {
-                                console.error('Tauri dialog error:', err);
-                                // Fallback to standard method
-                                downloadFileStandard(csvContent, filename);
-                            }
-                        });
-                    }).catch(err => {
-                        console.error('Blob conversion error:', err);
-                        showNotification('Błąd konwersji danych', 3000);
+
+                            errorMsg += '🔍 Sprawdź:\n';
+                            errorMsg += '• Czy folder docelowy istnieje\n';
+                            errorMsg += '• Czy masz uprawnienia zapisu\n';
+                            errorMsg += '• Czy plik nie jest otwarty\n';
+                            errorMsg += '• Czy dysk nie jest pełny\n\n';
+                            errorMsg += '⚙️ Permissions: fs:allow-write-text-file, fs:allow-truncate\n';
+                            errorMsg += '⚙️ Scope: Desktop, Documents, Downloads';
+
+                            alert(errorMsg);
+                            showNotification(t('msg.exportError') || 'Błąd podczas zapisu pliku CSV', 3000);
+
+                            // Fallback to standard method
+                            downloadFileStandard(csvContent, filename);
+                        }
+                    } else {
+                        console.log('ℹ️ Anulowano wybór pliku');
+                    }
+                } catch (dialogError) {
+                    // Dialog error (user cancelled or dialog failed)
+                    if (dialogError && dialogError !== 'User cancelled' && dialogError.message !== 'User cancelled') {
+                        console.error('❌ Błąd dialogu:', dialogError);
+
+                        let errorMsg = '🚨 BŁĄD DIALOGU ZAPISU:\n\n';
+                        errorMsg += `💬 ${dialogError.message || dialogError.toString()}`;
+                        alert(errorMsg);
+
                         // Fallback to standard method
                         downloadFileStandard(csvContent, filename);
-                    });
-                } catch (err) {
-                    console.error('Tauri API error:', err);
-                    // Fallback to standard method
-                    downloadFileStandard(csvContent, filename);
+                    }
                 }
             } else {
                 // Standard browser download (works in both browser and Tauri without plugins)
