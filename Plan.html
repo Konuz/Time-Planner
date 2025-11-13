@@ -349,6 +349,50 @@
             font-weight: 600;
         }
 
+        .section-toggles {
+            margin-bottom: 30px;
+        }
+
+        .section-toggle-card {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+
+        .section-toggle-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .section-toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            align-items: center;
+        }
+
+        .section-toggle-option {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: var(--bg-lighter);
+        }
+
+        .section-toggle-option input[type="checkbox"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+        }
+
+        .section-toggle-option span {
+            margin: 0;
+        }
+
         .invalid-feedback {
             color: var(--error-color);
             font-size: 14px;
@@ -977,33 +1021,6 @@
             pointer-events: auto;
         }
 
-        @media (max-width: 768px) {
-            .pomodoro-widget {
-                width: 280px;
-                top: 0;
-                right: 0;
-            }
-
-            .timer-display {
-                font-size: 40px;
-            }
-
-            .pomodoro-minimized {
-                top: 0;
-                right: 0;
-                width: 80px;
-                height: 50px;
-            }
-
-            .minimized-timer {
-                font-size: 14px;
-            }
-
-            .minimized-icon {
-                font-size: 20px;
-            }
-        }
-
         .todo-widget {
             position: fixed;
             top: 0;
@@ -1359,35 +1376,6 @@
             padding: 20px;
             color: var(--text-color);
             font-size: 13px;
-        }
-
-        @media (max-width: 768px) {
-            .todo-widget {
-                width: 300px;
-                top: 0;
-                left: 0;
-            }
-
-            .todo-minimized {
-                top: 0;
-                left: 0;
-                width: 60px;
-                height: 60px;
-            }
-
-            .minimized-count {
-                font-size: 14px;
-            }
-
-            .minimized-icon {
-                font-size: 18px;
-            }
-
-            .todo-btn {
-                width: 20px;
-                height: 20px;
-                font-size: 10px;
-            }
         }
 
         .settings-button {
@@ -1782,21 +1770,21 @@
 
         <main role="main">
 
-        <section class="section-toggles" style="margin-bottom: 30px;">
-            <div style="background-color: var(--bg-light); padding: 15px; border-radius: var(--border-radius);">
-                <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 16px; text-align: center;" data-i18n="section.visibility">Widoczność sekcji:</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;" role="group" aria-label="Przełączniki widoczności sekcji">
-                    <label style="display: flex; align-items: center; justify-content: center;">
+        <section class="section-toggles">
+            <div class="section-toggle-card">
+                <h3 class="section-toggle-title" data-i18n="section.visibility">Widoczność sekcji:</h3>
+                <div class="section-toggle-grid" role="group" aria-label="Przełączniki widoczności sekcji">
+                    <label class="section-toggle-option">
                         <input type="checkbox" id="toggle-entry-form" aria-label="Pokaż/ukryj sekcję dodawania wpisu">
-                        <span style="margin-left: 8px;" data-i18n="section.addEntry">Dodaj nowy wpis</span>
+                        <span data-i18n="section.addEntry">Dodaj nowy wpis</span>
                     </label>
-                    <label style="display: flex; align-items: center; justify-content: center;">
+                    <label class="section-toggle-option">
                         <input type="checkbox" id="toggle-entries-list" aria-label="Pokaż/ukryj listę wpisów">
-                        <span style="margin-left: 8px;" data-i18n="section.entriesList">Lista wpisów</span>
+                        <span data-i18n="section.entriesList">Lista wpisów</span>
                     </label>
-                    <label style="display: flex; align-items: center; justify-content: center;">
+                    <label class="section-toggle-option">
                         <input type="checkbox" id="toggle-summary" aria-label="Pokaż/ukryj podsumowanie">
-                        <span style="margin-left: 8px;" data-i18n="section.summary">Podsumowanie</span>
+                        <span data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
                 <script>
@@ -3448,6 +3436,106 @@
             }
         }
 
+        function resolveHorizontalAnchors(leftValue, rightValue) {
+            const hasLeft = Number.isFinite(leftValue);
+            const hasRight = Number.isFinite(rightValue);
+
+            if (!hasLeft && !hasRight) {
+                return { left: null, right: null };
+            }
+
+            if (!hasRight) {
+                return { left: hasLeft ? leftValue : null, right: null };
+            }
+
+            if (!hasLeft) {
+                return { left: null, right: rightValue };
+            }
+
+            if (rightValue <= leftValue) {
+                return { left: null, right: rightValue };
+            }
+
+            return { left: leftValue, right: null };
+        }
+
+        function applyAnchorsToLayout(layout, anchors, leftKey = 'left', rightKey = 'right') {
+            layout[leftKey] = (anchors && Number.isFinite(anchors.left)) ? anchors.left : null;
+            layout[rightKey] = (anchors && Number.isFinite(anchors.right)) ? anchors.right : null;
+        }
+
+        function ensureWidgetLayoutWithinViewport(type) {
+            const layout = widgetLayoutState[type];
+            if (!layout) {
+                return false;
+            }
+
+            const { widget, minimized } = getWidgetElements(type);
+            const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
+            const viewportHeight = document.documentElement.clientHeight || window.innerHeight || 0;
+
+            if (viewportWidth <= 0 || viewportHeight <= 0) {
+                return false;
+            }
+
+            const isMinimized = layout.isMinimized;
+            const element = isMinimized ? minimized : widget;
+            if (!element) {
+                return false;
+            }
+
+            const leftKey = isMinimized ? 'minimizedLeft' : 'left';
+            const rightKey = isMinimized ? 'minimizedRight' : 'right';
+            const topKey = isMinimized ? 'minimizedTop' : 'top';
+
+            const storedWidth = !isMinimized && Number.isFinite(layout.width) ? layout.width : null;
+            const storedHeight = !isMinimized && Number.isFinite(layout.height) ? layout.height : null;
+
+            const elementWidth = storedWidth || element.offsetWidth || 0;
+            const elementHeight = storedHeight || element.offsetHeight || 0;
+
+            let layoutChanged = false;
+
+            if (Number.isFinite(layout[leftKey])) {
+                const maxLeft = Math.max(0, viewportWidth - elementWidth);
+                const clampedLeft = Math.min(layout[leftKey], maxLeft);
+                if (clampedLeft !== layout[leftKey]) {
+                    layout[leftKey] = clampedLeft;
+                    layoutChanged = true;
+                }
+                if (layout[rightKey] != null) {
+                    layout[rightKey] = null;
+                    layoutChanged = true;
+                }
+            } else if (Number.isFinite(layout[rightKey])) {
+                const maxRight = Math.max(0, viewportWidth - elementWidth);
+                const clampedRight = Math.min(layout[rightKey], maxRight);
+                if (clampedRight !== layout[rightKey]) {
+                    layout[rightKey] = clampedRight;
+                    layoutChanged = true;
+                }
+                if (layout[leftKey] != null) {
+                    layout[leftKey] = null;
+                    layoutChanged = true;
+                }
+            }
+
+            if (Number.isFinite(layout[topKey])) {
+                const maxTop = Math.max(0, viewportHeight - elementHeight);
+                const clampedTop = Math.min(layout[topKey], maxTop);
+                if (clampedTop !== layout[topKey]) {
+                    layout[topKey] = clampedTop;
+                    layoutChanged = true;
+                }
+            }
+
+            if (layoutChanged) {
+                applyWidgetLayoutState(type);
+            }
+
+            return layoutChanged;
+        }
+
         /**
          * Constrain widget position and size to viewport boundaries
          * Ensures widgets stay fully visible within the browser window
@@ -3490,31 +3578,28 @@
             }
 
             const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
-            const left = Math.round(rect.left);
-            const top = Math.round(rect.top);
+            const left = Number.isFinite(rect.left) ? Math.round(rect.left) : null;
+            const top = Number.isFinite(rect.top) ? Math.round(rect.top) : null;
             const right = viewportWidth ? Math.round(Math.max(0, viewportWidth - rect.right)) : null;
+            const anchors = resolveHorizontalAnchors(left, right);
 
             if (isMinimized) {
-                layout.minimizedLeft = left;
                 layout.minimizedTop = top;
-                layout.minimizedRight = right;
+                applyAnchorsToLayout(layout, anchors, 'minimizedLeft', 'minimizedRight');
 
                 if (options.syncWidgetPosition) {
-                    layout.left = layout.minimizedLeft;
                     layout.top = layout.minimizedTop;
-                    layout.right = layout.minimizedRight;
+                    applyAnchorsToLayout(layout, anchors);
                 }
             } else {
-                layout.left = left;
                 layout.top = top;
-                layout.right = right;
-                layout.width = Math.round(rect.width);
-                layout.height = Math.round(rect.height);
+                layout.width = Number.isFinite(rect.width) ? Math.round(rect.width) : layout.width;
+                layout.height = Number.isFinite(rect.height) ? Math.round(rect.height) : layout.height;
+                applyAnchorsToLayout(layout, anchors);
 
                 if (options.syncMinimizedPosition) {
-                    layout.minimizedLeft = layout.left;
                     layout.minimizedTop = layout.top;
-                    layout.minimizedRight = layout.right;
+                    applyAnchorsToLayout(layout, anchors, 'minimizedLeft', 'minimizedRight');
                 }
             }
         }
@@ -5503,30 +5588,16 @@
             });
 
             window.addEventListener('resize', function() {
-                const widgets = [
-                    { type: 'pomodoro', id: 'pomodoro-widget' },
-                    { type: 'todo', id: 'todo-widget' }
-                ];
-
-                widgets.forEach(({ type, id }) => {
-                    const layout = widgetLayoutState[type];
-                    const element = document.getElementById(id);
-
-                    // Only constrain visible, non-minimized widgets
-                    if (!layout || layout.isMinimized || !element || element.style.display === 'none') {
-                        return;
-                    }
-
-                    const rect = element.getBoundingClientRect();
-                    const constrained = constrainToViewport(element, rect.left, rect.top);
-
-                    // Only update if position changed
-                    if (constrained.left !== rect.left || constrained.top !== rect.top) {
-                        element.style.left = constrained.left + 'px';
-                        element.style.top = constrained.top + 'px';
-                        syncWidgetRectToLayout(type);
+                let layoutChanged = false;
+                ['pomodoro', 'todo'].forEach(type => {
+                    if (ensureWidgetLayoutWithinViewport(type)) {
+                        layoutChanged = true;
                     }
                 });
+
+                if (layoutChanged) {
+                    saveWidgetLayoutState();
+                }
             });
 
             applyWidgetLayoutState('pomodoro');
