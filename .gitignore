@@ -1,9 +1,6 @@
 # Build output
 src-dist/
 
-# Translation files (generated from src)
-src/translations/*.json
-
 # Dependencies
 node_modules/
 
