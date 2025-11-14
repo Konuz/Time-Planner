@@ -354,6 +354,10 @@
             color: white;
         }
 
+        .summary {
+            margin-top: 40px;
+        }
+
         .summary-info {
             background-color: var(--bg-highlight);
             border-radius: var(--border-radius);
@@ -1705,6 +1709,12 @@
             border-radius: var(--border-radius);
         }
 
+        .info-data-location {
+            font-size: 0.875rem;
+            margin: 0;
+            padding: 0;
+        }
+
         .modal-header h2 {
             margin: 0;
             padding: 0;
@@ -2116,32 +2126,30 @@
                     <h3 data-i18n="info.section.overviewTitle">Rejestrowanie zadań</h3>
                     <p data-i18n="info.intro">Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.</p>
                     <ol>
-                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.</li>
+                        <li data-i18n="info.section.overviewStep1">W Ustawieniach wpisz swoje projekty i zadania, zgodnie z nazwami obowiązującymi z Twojej firmie</li>
                         <li data-i18n="info.section.overviewStep2">Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.</li>
                         <li data-i18n="info.section.overviewStep3">Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.</li>
                         <li data-i18n="info.section.overviewStep4">Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.</li>
-                        <li data-i18n="info.section.overviewStep5">Lista wpisów pokazuje wszystkie zadania – możesz je filtrować według miesiąca, tygodnia i rodzaju.</li>
-                        <li data-i18n="info.section.overviewStep6">Przyciski edycji, klonowania i usuwania przy każdym wierszu pozwalają odpowiednio: poprawić wpis, skopiować go z datą bieżącą lub całkowicie usunąć.</li>
-                        <li data-i18n="info.section.overviewStep7">Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.</li>
-                        <li data-i18n="info.section.overviewStep8">Czerwony przycisk z ikoną kosza w lewym górnym rogu pozwala usunąć wszystkie wpisy jednocześnie. Ta operacja wymaga potwierdzenia i jest nieodwracalna.</li>
+                        <li data-i18n="info.section.overviewStep5">Lista wpisów pokazuje wszystkie zadania – możesz je filtrować według daty, rodzaju zadania oraz projektu.</li>
+                        <li data-i18n="info.section.overviewStep6">Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.</li>
+                        <li data-i18n="info.section.overviewStep7">Czerwony przycisk z ikoną kosza w lewym górnym rogu pozwala usunąć wszystkie wpisy jednocześnie. Ta operacja wymaga potwierdzenia i jest nieodwracalna.</li>
                     </ol>
                 </div>
                 <div class="info-section">
                     <h3 data-i18n="info.section.todoTitle">Lista To-Do</h3>
                     <p data-i18n="info.section.todoIntro">Widżet To-Do pomaga gromadzić szybkie zadania obok timera.</p>
                     <ol>
-                        <li data-i18n="info.section.todoStep1">Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").</li>
-                        <li data-i18n="info.section.todoStep2">Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.</li>
-                        <li data-i18n="info.section.todoStep3">Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.</li>
-                        <li data-i18n="info.section.todoStep4">Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.</li>
+                        <li data-i18n="info.section.todoStep1">Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty"), żeby dodać zadanie</li>
+                        <li data-i18n="info.section.todoStep2">Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.</li>
+                        <li data-i18n="info.section.todoStep3">Przyciski "✓", "✕" oraz "→" przy zadaniu dodają numer/nazwę do odpowiedniego pola w sekcji "Dodaj nowy wpis", usuwają lub wysyłają numer do Pomodoro, aby wystartować timer. Zadanie zniknie automatycznie z To-Do kiedy wszystkie pozostałe pola w "Dodaj nowy wpis" zostaną uzupełnione oraz po zatwierdzeniu przyciskiem "Dodaj wpis".</li>
                     </ol>
                 </div>
                 <div class="info-section">
                     <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
-                        <li data-i18n="info.section.pomodoroStep1">Wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
-                        <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie", wyświetli się informacja o dodaniu wpisu.</li>
+                        <li data-i18n="info.section.pomodoroStep1">Kliknij ikonę 🍅, aby rozwinąć widżet i wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
+                        <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie" (zielony checkmark), wyświetli się informacja o dodaniu wpisu, jeśli długość zadania wynosi przynajmniej 0.5h</li>
                         <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.</li>
                         <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
                     </ol>
@@ -2151,6 +2159,9 @@
                 <div class="info-section">
                     <h3 data-i18n="info.section.monthEndTitle">Ostrzeżenie o końcu miesiąca</h3>
                     <div class="info-note" data-i18n="info.section.monthEndNote">Ostrzeżenie o zbliżającym się końcu miesiąca ma przypomnieć o wpisaniu wszystkich godzin do odpowiednich, firmowych narzędzi do rozliczania czasu.</div>
+                </div>
+                <div class="info-section">
+                    <p class="info-data-location" data-i18n="info.section.dataLocation">Dane aplikacji są przechowywane w katalogu "%APPDATA%\Time Planner"</p>
                 </div>
             </div>
         </div>
@@ -2276,10 +2287,12 @@
 
             <div class="timer-task-input">
                 <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer lub nazwa zadania:</label>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="timer-task-number" style="flex: 1;" aria-label="Numer lub nazwa zadania">
-                    <button id="timer-complete-task" class="timer-btn timer-btn-success" style="flex: 0 0 auto; padding: 10px; margin: 0; width: 36px; height: 36px; line-height: 1; display: flex; align-items: center; justify-content: center; font-size: 18px;" data-i18n-title="pomodoro.completeTask" title="Zakończ zadanie, zacznij nowe (ciágłość sesji)" aria-label="Zakończ zadanie, zacznij nowe">✓</button>
-                </div>
+                <input type="text" id="timer-task-number" aria-label="Numer lub nazwa zadania">
+                <button id="timer-complete-task"
+                        class="timer-btn timer-btn-success"
+                        data-i18n-title="pomodoro.completeTask"
+                        title="Zakończ zadanie, zacznij nowe (ciágłość sesji)"
+                        aria-label="Zakończ zadanie, zacznij nowe">✓</button>
             </div>
 
             <div class="pomodoro-stats" role="status" aria-live="polite" aria-atomic="false">
@@ -2310,12 +2323,6 @@
                     <summary data-i18n="pomodoro.settings">⚙️ Ustawienia</summary>
                     <div class="settings-content">
                         <label>
-                            <input type="number" id="work-duration" value="30" min="1" max="60"> <span data-i18n="pomodoro.workDuration">min - Praca</span>
-                        </label>
-                        <label>
-                            <input type="number" id="short-break-duration" value="5" min="1" max="30"> <span data-i18n="pomodoro.shortBreakDuration">min - Krótka przerwa</span>
-                        </label>
-                        <label>
                             <input type="number" id="long-break-duration" value="15" min="1" max="60"> <span data-i18n="pomodoro.longBreakDuration">min - Długa przerwa</span>
                         </label>
                         <label>
@@ -2323,6 +2330,9 @@
                         </label>
                         <label>
                             <input type="checkbox" id="auto-start-break" checked> <span data-i18n="pomodoro.autoStartBreak">Auto-start przerwy</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="auto-start-work"> <span data-i18n="pomodoro.autoStartWork">Auto-start sesji</span>
                         </label>
                     </div>
                 </details>
@@ -2672,21 +2682,33 @@
                 try {
                     const data = JSON.parse(stored);
 
+                    // Merge with defaults for objects to ensure all properties exist
+                    // This fixes NaN:NaN bug when localStorage has incomplete settings
+                    let mergedData = data;
+                    if (typeof this.defaultValue === 'object' &&
+                        !Array.isArray(this.defaultValue) &&
+                        this.defaultValue !== null &&
+                        typeof data === 'object' &&
+                        !Array.isArray(data) &&
+                        data !== null) {
+                        mergedData = { ...this.defaultValue, ...data };
+                    }
+
                     // Apply validator if provided
                     if (this.validator) {
                         // For arrays, validate each item
-                        if (Array.isArray(data)) {
-                            return data
+                        if (Array.isArray(mergedData)) {
+                            return mergedData
                                 .map(item => this.validator.sanitize ? this.validator.sanitize(item) : item)
                                 .filter(item => this.validator.isValid ? this.validator.isValid(item) : true);
                         }
                         // For objects, sanitize directly
                         if (this.validator.sanitize) {
-                            return this.validator.sanitize(data);
+                            return this.validator.sanitize(mergedData);
                         }
                     }
 
-                    return data;
+                    return mergedData;
                 } catch (e) {
                     console.error(`⚠️ Error loading ${this.key}:`, e);
                     return this.defaultValue;
@@ -2723,9 +2745,13 @@
         const MINUTES_PER_HOUR = 60;
 
         // Pomodoro Duration Constants
-        const POMODORO_WORK_DURATION_MINUTES = 30;
+        const POMODORO_WORK_DURATION_MINUTES = 25;
         const POMODORO_SHORT_BREAK_MINUTES = 5;
         const POMODORO_LONG_BREAK_MINUTES = 15;
+
+        // Minimum Pomodoro session requirements
+        const MIN_POMODORO_SESSION_MINUTES = 25;
+        const MIN_POMODORO_SESSION_SECONDS = MIN_POMODORO_SESSION_MINUTES * SECONDS_PER_MINUTE;
 
         // Convert to seconds for internal state management
         const POMODORO_WORK_DURATION_SECONDS = POMODORO_WORK_DURATION_MINUTES * SECONDS_PER_MINUTE;
@@ -2735,10 +2761,6 @@
         // 90% of work duration must be completed to count as full pomodoro
         const POMODORO_COMPLETION_THRESHOLD = 0.9;
         const POMODORO_COMPLETION_PERCENTAGE = 90;
-
-        // Show warning when less than 30 minutes remain (0.5 hours)
-        const SHORT_WARNING_THRESHOLD_MINUTES = 30;
-        const SHORT_WARNING_THRESHOLD_SECONDS = SHORT_WARNING_THRESHOLD_MINUTES * SECONDS_PER_MINUTE;
 
         // localStorage Keys
         const STORAGE_KEY = 'timesheet-entries';
@@ -2832,7 +2854,8 @@
             shortBreakDuration: POMODORO_SHORT_BREAK_MINUTES,
             longBreakDuration: POMODORO_LONG_BREAK_MINUTES,
             soundEnabled: true,
-            autoStartBreak: true
+            autoStartBreak: true,
+            autoStartWork: false
         };
 
         // Widget layout state
@@ -2884,7 +2907,8 @@
             shortBreakDuration: POMODORO_SHORT_BREAK_MINUTES,
             longBreakDuration: POMODORO_LONG_BREAK_MINUTES,
             soundEnabled: true,
-            autoStartBreak: true
+            autoStartBreak: true,
+            autoStartWork: false
         });
         const todoTasksStorage = new LocalStorageManager(TODO_STORAGE_KEY, []);
         const widgetLayoutStorage = new LocalStorageManager(WIDGET_LAYOUT_STATE_KEY, getDefaultWidgetLayoutState());
@@ -3390,11 +3414,10 @@
             pomodoroToday: null,
 
             // Pomodoro settings
-            workDuration: null,
-            shortBreakDuration: null,
             longBreakDuration: null,
             soundEnabled: null,
             autoStartBreak: null,
+            autoStartWork: null,
 
             // Modals
             settingsModal: null,
@@ -3521,11 +3544,10 @@
             domCache.pomodoroToday = document.getElementById('pomodoro-today');
 
             // Pomodoro settings
-            domCache.workDuration = document.getElementById('work-duration');
-            domCache.shortBreakDuration = document.getElementById('short-break-duration');
             domCache.longBreakDuration = document.getElementById('long-break-duration');
             domCache.soundEnabled = document.getElementById('sound-enabled');
             domCache.autoStartBreak = document.getElementById('auto-start-break');
+            domCache.autoStartWork = document.getElementById('auto-start-work');
 
             // Modals
             domCache.settingsModal = document.getElementById('settings-modal');
@@ -3651,407 +3673,8 @@
             }
         }
 
-        // Translations cache - lazy loaded
-        const translations = {
-            pl: {
-                'app.title': 'TIME PLANNER',
-                'app.settings': 'Ustawienia',
-                'app.info': 'Instrukcja',
-                'app.deleteAll': 'Usuń wszystkie wpisy',
-                'app.language': 'Zmień język / Change language',
-                'warning.endOfMonth': 'Zbliża się koniec miesiąca!',
-                'section.visibility': 'Widoczność sekcji:',
-                'section.addEntry': 'Dodaj nowy wpis',
-                'section.entriesList': 'Lista wpisów',
-                'section.summary': 'Podsumowanie',
-                'form.addEntry': 'Dodaj nowy wpis',
-                'form.editEntry': 'Edytuj wpis',
-                'form.date': 'Data:',
-                'form.taskType': 'Rodzaj zadania:',
-                'form.selectTaskType': '-- Wybierz rodzaj zadania --',
-                'form.project': 'Projekt:',
-                'form.selectProject': '-- Wybierz projekt --',
-                'form.hours': 'Liczba przepracowanych godzin (max 8):',
-                'form.taskNumber': 'Numer lub nazwa zadania:',
-                'form.addButton': 'Dodaj wpis',
-                'form.updateButton': 'Aktualizuj wpis',
-                'form.clearButton': 'Wyczyść',
-                'entries.title': 'Lista wpisów',
-                'entries.dateFilter': 'Data',
-                'entries.filterCurrentMonth': 'Obecny miesiąc',
-                'entries.filterCurrentWeek': 'Obecny tydzień',
-                'entries.taskTypeFilter': 'Rodzaj zadania',
-                'entries.projectFilter': 'Projekt',
-                'entries.filterAll': 'Wszystko',
-                'entries.selectDeselectAll': 'Wszystko',
-                'entries.showAll': 'Pokaż wszystkie wpisy',
-                'entries.noResults': 'Brak wpisów spełniających kryteria filtrowania',
-                'table.date': 'Data',
-                'table.taskType': 'Rodzaj zadania',
-                'table.project': 'Projekt',
-                'table.hours': 'Godziny',
-                'table.number': 'Numer/Nazwa',
-                'table.actions': 'Akcje',
-                'summary.title': 'Podsumowanie',
-                'summary.currentMonth': 'Aktualny miesiąc:',
-                'summary.totalHours': 'Całkowita liczba godzin:',
-                'summary.export': 'Eksportuj dane z bieżącego miesiąca (CSV)',
-                'export.filenamePrefix': 'ewidencja_godzin',
-                'settings.title': 'Ustawienia',
-                'settings.projects': 'Projekty',
-                'settings.tasks': 'Zadania',
-                'settings.projectName': 'Nazwa projektu:',
-                'settings.addProject': 'Dodaj projekt',
-                'settings.deleteAllProjects': 'Usuń wszystkie',
-                'settings.cancel': 'Anuluj',
-                'settings.discard': 'Anuluj',
-                'settings.taskType': 'Rodzaj zadania:',
-                'settings.addTask': 'Dodaj zadanie',
-                'settings.deleteAllTasks': 'Usuń wszystkie',
-                'settings.noProjects': 'Brak projektów',
-                'settings.noTasks': 'Brak zadań',
-                'settings.apply': 'Zastosuj',
-                'settings.ok': 'OK',
-                'confirm.title': 'Potwierdzenie',
-                'confirm.confirm': 'OK',
-                'confirm.cancel': 'Anuluj',
-                'pomodoro.title': 'POMODORO',
-                'pomodoro.workTime': 'Czas pracy',
-                'pomodoro.shortBreak': 'Krótka przerwa',
-                'pomodoro.longBreak': 'Długa przerwa',
-                'pomodoro.start': 'Start',
-                'pomodoro.pause': 'Pauza',
-                'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Numer lub nazwa zadania:',
-                'pomodoro.completeTask': 'Zakończ zadanie, zacznij nowe (ciągłość sesji)',
-                'pomodoro.newTask': 'Nowe',
-                'pomodoro.session': 'Sesja:',
-                'pomodoro.shortBreaks': 'Przerwy krótkie:',
-                'pomodoro.longBreaks': 'Przerwy długie:',
-                'pomodoro.today': 'Dziś:',
-                'pomodoro.currentTime': 'Aktualny czas:',
-                'pomodoro.settings': '⚙️ Ustawienia',
-                'pomodoro.workDuration': 'min - Praca',
-                'pomodoro.shortBreakDuration': 'min - Krótka przerwa',
-                'pomodoro.longBreakDuration': 'min - Długa przerwa',
-                'pomodoro.soundEnabled': 'Dźwięk powiadomienia',
-                'pomodoro.autoStartBreak': 'Auto-start przerwy',
-                'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer lub nazwę zadania',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer lub nazwę zadania aby zapisać czas pracy',
-                'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
-                'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.',
-                'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
-                'pomodoro.notif.timeAdded': '✅ Czas dodany: {task} (+{hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
-                'pomodoro.notif.timeAddedContinue': '✅ Czas dodany: {task} (+{time}). Możesz kontynuować pracę!',
-                'pomodoro.notif.entryAdded': '✅ Wpis dodany: {task} ({hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
-                'pomodoro.notif.entryAddedContinue': '✅ Wpis dodany: {task} ({time}). Możesz kontynuować pracę!',
-                'pomodoro.notif.taskCompleted': '✅ Zadanie zakończone: {task} (+{hours}h). Timer nadal liczy!',
-                'pomodoro.notif.taskCompletedNew': '✅ Zadanie zakończone: {task} ({hours}h). Timer nadal liczy!',
-                'pomodoro.notif.newTaskConfirm': 'Masz naliczony czas {time} dla zadania "{task}". Czy chcesz go dodać przed rozpoczęciem nowego zadania?',
-                'pomodoro.notif.workComplete': 'Czas pracy zakończony! Czas na przerwę.',
-                'pomodoro.notif.breakComplete': 'Przerwa zakończona! Wracaj do pracy.',
-                'info.title': 'Jak korzystać z Time Planner',
-                'info.intro': 'Ta strona pomoże Ci planować pracę, mierzyć czas i pilnować przerw.',
-                'info.section.overviewTitle': 'Rejestrowanie zadań',
-                'info.section.overviewStep1': 'W Ustawieniach wpisz swoje Projekty i Zadania, a następnie uzupełnij pola Data, Rodzaj zadania, Projekt i Numer lub nazwa zadania.',
-                'info.section.overviewStep2': 'Podaj liczbę przepracowanych godzin lub skorzystaj z trybu Pomodoro, aby policzyć je automatycznie.',
-                'info.section.overviewStep3': 'Kliknij „Dodaj wpis", aby zapisać czas w tabeli poniżej.',
-                'info.section.overviewStep4': 'Użyj przełączników nad formularzem, aby ukrywać lub pokazywać potrzebne sekcje.',
-                'info.section.overviewStep5': 'Lista wpisów pokazuje wszystkie zadania – możesz je filtrować według miesiąca, tygodnia i rodzaju.',
-                'info.section.overviewStep6': 'Przyciski edycji, klonowania i usuwania przy każdym wierszu pozwalają odpowiednio: poprawić wpis, skopiować go z datą bieżącą lub całkowicie usunąć.',
-                'info.section.overviewStep7': 'Przycisk „Eksportuj dane" pobiera plik CSV z godzinami z bieżącego miesiąca.',
-                'info.section.overviewStep8': 'Czerwony przycisk z ikoną kosza w lewym górnym rogu pozwala usunąć wszystkie wpisy jednocześnie. Ta operacja wymaga potwierdzenia i jest nieodwracalna.',
-                'info.section.pomodoroTitle': 'Tryb Pomodoro',
-                'info.section.pomodoroIntro': 'Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.',
-                'info.section.pomodoroStep1': 'Kliknij ikonę 🍅, aby rozwinąć widżet i wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.',
-                'info.section.pomodoroStep2': 'Po zakończeniu pracy kliknij „Zakończ zadanie" (zielony checkmark), wyświetli się informacja o dodaniu wpisu.',
-                'info.section.pomodoroStep3': 'Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.',
-                'info.section.pomodoroStep4': 'Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.',
-                'info.section.pomodoroNote': 'Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.',
-                'info.section.monthEndTitle': 'Ostrzeżenie o końcu miesiąca',
-                'info.section.monthEndNote': 'Ostrzeżenie o zbliżającym się końcu miesiąca ma przypomnieć o wpisaniu wszystkich godzin do odpowiednich, firmowych narzędzi do rozliczania czasu.',
-                'info.section.todoTitle': 'Lista To-Do',
-                'info.section.todoIntro': 'Widżet To-Do pomaga gromadzić szybkie zadania obok timera.',
-                'info.section.todoStep1': 'Kliknij ikonę 📋, aby rozwinąć widżet i wypełnij opis, priorytet oraz termin (lub zaznacz „Bez daty").',
-                'info.section.todoStep2': 'Przyciski w formularzu pozwalają dodać zadania lub usunąć wszystkie wpisy; zadania zapisywane są automatycznie w przeglądarce.',
-                'info.section.todoStep3': 'Przeciągaj pozycje, by zmieniać ich kolejność w obrębie sekcji.',
-                'info.section.todoStep4': 'Przyciski ✓, ✕ i → przy zadaniu kończą je, usuwają lub wysyłają numer do Pomodoro, aby wystartować timer.',
-                'info.close': 'Zamknij instrukcję',
-                'msg.enterProjectName': 'Podaj nazwę projektu',
-                'msg.projectExists': 'Ten projekt już istnieje',
-                'msg.confirmDeleteProject': 'Czy na pewno chcesz usunąć projekt',
-                'msg.enterTaskType': 'Podaj rodzaj zadania',
-                'msg.taskTypeExists': 'Ten typ zadania już istnieje',
-                'msg.confirmDeleteTaskType': 'Czy na pewno chcesz usunąć typ zadania',
-                'msg.confirmDeleteAllProjects': 'Czy na pewno usunąć wszystkie projekty? Ta operacja jest nieodwracalna.',
-                'msg.confirmDeleteAllTasks': 'Czy na pewno usunąć wszystkie zadania? Ta operacja jest nieodwracalna.',
-                'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
-                'msg.noDataToExport': 'Brak danych do eksportu',
-                'msg.exportSuccess': 'Plik CSV został zapisany',
-                'msg.exportError': 'Błąd podczas zapisu pliku CSV',
-                'csv.headers': 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania',
-                'msg.noEntriesToDelete': 'Brak wpisów do usunięcia',
-                'msg.confirmDeleteAllEntries': 'Czy na pewno usunąć wszystkie wpisy ({count})? Ta operacja jest nieodwracalna.',
-                'msg.allEntriesDeleted': 'Wszystkie wpisy zostały usunięte',
-                'msg.confirmTaskChange': 'Zmiana zadania spowoduje reset naliczonego czasu',
-                'msg.continue': 'Kontynuować?',
-                'msg.settingsApplied': 'Ustawienia zostały zastosowane',
-                'msg.settingsCancelled': 'Zmiany anulowane',
-                'msg.storageQuotaExceeded': 'Pamięć przeglądarki jest pełna. Wyeksportuj dane i usuń starsze wpisy.',
-                'msg.storageSaveFailed': 'Nie można zapisać danych. Sprawdź ustawienia przeglądarki.',
-                'validation.selectDate': 'Wybierz datę',
-                'validation.selectTaskType': 'Wybierz rodzaj zadania',
-                'validation.selectProject': 'Wybierz projekt',
-                'validation.enterHours': 'Podaj liczbę godzin',
-                'validation.hoursGreaterThanZero': 'Liczba godzin musi być co najmniej 0,5',
-                'validation.hoursMaxEight': 'Maksymalna liczba godzin to 8',
-                'validation.enterTaskNumber': 'Podaj numer lub nazwę zadania',
-                'month.january': 'Styczeń',
-                'month.february': 'Luty',
-                'month.march': 'Marzec',
-                'month.april': 'Kwiecień',
-                'month.may': 'Maj',
-                'month.june': 'Czerwiec',
-                'month.july': 'Lipiec',
-                'month.august': 'Sierpień',
-                'month.september': 'Wrzesień',
-                'month.october': 'Październik',
-                'month.november': 'Listopad',
-                'month.december': 'Grudzień',
-                'action.edit': 'Edytuj',
-                'action.clone': 'Klonuj',
-                'action.delete': 'Usuń',
-
-                'todo.title': 'TO-DO',
-                'todo.descriptionPlaceholder': 'Opis zadania...',
-                'todo.priorityHigh': 'Wysoki',
-                'todo.priorityMedium': 'Średni',
-                'todo.priorityLow': 'Niski',
-                'todo.noDate': 'Bez daty',
-                'todo.addTask': 'Dodaj zadanie',
-                'todo.deleteAll': 'Usuń wszystkie',
-                'todo.withDates': 'Zadania z terminem',
-                'todo.withoutDates': 'Zadania bez terminu',
-                'todo.noDatedTasks': 'Brak zadań z terminem',
-                'todo.noUndatedTasks': 'Brak zadań bez terminu',
-                'todo.complete': 'Zakończ sukcesem',
-                'todo.cancel': 'Anuluj',
-                'todo.moveToPomodoro': 'Przenieś do Pomodoro',
-                'todo.confirmCancel': 'Czy na pewno anulować to zadanie?',
-                'todo.confirmDeleteAll': 'Czy na pewno usunąć wszystkie zadania?',
-                'todo.createEntry': 'Czy wprowadzić nowy wpis czasu pracy?',
-                'todo.movedToPomodoro': 'Zadanie przeniesione do Pomodoro',
-                'todo.overdue': 'Przeterminowane',
-                'todo.emptyDescription': 'Proszę wprowadzić opis zadania',
-                'todo.selectDate': 'Wybierz datę',
-                'todo.noTasks': 'Brak zadań do usunięcia'
-            },
-            en: {
-                'app.title': 'TIME PLANNER',
-                'app.settings': 'Settings',
-                'app.info': 'Guide',
-                'app.deleteAll': 'Delete all entries',
-                'app.language': 'Change language / Zmień język',
-                'warning.endOfMonth': 'End of month approaching!',
-
-                'section.visibility': 'Section visibility:',
-                'section.addEntry': 'Add new entry',
-                'section.entriesList': 'Entries list',
-                'section.summary': 'Summary',
-
-                'form.addEntry': 'Add new entry',
-                'form.editEntry': 'Edit entry',
-                'form.date': 'Date:',
-                'form.taskType': 'Task type:',
-                'form.selectTaskType': '-- Select task type --',
-                'form.project': 'Project:',
-                'form.selectProject': '-- Select project --',
-                'form.hours': 'Number of hours worked (max 8):',
-                'form.taskNumber': 'Task number or name:',
-                'form.addButton': 'Add entry',
-                'form.updateButton': 'Update entry',
-                'form.clearButton': 'Clear',
-
-                'entries.title': 'Entries list',
-                'entries.dateFilter': 'Date',
-                'entries.filterCurrentMonth': 'Current month',
-                'entries.filterCurrentWeek': 'Current week',
-                'entries.taskTypeFilter': 'Task type',
-                'entries.projectFilter': 'Project',
-                'entries.filterAll': 'All',
-                'entries.selectDeselectAll': 'All',
-                'entries.showAll': 'Show all entries',
-                'entries.noResults': 'No entries match the current filters',
-
-                'table.date': 'Date',
-                'table.taskType': 'Task type',
-                'table.project': 'Project',
-                'table.hours': 'Hours',
-                'table.number': 'Number/Name',
-                'table.actions': 'Actions',
-
-                'summary.title': 'Summary',
-                'summary.currentMonth': 'Current month:',
-                'summary.totalHours': 'Total hours:',
-                'summary.export': 'Export current month data (CSV)',
-                'export.filenamePrefix': 'timesheet',
-
-                'settings.title': 'Settings',
-                'settings.projects': 'Projects',
-                'settings.tasks': 'Tasks',
-                'settings.projectName': 'Project name:',
-                'settings.addProject': 'Add project',
-                'settings.deleteAllProjects': 'Delete all',
-                'settings.cancel': 'Cancel',
-                'settings.taskType': 'Task type:',
-                'settings.addTask': 'Add task',
-                'settings.deleteAllTasks': 'Delete all',
-                'settings.noProjects': 'No projects',
-                'settings.noTasks': 'No tasks',
-                'settings.discard': 'Cancel',
-                'settings.apply': 'Apply',
-                'settings.ok': 'OK',
-                'confirm.title': 'Confirmation',
-                'confirm.confirm': 'OK',
-                'confirm.cancel': 'Cancel',
-
-                'pomodoro.title': 'POMODORO',
-                'pomodoro.workTime': 'Work time',
-                'pomodoro.shortBreak': 'Short break',
-                'pomodoro.longBreak': 'Long break',
-                'pomodoro.start': 'Start',
-                'pomodoro.pause': 'Pause',
-                'pomodoro.reset': 'Reset',
-                'pomodoro.taskNumber': 'Task number or name:',
-                'pomodoro.completeTask': 'Complete task, start new (session continuity)',
-                'pomodoro.newTask': 'New',
-                'pomodoro.session': 'Session:',
-                'pomodoro.shortBreaks': 'Short breaks:',
-                'pomodoro.longBreaks': 'Long breaks:',
-                'pomodoro.today': 'Today:',
-                'pomodoro.currentTime': 'Current time:',
-                'pomodoro.settings': '⚙️ Settings',
-                'pomodoro.workDuration': 'min - Work',
-                'pomodoro.shortBreakDuration': 'min - Short break',
-                'pomodoro.longBreakDuration': 'min - Long break',
-                'pomodoro.soundEnabled': 'Notification sound',
-                'pomodoro.autoStartBreak': 'Auto-start break',
-
-                'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
-                'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
-                'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
-                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 30 min). Entry not added.',
-                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 30 min). Timer still running - continue working or enter new task!',
-                'pomodoro.notif.timeAdded': '✅ Time added: {task} (+{hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
-                'pomodoro.notif.timeAddedContinue': '✅ Time added: {task} (+{time}). You can continue working!',
-                'pomodoro.notif.entryAdded': '✅ Entry added: {task} ({hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
-                'pomodoro.notif.entryAddedContinue': '✅ Entry added: {task} ({time}). You can continue working!',
-                'pomodoro.notif.taskCompleted': '✅ Task completed: {task} (+{hours}h). Timer still running!',
-                'pomodoro.notif.taskCompletedNew': '✅ Task completed: {task} ({hours}h). Timer still running!',
-                'pomodoro.notif.newTaskConfirm': 'You have accumulated {time} for task "{task}". Do you want to add it before starting a new task?',
-                'pomodoro.notif.workComplete': 'Work time complete! Time for a break.',
-                'pomodoro.notif.breakComplete': 'Break complete! Back to work.',
-                'info.title': 'How to use Time Planner',
-                'info.intro': 'This page helps you plan work, track time, and remember your breaks.',
-                'info.section.overviewTitle': 'Tracking tasks',
-                'info.section.overviewStep1': 'In Settings, enter your Projects and Tasks, then fill in the Date, Task type, Project, and Task number or name fields.',
-                'info.section.overviewStep2': 'Enter the number of worked hours or use Pomodoro mode to calculate them automatically.',
-                'info.section.overviewStep3': 'Click "Add entry" to save your time in the table below.',
-                'info.section.overviewStep4': 'Use the toggles above the form to show or hide the sections you need.',
-                'info.section.overviewStep5': 'The entries list shows every saved task – filter it by month, week, or task type.',
-                'info.section.overviewStep6': 'Use the edit, clone, and delete buttons on each row to update an entry, copy it with the current date, or remove it completely.',
-                'info.section.overviewStep7': 'The "Export data" button downloads a CSV file with the current month hours.',
-                'info.section.overviewStep8': 'The red trash button in the top left corner allows you to delete all entries at once. This operation requires confirmation and cannot be undone.',
-                'info.section.pomodoroTitle': 'Pomodoro mode',
-                'info.section.pomodoroIntro': 'The Pomodoro timer keeps you focused with short work cycles.',
-                'info.section.pomodoroStep1': 'Click the 🍅 icon to expand the widget and enter the task number or name inside the Pomodoro panel and press Start to begin the countdown.',
-                'info.section.pomodoroStep2': 'When work ends, click "Complete task" (green checkmark), a notification about adding the entry will be displayed.',
-                'info.section.pomodoroStep3': 'The entry is added automatically with the calculated time and selected project.',
-                'info.section.pomodoroStep4': 'Every new session with the same task number or name appends the tracked minutes to the existing entry so you keep the full history.',
-                'info.section.pomodoroNote': 'When a session finishes, you do not have to add the task manually – the app does it for you and remembers the hours you gather in later pomodoros.',
-                'info.section.monthEndTitle': 'Month-End Warning',
-                'info.section.monthEndNote': 'The month-end warning reminder is to ensure all hours are entered into the appropriate company time tracking tools.',
-                'info.section.todoTitle': 'To-Do list',
-                'info.section.todoIntro': 'Use the To-Do widget to capture quick tasks next to the timer.',
-                'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority and due date (or enable "No date").',
-                'info.section.todoStep2': 'Use the form buttons to add tasks or remove them all; every task is saved automatically in your browser.',
-                'info.section.todoStep3': 'Drag items to reorder them within sections.',
-                'info.section.todoStep4': 'The ✓, ✕ and → buttons complete, cancel or send the task to Pomodoro so the timer picks up its number.',
-                'info.close': 'Close guide',
-
-                'msg.enterProjectName': 'Enter project name',
-                'msg.projectExists': 'This project already exists',
-                'msg.confirmDeleteProject': 'Are you sure you want to delete project',
-                'msg.enterTaskType': 'Enter task type',
-                'msg.taskTypeExists': 'This task type already exists',
-                'msg.confirmDeleteTaskType': 'Are you sure you want to delete task type',
-                'msg.confirmDeleteAllProjects': 'Are you sure you want to delete all projects? This operation cannot be undone.',
-                'msg.confirmDeleteAllTasks': 'Are you sure you want to delete all tasks? This operation cannot be undone.',
-                'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
-                'msg.noDataToExport': 'No data to export',
-                'msg.exportSuccess': 'CSV file has been saved',
-                'msg.exportError': 'Error saving CSV file',
-                'csv.headers': 'Date,Task type,Project,Hours,Task number or name',
-                'msg.noEntriesToDelete': 'No entries to delete',
-                'msg.confirmDeleteAllEntries': 'Are you sure you want to delete all entries ({count})? This operation cannot be undone.',
-                'msg.allEntriesDeleted': 'All entries have been deleted',
-                'msg.confirmTaskChange': 'Changing task will reset accumulated time',
-                'msg.continue': 'Continue?',
-                'msg.settingsApplied': 'Settings applied',
-                'msg.settingsCancelled': 'Changes cancelled',
-                'msg.storageQuotaExceeded': 'Storage is full. Please export your data and remove old entries.',
-                'msg.storageSaveFailed': 'Unable to save data. Please check your browser settings.',
-
-                'validation.selectDate': 'Select date',
-                'validation.selectTaskType': 'Select task type',
-                'validation.selectProject': 'Select project',
-                'validation.enterHours': 'Enter number of hours',
-                'validation.hoursGreaterThanZero': 'Number of hours must be at least 0.5',
-                'validation.hoursMaxEight': 'Maximum number of hours is 8',
-                'validation.enterTaskNumber': 'Enter task number or name',
-
-                'month.january': 'January',
-                'month.february': 'February',
-                'month.march': 'March',
-                'month.april': 'April',
-                'month.may': 'May',
-                'month.june': 'June',
-                'month.july': 'July',
-                'month.august': 'August',
-                'month.september': 'September',
-                'month.october': 'October',
-                'month.november': 'November',
-                'month.december': 'December',
-
-                'action.edit': 'Edit',
-                'action.clone': 'Clone',
-                'action.delete': 'Delete',
-
-                'todo.title': 'TO-DO',
-                'todo.descriptionPlaceholder': 'Task description...',
-                'todo.priorityHigh': 'High',
-                'todo.priorityMedium': 'Medium',
-                'todo.priorityLow': 'Low',
-                'todo.noDate': 'No date',
-                'todo.addTask': 'Add task',
-                'todo.deleteAll': 'Delete all',
-                'todo.withDates': 'Tasks with deadline',
-                'todo.withoutDates': 'Tasks without deadline',
-                'todo.noDatedTasks': 'No tasks with deadline',
-                'todo.noUndatedTasks': 'No tasks without deadline',
-                'todo.complete': 'Complete',
-                'todo.cancel': 'Cancel',
-                'todo.moveToPomodoro': 'Move to Pomodoro',
-                'todo.confirmCancel': 'Are you sure you want to cancel this task?',
-                'todo.confirmDeleteAll': 'Are you sure you want to delete all tasks?',
-                'todo.createEntry': 'Create new time entry?',
-                'todo.movedToPomodoro': 'Task moved to Pomodoro',
-                'todo.overdue': 'Overdue',
-                'todo.emptyDescription': 'Please enter task description',
-                'todo.selectDate': 'Select date',
-                'todo.noTasks': 'No tasks to delete'
-            }
-        };
+        // Translations cache - all languages loaded from external JSON files
+        const translations = {};
 
         // Lazy load translations from JSON files
         async function loadTranslations(langCode) {
@@ -4146,9 +3769,37 @@
                 }
 
                 refreshValidationMessages();
+                refreshPomodoroValidationMessages();
             } catch (error) {
                 console.error('Error updating UI language:', error);
             }
+        }
+
+        // Refresh Pomodoro validation messages when language changes
+        function refreshPomodoroValidationMessages() {
+            const validationRules = [
+                { input: domCache.longBreakDuration, minKey: 'pomodoro.validation.longBreakDurationMin', maxKey: 'pomodoro.validation.longBreakDurationMax' }
+            ];
+
+            validationRules.forEach(({ input, minKey, maxKey }) => {
+                if (!input) return;
+
+                // If input currently has validation error, update the message
+                if (input.validity && !input.validity.valid) {
+                    const value = parseInt(input.value);
+                    const min = parseInt(input.min);
+                    const max = parseInt(input.max);
+
+                    let message = '';
+                    if (isNaN(value) || value < min) {
+                        message = t(minKey) || 'Wartość musi być większa lub równa ' + min;
+                    } else if (value > max) {
+                        message = t(maxKey) || 'Wartość musi być mniejsza lub równa ' + max;
+                    }
+
+                    input.setCustomValidity(message);
+                }
+            });
         }
 
         function updateTodoTooltips() {
@@ -4265,20 +3916,13 @@
         }
 
         function loadSectionVisibility() {
-            const stored = localStorage.getItem(SECTION_VISIBILITY_KEY);
-            if (stored) {
-                return JSON.parse(stored);
-            }
-            return {
-                'entry-form': true,
-                'entries-list': true,
-                'project-management': true,
-                'summary': true
-            };
+            // Load section visibility using LocalStorageManager
+            // Returns default value if not found
+            return sectionVisibilityStorage.load();
         }
 
         function saveSectionVisibility(visibility) {
-            safeLocalStorageSave(SECTION_VISIBILITY_KEY, visibility);
+            sectionVisibilityStorage.save(visibility);
         }
 
         function toggleSectionVisibility(sectionName, isVisible) {
@@ -4421,18 +4065,15 @@
 
         function loadWidgetLayoutState() {
             try {
-                const stored = localStorage.getItem(WIDGET_LAYOUT_STATE_KEY);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    // Merge loaded state with defaults to ensure all properties exist
-                    const defaults = getDefaultWidgetLayoutState();
-                    widgetLayoutState = {
-                        pomodoro: { ...defaults.pomodoro, ...parsed.pomodoro },
-                        todo: { ...defaults.todo, ...parsed.todo }
-                    };
-                } else {
-                    widgetLayoutState = getDefaultWidgetLayoutState();
-                }
+                // Load widget layout state using LocalStorageManager
+                const loaded = widgetLayoutStorage.load();
+
+                // Merge loaded state with defaults to ensure all properties exist
+                const defaults = getDefaultWidgetLayoutState();
+                widgetLayoutState = {
+                    pomodoro: { ...defaults.pomodoro, ...loaded.pomodoro },
+                    todo: { ...defaults.todo, ...loaded.todo }
+                };
             } catch (error) {
                 console.warn('Error loading widget layout state:', error);
                 widgetLayoutState = getDefaultWidgetLayoutState();
@@ -4441,7 +4082,7 @@
 
         function saveWidgetLayoutState() {
             try {
-                safeLocalStorageSave(WIDGET_LAYOUT_STATE_KEY, widgetLayoutState, 300);
+                widgetLayoutStorage.save(widgetLayoutState, 300);
             } catch (error) {
                 console.warn('Error saving widget layout state:', error);
             }
@@ -4717,38 +4358,17 @@
 
         function loadEntries() {
             try {
-                const storedEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                // Load and validate entries using LocalStorageManager
+                // EntryValidator is already configured in entriesStorage
+                const loadedEntries = entriesStorage.load();
 
-                // Security: Validate and sanitize entries from localStorage
-                // This prevents XSS attacks via localStorage manipulation
-                const validEntries = storedEntries.filter(rawEntry => {
-                    try {
-                        // Sanitize and validate each entry
-                        const sanitized = EntryValidator.sanitize(rawEntry);
-                        EntryValidator.validate(sanitized);
-                        return true;
-                    } catch (e) {
-                        console.warn('⚠️ Invalid entry removed from localStorage:', e.message);
-                        return false;
-                    }
-                });
-
-                // Sanitize and convert dates
-                entries = validEntries.map(rawEntry => {
-                    const sanitized = EntryValidator.sanitize(rawEntry);
-                    return {
-                        ...sanitized,
-                        date: new Date(sanitized.date || rawEntry.date)
-                    };
-                });
+                // Convert date strings to Date objects
+                entries = loadedEntries.map(entry => ({
+                    ...entry,
+                    date: new Date(entry.date)
+                }));
 
                 rebuildEntriesMap(); // Rebuild Map for O(1) lookups
-
-                // If any entries were filtered out, save the cleaned version
-                if (validEntries.length < storedEntries.length) {
-                    console.warn(`🔒 Removed ${storedEntries.length - validEntries.length} invalid entries from storage`);
-                    saveEntries();
-                }
             } catch (error) {
                 console.error('❌ Error loading entries:', error);
                 entries = [];
@@ -4757,19 +4377,20 @@
         }
 
         function saveEntries() {
-            safeLocalStorageSave(STORAGE_KEY, entries);
+            entriesStorage.save(entries);
         }
 
         function loadProjects() {
-            const storedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
-            const loadedProjects = storedProjects ? JSON.parse(storedProjects) : [];
+            // Load projects using LocalStorageManager
+            const loadedProjects = projectsStorage.load();
 
             // Security: Sanitize project names from localStorage
             const sanitizedProjects = loadedProjects
                 .map(p => EntryValidator.sanitizeString(p))
                 .filter(p => p.length > 0); // Remove empty strings
 
-            projects.length = 0; // Preserve reference for managers relying on the original array
+            // Preserve array reference for managers relying on the original array
+            projects.length = 0;
             projects.push(...sanitizedProjects);
 
             // Save sanitized version if any changes were made
@@ -4778,14 +4399,10 @@
                 console.warn('🔒 Sanitized project names from storage');
                 saveProjects();
             }
-
-            if (!storedProjects) {
-                saveProjects();
-            }
         }
 
         function saveProjects() {
-            safeLocalStorageSave(PROJECTS_STORAGE_KEY, projects);
+            projectsStorage.save(projects);
         }
 
         function updateProjectSelect() {
@@ -4929,15 +4546,16 @@
         });
 
         function loadTaskTypes() {
-            const storedTaskTypes = localStorage.getItem(TASK_TYPES_STORAGE_KEY);
-            const loadedTaskTypes = storedTaskTypes ? JSON.parse(storedTaskTypes) : [];
+            // Load task types using LocalStorageManager
+            const loadedTaskTypes = taskTypesStorage.load();
 
             // Security: Sanitize task type names from localStorage
             const sanitizedTaskTypes = loadedTaskTypes
                 .map(t => EntryValidator.sanitizeString(t))
                 .filter(t => t.length > 0); // Remove empty strings
 
-            taskTypes.length = 0; // Preserve reference shared with task type manager
+            // Preserve array reference shared with task type manager
+            taskTypes.length = 0;
             taskTypes.push(...sanitizedTaskTypes);
 
             // Save sanitized version if any changes were made
@@ -4946,14 +4564,10 @@
                 console.warn('🔒 Sanitized task type names from storage');
                 saveTaskTypes();
             }
-
-            if (!storedTaskTypes) {
-                saveTaskTypes();
-            }
         }
 
         function saveTaskTypes() {
-            safeLocalStorageSave(TASK_TYPES_STORAGE_KEY, taskTypes);
+            taskTypesStorage.save(taskTypes);
         }
 
         function updateTaskTypeSelect() {
@@ -5797,27 +5411,27 @@
                         try {
                             // Use modern writeTextFile API
                             await window.__TAURI__.fs.writeTextFile(filePath, csvContent);
-                            showNotification(t('msg.exportSuccess') || 'Plik CSV został zapisany', 2000);
+                            showNotification(t('msg.exportSuccess') || 'Plik CSV został pomyślnie zapisany', 2000);
                         } catch (writeError) {
                             console.error('❌ Błąd zapisu:', writeError);
 
                             // Detailed error for user (since F12 unavailable)
-                            let errorMsg = '🚨 BŁĄD ZAPISU CSV:\n\n';
-                            errorMsg += `📍 Ścieżka: ${filePath}\n`;
-                            errorMsg += `📛 Typ błędu: ${writeError.name || 'Unknown'}\n`;
-                            errorMsg += `💬 Wiadomość: ${writeError.message || writeError.toString()}\n\n`;
+                            let errorMsg = (t('msg.csvWriteErrorTitle') || '🚨 BŁĄD ZAPISU CSV:') + '\n\n';
+                            errorMsg += (t('msg.csvPath') || '📍 Ścieżka:') + ` ${filePath}\n`;
+                            errorMsg += (t('msg.csvErrorType') || '📛 Typ błędu:') + ` ${writeError.name || 'Unknown'}\n`;
+                            errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${writeError.message || writeError.toString()}\n\n`;
 
                             if (writeError.code) {
-                                errorMsg += `🔢 Kod: ${writeError.code}\n\n`;
+                                errorMsg += (t('msg.csvErrorCode') || '🔢 Kod:') + ` ${writeError.code}\n\n`;
                             }
 
-                            errorMsg += '🔍 Sprawdź:\n';
-                            errorMsg += '• Czy folder docelowy istnieje\n';
-                            errorMsg += '• Czy masz uprawnienia zapisu\n';
-                            errorMsg += '• Czy plik nie jest otwarty\n';
-                            errorMsg += '• Czy dysk nie jest pełny\n\n';
-                            errorMsg += '⚙️ Permissions: fs:allow-write-text-file, fs:allow-truncate\n';
-                            errorMsg += '⚙️ Scope: Desktop, Documents, Downloads';
+                            errorMsg += (t('msg.csvCheckList') || '🔍 Sprawdź:') + '\n';
+                            errorMsg += '• ' + (t('msg.csvCheckFolder') || 'Czy folder docelowy istnieje') + '\n';
+                            errorMsg += '• ' + (t('msg.csvCheckPermissions') || 'Czy masz uprawnienia zapisu') + '\n';
+                            errorMsg += '• ' + (t('msg.csvCheckFileOpen') || 'Czy plik nie jest otwarty w innym programie') + '\n';
+                            errorMsg += '• ' + (t('msg.csvCheckDiskSpace') || 'Czy dysk nie jest pełny') + '\n\n';
+                            errorMsg += (t('msg.csvPermissionsInfo') || '⚙️ Wymagane uprawnienia:') + ' fs:allow-write-text-file, fs:allow-truncate\n';
+                            errorMsg += (t('msg.csvScopeInfo') || '⚙️ Dozwolone lokalizacje:') + ' Desktop, Documents, Downloads';
 
                             alert(errorMsg);
                             showNotification(t('msg.exportError') || 'Błąd podczas zapisu pliku CSV', 3000);
@@ -5833,8 +5447,8 @@
                     if (dialogError && dialogError !== 'User cancelled' && dialogError.message !== 'User cancelled') {
                         console.error('❌ Błąd dialogu:', dialogError);
 
-                        let errorMsg = '🚨 BŁĄD DIALOGU ZAPISU:\n\n';
-                        errorMsg += `💬 ${dialogError.message || dialogError.toString()}`;
+                        let errorMsg = (t('msg.csvDialogErrorTitle') || '🚨 BŁĄD DIALOGU ZAPISU:') + '\n\n';
+                        errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${dialogError.message || dialogError.toString()}`;
                         alert(errorMsg);
 
                         // Fallback to standard method
@@ -5988,34 +5602,39 @@
          * Restores timer settings (durations, sound, auto-start preferences)
          */
         function loadPomodoroData() {
-            const stored = localStorage.getItem(POMODORO_STORAGE_KEY);
-            if (stored) {
-                const data = JSON.parse(stored);
-                const today = new Date().toDateString();
-                if (data.lastDate !== today) {
-                    pomodoroState.todayPomodoros = 0;
-                    pomodoroState.shortBreaksToday = 0;
-                    pomodoroState.longBreaksToday = 0;
-                    pomodoroState.todayHours = 0;
-                    pomodoroState.sessionCount = 0;
-                } else {
-                    pomodoroState.todayPomodoros = data.todayPomodoros || 0;
-                    pomodoroState.shortBreaksToday = data.shortBreaksToday || 0;
-                    pomodoroState.longBreaksToday = data.longBreaksToday || 0;
-                    pomodoroState.todayHours = data.todayHours || 0;
-                    pomodoroState.sessionCount = data.sessionCount || 0;
-                }
+            // Load pomodoro daily statistics using LocalStorageManager
+            const data = pomodoroDataStorage.load();
+
+            // Check if it's a new day - reset daily counters
+            const today = new Date().toDateString();
+            if (data.lastDate !== today) {
+                pomodoroState.todayPomodoros = 0;
+                pomodoroState.shortBreaksToday = 0;
+                pomodoroState.longBreaksToday = 0;
+                pomodoroState.todayHours = 0;
+                pomodoroState.sessionCount = 0;
+            } else {
+                pomodoroState.todayPomodoros = data.todayPomodoros || 0;
+                pomodoroState.shortBreaksToday = data.shortBreaksToday || 0;
+                pomodoroState.longBreaksToday = data.longBreaksToday || 0;
+                pomodoroState.todayHours = data.todayHours || 0;
+                pomodoroState.sessionCount = data.sessionCount || 0;
             }
 
-            const settings = localStorage.getItem(POMODORO_SETTINGS_KEY);
-            if (settings) {
-                pomodoroSettings = JSON.parse(settings);
-                domCache.workDuration.value = pomodoroSettings.workDuration;
-                domCache.shortBreakDuration.value = pomodoroSettings.shortBreakDuration;
-                domCache.longBreakDuration.value = pomodoroSettings.longBreakDuration;
-                domCache.soundEnabled.checked = pomodoroSettings.soundEnabled;
-                domCache.autoStartBreak.checked = pomodoroSettings.autoStartBreak;
+            // Load pomodoro settings using LocalStorageManager
+            pomodoroSettings = pomodoroSettingsStorage.load();
+
+            pomodoroSettings.workDuration = MIN_POMODORO_SESSION_MINUTES;
+            pomodoroSettings.shortBreakDuration = POMODORO_SHORT_BREAK_MINUTES;
+
+            if (typeof pomodoroSettings.longBreakDuration !== 'number' || pomodoroSettings.longBreakDuration < 1) {
+                pomodoroSettings.longBreakDuration = POMODORO_LONG_BREAK_MINUTES;
             }
+
+            domCache.longBreakDuration.value = pomodoroSettings.longBreakDuration;
+            domCache.soundEnabled.checked = pomodoroSettings.soundEnabled;
+            domCache.autoStartBreak.checked = pomodoroSettings.autoStartBreak;
+            domCache.autoStartWork.checked = pomodoroSettings.autoStartWork || false;
 
             updatePomodoroDisplay();
             updatePomodoroStats();
@@ -6036,16 +5655,35 @@
                 sessionCount: pomodoroState.sessionCount,
                 lastDate: today
             };
-            safeLocalStorageSave(POMODORO_STORAGE_KEY, data, DEBOUNCE_DELAY_LONG_MS);
+            pomodoroDataStorage.save(data, DEBOUNCE_DELAY_LONG_MS);
         }
 
         function savePomodoroSettings() {
-            pomodoroSettings.workDuration = parseInt(domCache.workDuration.value);
-            pomodoroSettings.shortBreakDuration = parseInt(domCache.shortBreakDuration.value);
-            pomodoroSettings.longBreakDuration = parseInt(domCache.longBreakDuration.value);
+            let longBreakDuration = parseInt(domCache.longBreakDuration.value);
+            const minLongBreakDuration = 1;
+            const validationMessages = [];
+
+            if (isNaN(longBreakDuration) || longBreakDuration < minLongBreakDuration) {
+                longBreakDuration = minLongBreakDuration;
+                domCache.longBreakDuration.value = minLongBreakDuration;
+                validationMessages.push(t('pomodoro.validation.longBreakDurationMin') || 'Czas długiej przerwy musi wynosić co najmniej 1 minutę.');
+            }
+
+            if (validationMessages.length > 0) {
+                showNotification(validationMessages.join(' '), 4000);
+            }
+
+            pomodoroSettings.workDuration = MIN_POMODORO_SESSION_MINUTES;
+            pomodoroSettings.shortBreakDuration = POMODORO_SHORT_BREAK_MINUTES;
+            pomodoroSettings.longBreakDuration = longBreakDuration;
             pomodoroSettings.soundEnabled = domCache.soundEnabled.checked;
             pomodoroSettings.autoStartBreak = domCache.autoStartBreak.checked;
-            safeLocalStorageSave(POMODORO_SETTINGS_KEY, pomodoroSettings);
+            pomodoroSettings.autoStartWork = domCache.autoStartWork.checked;
+            pomodoroSettingsStorage.save(pomodoroSettings);
+
+            if (!pomodoroState.isRunning) {
+                resetTimer();
+            }
         }
 
         function formatTime(seconds) {
@@ -6258,8 +5896,10 @@
                 const isFullPomodoro = elapsedSeconds >= requiredTime;
 
                 if (elapsedSeconds > 0) {
-                    recordPomodoroWork({ elapsedSecondsOverride: elapsedSeconds });
-                    pomodoroState.todayHours += elapsedSeconds / 3600;
+                    const recordedWork = recordPomodoroWork({ elapsedSecondsOverride: elapsedSeconds });
+                    if (recordedWork && typeof recordedWork.hoursAdded === 'number') {
+                        pomodoroState.todayHours += recordedWork.hoursAdded;
+                    }
                 }
 
                 if (isFullPomodoro) {
@@ -6283,12 +5923,18 @@
                     setTimeout(startTimer, 1000);
                 }
             } else {
+                // Break completed, switch to work mode
                 switchMode('work');
+                if (pomodoroSettings.autoStartWork) {
+                    setTimeout(startTimer, 1000);
+                }
             }
 
             updatePomodoroDisplay();
-            domCache.timerStart.style.display = 'inline-block';
-            domCache.timerPause.style.display = 'none';
+
+            if (!pomodoroState.isRunning) {
+                setTimerIdleState();
+            }
         }
 
         function switchMode(mode) {
@@ -6309,36 +5955,94 @@
             updatePomodoroDisplay();
         }
 
+        function setTimerRunningState() {
+            if (!domCache.timerStart || !domCache.timerPause) return;
+            domCache.timerStart.style.display = 'none';
+            domCache.timerPause.style.display = 'inline-block';
+        }
+
+        function setTimerIdleState() {
+            if (!domCache.timerStart || !domCache.timerPause) return;
+            domCache.timerStart.style.display = 'inline-block';
+            domCache.timerPause.style.display = 'none';
+        }
+
         /**
          * Start the Pomodoro timer
          * Initializes interval timer and updates UI state
+         * Validates minimum duration (1 minute) before starting NEW timers
+         * Allows resuming paused timers regardless of remaining time
          */
         function startTimer() {
             if (pomodoroState.isRunning) return;
+
+            if (pomodoroState.mode === 'work') {
+                const taskValue = domCache.timerTaskNumber.value.trim();
+                if (!taskValue) {
+                    showNotification(t('pomodoro.notif.enterTaskNumber') || '⚠️ Podaj numer lub nazwę zadania', 4000);
+                    domCache.timerTaskNumber.focus();
+                    return;
+                }
+                pomodoroState.currentTaskNumber = taskValue;
+            }
+
+            // Only validate minimum duration for NEW timers (not when resuming from pause)
+            // Resuming is detected by checking if elapsedTime > 0
+            const isResumingFromPause = pomodoroState.elapsedTime > 0;
+
+            if (!isResumingFromPause) {
+                const requiresExtendedDuration = pomodoroState.mode === 'work';
+                const minDurationSeconds = requiresExtendedDuration ? MIN_POMODORO_SESSION_SECONDS : SECONDS_PER_MINUTE;
+                const requiredMinutes = requiresExtendedDuration ? MIN_POMODORO_SESSION_MINUTES : 1;
+
+                if (pomodoroState.timeRemaining < minDurationSeconds) {
+                    const modeText = pomodoroState.mode === 'work'
+                        ? t('pomodoro.workTime')
+                        : pomodoroState.mode === 'shortBreak'
+                            ? t('pomodoro.shortBreak')
+                            : t('pomodoro.longBreak');
+
+                    const message = t('pomodoro.notif.durationTooShort', { mode: modeText, minutes: requiredMinutes })
+                        || `Czas ${modeText} musi wynosić co najmniej ${requiredMinutes} min. Sprawdź ustawienia.`;
+
+                    showNotification(message, 4000);
+
+                    // Reset to default to prevent infinite loop
+                    resetTimer();
+                    return;
+                }
+            }
 
             pomodoroState.isRunning = true;
             pomodoroState.startTime = Date.now();
 
             pomodoroTimer = setInterval(timerTick, 1000);
 
-            domCache.timerStart.style.display = 'none';
-            domCache.timerPause.style.display = 'inline-block';
+            setTimerRunningState();
             updatePomodoroDisplay();
         }
 
-        function roundWorkTime(seconds) {
-            if (seconds < SHORT_WARNING_THRESHOLD) {
+        function calculateWorkedHours(seconds) {
+            const minutes = seconds / SECONDS_PER_MINUTE;
+
+            if (minutes < MIN_POMODORO_SESSION_MINUTES) {
                 return 0;
             }
-            const hours = Math.floor(seconds / 3600);
-            const remainingSeconds = seconds % 3600;
-            if (remainingSeconds < SHORT_WARNING_THRESHOLD) {
-                return hours;
-            } else if (remainingSeconds < 2700) {
-                return hours + 0.5;
-            } else {
-                return hours + 1;
+
+            let effectiveMinutes = minutes;
+
+            const singleSessionTarget = MIN_POMODORO_SESSION_MINUTES + 5; // 25 min work counts as 30 min session
+            if (minutes >= MIN_POMODORO_SESSION_MINUTES && minutes < singleSessionTarget) {
+                effectiveMinutes = singleSessionTarget;
+            } else if (minutes >= 55 && minutes < 60) {
+                effectiveMinutes = 60;
             }
+
+            return Number((effectiveMinutes / MINUTES_PER_HOUR).toFixed(2));
+        }
+
+        function formatHoursValue(hours) {
+            return Number(hours.toFixed(2)).toString();
         }
 
         function pauseTimer() {
@@ -6348,8 +6052,7 @@
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
 
-            domCache.timerStart.style.display = 'inline-block';
-            domCache.timerPause.style.display = 'none';
+            setTimerIdleState();
             updatePomodoroDisplay();
         }
 
@@ -6368,17 +6071,13 @@
                 progressCircle.classList.remove('no-transition');
             }, 50);
 
-            domCache.timerStart.style.display = 'inline-block';
-            domCache.timerPause.style.display = 'none';
+            setTimerIdleState();
         }
 
         /**
          * Record work time from Pomodoro timer to timesheet entries
-         * Complex logic that handles:
-         * - Merging time with existing entries for the same task on the same day
-         * - Creating new entries if task doesn't exist
-         * - Rounding work time (drops <30min, rounds to 0.5h or 1h increments)
-         * - Task number persistence for continuous work
+         * Handles merging with existing entries, enforcing minimum session length,
+         * and persisting task numbers for continuous work.
          * @param {Object} options - Configuration options
          * @param {boolean} options.clearTaskNumber - Clear task number after recording (task completion)
          * @param {number|null} options.elapsedSecondsOverride - Override elapsed time (used by timerComplete)
@@ -6402,11 +6101,17 @@
                 return false;
             }
 
-            const roundedHours = roundWorkTime(elapsedSeconds);
+            const workedHours = calculateWorkedHours(elapsedSeconds);
 
-            if (roundedHours === 0) {
+            if (workedHours === 0) {
                 const messageKey = clearTaskNumber ? 'pomodoro.notif.insufficientTimeContinue' : 'pomodoro.notif.insufficientTime';
-                showNotification(t(messageKey), clearTaskNumber ? 4000 : 3000);
+                const fallback = clearTaskNumber
+                    ? `⏱️ Niewystarczający czas pracy (< ${MIN_POMODORO_SESSION_MINUTES} min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!`
+                    : `⚠️ Niewystarczający czas pracy (< ${MIN_POMODORO_SESSION_MINUTES} min). Wpis nie został dodany.`;
+                showNotification(
+                    t(messageKey, { minutes: MIN_POMODORO_SESSION_MINUTES }) || fallback,
+                    clearTaskNumber ? 4000 : 3000
+                );
                 return false;
             }
 
@@ -6421,11 +6126,11 @@
             const timeFormatted = formatSeconds(elapsedSeconds, true);
             let notificationMessage;
 
-            let actualHoursAdded = roundedHours;
+            let actualHoursAdded = workedHours;
             
             if (existingEntryIndex !== -1) {
                 const currentHours = entries[existingEntryIndex].hours;
-                const newTotalHours = currentHours + roundedHours;
+                const newTotalHours = currentHours + workedHours;
                 
                 // Validate maximum hours constraint (8 hours)
                 if (newTotalHours > EntryValidator.CONSTRAINTS.hours.max) {
@@ -6440,15 +6145,15 @@
                 }
                 
                 notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: actualHoursAdded })
+                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: formatHoursValue(actualHoursAdded) })
                     : t('pomodoro.notif.timeAddedContinue', { task: taskNumber, time: timeFormatted });
             } else {
                 // Validate new entry doesn't exceed maximum
-                const finalHours = roundedHours > EntryValidator.CONSTRAINTS.hours.max 
+                const finalHours = workedHours > EntryValidator.CONSTRAINTS.hours.max 
                     ? EntryValidator.CONSTRAINTS.hours.max 
-                    : roundedHours;
+                    : workedHours;
                 
-                if (roundedHours > EntryValidator.CONSTRAINTS.hours.max) {
+                if (workedHours > EntryValidator.CONSTRAINTS.hours.max) {
                     showNotification(t('validation.hoursMaxEight'), 3000);
                 }
                 
@@ -6465,7 +6170,7 @@
                 entries.push(newEntry);
                 entriesMap.set(newEntry.id, newEntry);
                 notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: finalHours })
+                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: formatHoursValue(finalHours) })
                     : t('pomodoro.notif.entryAddedContinue', { task: taskNumber, time: timeFormatted });
             }
 
@@ -6491,11 +6196,11 @@
             }
 
             return {
-                roundedHours: actualHoursAdded,
+                hoursAdded: actualHoursAdded,
                 elapsedSeconds,
                 taskNumber,
                 existingEntry: existingEntryIndex !== -1,
-                capped: actualHoursAdded !== roundedHours
+                capped: actualHoursAdded !== workedHours
             };
         }
 
@@ -6684,20 +6389,19 @@
         }
 
         function loadTodoTasks() {
-            const stored = localStorage.getItem(TODO_STORAGE_KEY);
-            if (stored) {
-                try {
-                    todoTasks = JSON.parse(stored);
-                } catch (e) {
-                    console.error('Error loading TODO tasks:', e);
-                    todoTasks = [];
-                }
+            try {
+                // Load TODO tasks using LocalStorageManager
+                todoTasks = todoTasksStorage.load();
+                renderTodoTasks();
+            } catch (e) {
+                console.error('Error loading TODO tasks:', e);
+                todoTasks = [];
+                renderTodoTasks();
             }
-            renderTodoTasks();
         }
 
         function saveTodoTasks() {
-            safeLocalStorageSave(TODO_STORAGE_KEY, todoTasks);
+            todoTasksStorage.save(todoTasks);
         }
 
         /**
@@ -7229,8 +6933,7 @@
 
             // Fix for Tauri: Explicitly set button visibility on initialization
             // Inline HTML style="display: none;" doesn't work reliably in WebView2
-            domCache.timerStart.style.display = 'inline-block';
-            domCache.timerPause.style.display = 'none';
+            setTimerIdleState();
 
             setTimeout(() => {
                 timerDisplay.classList.remove('no-transition');
@@ -7303,9 +7006,47 @@
                 }
             });
 
-            ['work-duration', 'short-break-duration', 'long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
+            ['long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
                 document.getElementById(id).addEventListener('change', savePomodoroSettings);
             });
+
+            // Setup custom validation messages for Pomodoro duration inputs
+            function setPomodoroValidationMessages() {
+                const validationRules = [
+                    { input: domCache.longBreakDuration, minKey: 'pomodoro.validation.longBreakDurationMin', maxKey: 'pomodoro.validation.longBreakDurationMax' }
+                ];
+
+                validationRules.forEach(({ input, minKey, maxKey }) => {
+                    if (!input) return;
+
+                    // Handle invalid event (triggered by HTML5 validation)
+                    input.addEventListener('invalid', function(e) {
+                        e.preventDefault();
+
+                        const value = parseInt(this.value);
+                        const min = parseInt(this.min);
+                        const max = parseInt(this.max);
+
+                        let message = '';
+                        if (isNaN(value) || value < min) {
+                            message = t(minKey) || 'Wartość musi być większa lub równa ' + min;
+                        } else if (value > max) {
+                            message = t(maxKey) || 'Wartość musi być mniejsza lub równa ' + max;
+                        }
+
+                        this.setCustomValidity(message);
+                        showNotification(message, 3000);
+                    });
+
+                    // Clear custom validity on input
+                    input.addEventListener('input', function() {
+                        this.setCustomValidity('');
+                    });
+                });
+            }
+
+            // Initialize validation messages
+            setPomodoroValidationMessages();
 
             // Minimized timer is updated by updatePomodoroDisplay() (called from timerTick)
         }
@@ -7401,6 +7142,8 @@
                         applySettings();
                     } else if (button.id === 'modal-ok-btn') {
                         applyAndCloseSettings();
+                    } else if (button.id === 'delete-all-btn') {
+                        deleteAllEntries();
                     } else if (button.id === 'modal-add-project-btn') {
                         addModalProject();
                     } else if (button.id === 'delete-all-projects-btn') {
@@ -7586,7 +7329,9 @@
             // Note: Settings/Info/Confirm buttons still need to be attached to trigger modal opening
             domCache.settingsBtn.addEventListener('click', openSettingsModal);
             domCache.infoBtn.addEventListener('click', openInfoModal);
-            domCache.deleteAllBtn.addEventListener('click', deleteAllEntries);
+            if (domCache.deleteAllBtn) {
+                domCache.deleteAllBtn.addEventListener('click', deleteAllEntries);
+            }
 
             // Initialize language dropdown
             initLanguageDropdown();
