@@ -244,8 +244,8 @@
         }
 
         .filters {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
             background-color: var(--bg-light);
@@ -505,7 +505,7 @@
             gap: 8px;
             padding: 8px;
             background-color: var(--bg-highlight);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             list-style: none;
             font-weight: 600;
             cursor: pointer;
@@ -543,6 +543,10 @@
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
             }
 
             .task-table {
@@ -1942,18 +1946,32 @@
         <section class="entries" id="section-entries-list">
             <h2 data-i18n="entries.title">Lista wpisów</h2>
             <div class="filters">
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-current-month" checked>
-                        <span data-i18n="entries.filterCurrentMonth">Pokaż tylko wpisy z bieżącego miesiąca</span>
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-current-week">
-                        <span data-i18n="entries.filterCurrentWeek">Pokaż tylko wpisy z bieżącego tygodnia</span>
-                    </label>
-                </div>
+                <details class="task-type-dropdown" open>
+                    <summary>
+                        <span data-i18n="entries.dateFilter">Data</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div id="date-filters-container" class="task-type-filters">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-dates" checked>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-current-month">
+                                <span data-i18n="entries.filterCurrentMonth">Obecny miesiąc</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-current-week">
+                                <span data-i18n="entries.filterCurrentWeek">Obecny tydzień</span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
                 <details class="task-type-dropdown" open>
                     <summary>
                         <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
@@ -1963,7 +1981,22 @@
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
-                                <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
+                            </label>
+                        </div>
+                        
+                    </div>
+                </details>
+                <details class="task-type-dropdown" open>
+                    <summary>
+                        <span data-i18n="entries.projectFilter">Projekt</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div id="project-filters-container" class="task-type-filters">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-projects" checked>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
                             </label>
                         </div>
                         
@@ -2570,7 +2603,7 @@
         const POMODORO_STORAGE_KEY = 'pomodoro-data';
         const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
         const POMODORO_COMPLETION_THRESHOLD = 0.9; // 90% of work duration required for full pomodoro
-        const SHORT_WARNING_THRESHOLD = 900; // 15 minutes in seconds
+        const SHORT_WARNING_THRESHOLD = 1800; // 30 minutes (0.5 hours) in seconds
         const DEBOUNCE_DELAY_MS = 300; // Default debounce delay for localStorage saves
         const DEBOUNCE_DELAY_LONG_MS = 500; // Longer debounce for pomodoro data
 
@@ -2714,6 +2747,7 @@
             domCache.client = document.getElementById('client');
             domCache.hours = document.getElementById('hours');
             domCache.taskNumber = document.getElementById('task-number');
+            domCache.filterAllDates = document.getElementById('filter-all-dates');
             domCache.filterCurrentMonth = document.getElementById('filter-current-month');
             domCache.filterCurrentWeek = document.getElementById('filter-current-week');
             domCache.entriesBody = document.getElementById('entries-body');
@@ -2771,6 +2805,8 @@
 
             domCache.filterAllTasks = document.getElementById('filter-all-tasks');
             domCache.taskTypeFiltersContainer = document.getElementById('task-type-filters-container');
+            domCache.filterAllProjects = document.getElementById('filter-all-projects');
+            domCache.projectFiltersContainer = document.getElementById('project-filters-container');
             domCache.monthEndWarning = document.getElementById('month-end-warning');
 
             domCache.languageBtn = document.getElementById('language-btn');
@@ -2825,10 +2861,13 @@
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
                 'entries.title': 'Lista wpisów',
-                'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
-                'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
+                'entries.dateFilter': 'Data',
+                'entries.filterCurrentMonth': 'Obecny miesiąc',
+                'entries.filterCurrentWeek': 'Obecny tydzień',
                 'entries.taskTypeFilter': 'Rodzaj zadania',
-                'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
+                'entries.projectFilter': 'Projekt',
+                'entries.filterAll': 'Wszystko',
+                'entries.selectDeselectAll': 'Wszystko',
                 'entries.showAll': 'Pokaż wszystkie wpisy',
                 'entries.showLimited': 'Pokaż tylko {limit} wpisów',
                 'entries.showAllCount': 'Pokaż wszystkie wpisy ({count})',
@@ -2886,8 +2925,8 @@
                 'pomodoro.notif.enterTaskNumber': '⚠️ Podaj numer lub nazwę zadania',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Podaj numer lub nazwę zadania aby zapisać czas pracy',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer nie został jeszcze uruchomiony',
-                'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 15 min). Wpis nie został dodany.',
-                'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 15 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
+                'pomodoro.notif.insufficientTime': '⚠️ Niewystarczający czas pracy (< 30 min). Wpis nie został dodany.',
+                'pomodoro.notif.insufficientTimeContinue': '⏱️ Niewystarczający czas pracy (< 30 min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!',
                 'pomodoro.notif.timeAdded': '✅ Czas dodany: {task} (+{hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
                 'pomodoro.notif.timeAddedContinue': '✅ Czas dodany: {task} (+{time}). Możesz kontynuować pracę!',
                 'pomodoro.notif.entryAdded': '✅ Wpis dodany: {task} ({hours}h). Pomidor anulowany zgodnie z filozofią Pomodoro.',
@@ -3026,10 +3065,13 @@
                 'form.clearButton': 'Clear',
 
                 'entries.title': 'Entries list',
-                'entries.filterCurrentMonth': 'Show only entries from current month',
-                'entries.filterCurrentWeek': 'Show only entries from current week',
+                'entries.dateFilter': 'Date',
+                'entries.filterCurrentMonth': 'Current month',
+                'entries.filterCurrentWeek': 'Current week',
                 'entries.taskTypeFilter': 'Task type',
-                'entries.selectDeselectAll': 'Select/Deselect all',
+                'entries.projectFilter': 'Project',
+                'entries.filterAll': 'All',
+                'entries.selectDeselectAll': 'All',
                 'entries.showAll': 'Show all entries',
                 'entries.showLimited': 'Show only {limit} entries',
                 'entries.showAllCount': 'Show all entries ({count})',
@@ -3092,8 +3134,8 @@
                 'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
-                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 15 min). Entry not added.',
-                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 15 min). Timer still running - continue working or enter new task!',
+                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 30 min). Entry not added.',
+                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 30 min). Timer still running - continue working or enter new task!',
                 'pomodoro.notif.timeAdded': '✅ Time added: {task} (+{hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
                 'pomodoro.notif.timeAddedContinue': '✅ Time added: {task} (+{time}). You can continue working!',
                 'pomodoro.notif.entryAdded': '✅ Entry added: {task} ({hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
@@ -4016,6 +4058,7 @@
             save: saveProjects,
             update: updateProjectSelect,
             render: renderModalProjects,
+            extraRender: renderProjectFilters,
             onChange: markAsChanged
         });
 
@@ -4095,8 +4138,8 @@
             allCheckbox.checked = filterAllChecked;
 
             const allStrong = document.createElement('strong');
-            allStrong.setAttribute('data-i18n', 'entries.selectDeselectAll');
-            allStrong.textContent = 'Zaznacz/Odznacz wszystkie';
+            allStrong.setAttribute('data-i18n', 'entries.filterAll');
+            allStrong.textContent = 'Wszystko';
 
             allLabel.appendChild(allCheckbox);
             allLabel.appendChild(allStrong);
@@ -4186,6 +4229,153 @@
             domCache.taskTypeFiltersContainer.addEventListener('change', taskTypeFilterHandler);
         }
 
+        function renderProjectFilters() {
+            const filterAllChecked = domCache.filterAllProjects ? domCache.filterAllProjects.checked : true;
+
+            const filterStates = {};
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+                filterStates[project] = filterElement ? filterElement.checked : true;
+            });
+
+            domCache.projectFiltersContainer.innerHTML = '';
+
+            // Create "Select all" filter
+            const allFilterDiv = document.createElement('div');
+            allFilterDiv.className = 'filter-option';
+
+            const allLabel = document.createElement('label');
+
+            const allCheckbox = document.createElement('input');
+            allCheckbox.type = 'checkbox';
+            allCheckbox.id = 'filter-all-projects';
+            allCheckbox.checked = filterAllChecked;
+
+            const allStrong = document.createElement('strong');
+            allStrong.setAttribute('data-i18n', 'entries.filterAll');
+            allStrong.textContent = 'Wszystko';
+
+            allLabel.appendChild(allCheckbox);
+            allLabel.appendChild(allStrong);
+            allFilterDiv.appendChild(allLabel);
+            domCache.projectFiltersContainer.appendChild(allFilterDiv);
+
+            // Create filter for each project
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const isChecked = filterStates[project] ?? true;
+
+                const filterDiv = document.createElement('div');
+                filterDiv.className = 'filter-option';
+
+                const label = document.createElement('label');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = filterId;
+                checkbox.setAttribute('data-project', project);
+                checkbox.checked = isChecked;
+
+                const projectText = document.createTextNode(' ');
+                const projectSpan = document.createTextNode(project);
+
+                label.appendChild(checkbox);
+                label.appendChild(projectText);
+                label.appendChild(projectSpan);
+                filterDiv.appendChild(label);
+                domCache.projectFiltersContainer.appendChild(filterDiv);
+            });
+
+            domCache.filterAllProjects = document.getElementById('filter-all-projects');
+
+            initProjectFilterListeners();
+        }
+
+        let projectFilterHandler = null;
+
+        function initProjectFilterListeners() {
+            // Remove old event delegation handler if exists
+            if (projectFilterHandler) {
+                domCache.projectFiltersContainer.removeEventListener('change', projectFilterHandler);
+            }
+
+            projectFilterHandler = function(event) {
+                const target = event.target;
+                if (target.type !== 'checkbox') return;
+
+                if (target.id === 'filter-all-projects') {
+                    const isChecked = target.checked;
+                    projects.forEach(project => {
+                        const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                        const filterElement = document.getElementById(filterId);
+                        if (filterElement) {
+                            filterElement.checked = isChecked;
+                        }
+                    });
+                    renderEntries();
+                    return;
+                }
+
+                if (target.dataset.project) {
+                    const allChecked = projects.every(p => {
+                        const fid = `filter-project-${p.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? el.checked : true;
+                    });
+                    const noneChecked = projects.every(p => {
+                        const fid = `filter-project-${p.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? !el.checked : false;
+                    });
+
+                    if (domCache.filterAllProjects) {
+                        if (allChecked) {
+                            domCache.filterAllProjects.checked = true;
+                        } else if (noneChecked) {
+                            domCache.filterAllProjects.checked = false;
+                        }
+                    }
+
+                    renderEntries();
+                }
+            };
+
+            domCache.projectFiltersContainer.addEventListener('change', projectFilterHandler);
+        }
+
+        function filterEntriesByProject(entries) {
+            // Cache all filter states before filtering to avoid O(n) DOM queries
+            const filterStates = {};
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+                filterStates[project] = filterElement ? filterElement.checked : true;
+            });
+
+            // Generate cache key from inputs
+            const filterStatesKey = JSON.stringify(filterStates);
+            const cacheKey = `${entries.length}-${filterStatesKey}`;
+
+            // Return cached result if inputs haven't changed
+            if (filterCache.projectKey === cacheKey && filterCache.projectResult) {
+                return filterCache.projectResult;
+            }
+
+            // Perform filtering
+            const result = entries.filter(entry => {
+                const entryProject = entry.client || '';
+                return filterStates[entryProject] !== undefined
+                    ? filterStates[entryProject]
+                    : true;
+            });
+
+            // Cache the result
+            filterCache.projectKey = cacheKey;
+            filterCache.projectResult = result;
+            return result;
+        }
+
         const taskTypeManager = createItemManager({
             items: taskTypes,
             editingIndex: editingTaskTypeIndex,
@@ -4231,6 +4421,7 @@
                 saveProjects();
                 updateProjectSelect();
                 renderModalProjects();
+                renderProjectFilters();
                 markAsChanged();
                 showNotification(t('msg.allEntriesDeleted'), 3000);
             });
@@ -4249,6 +4440,7 @@
                 updateTaskTypeSelect();
                 renderTaskTypes();
                 renderTaskTypeFilters();
+                renderProjectFilters();
                 markAsChanged();
                 showNotification(t('msg.allEntriesDeleted'), 3000);
             });
@@ -4290,6 +4482,7 @@
             domCache.settingsModal.style.display = 'block';
             switchTab('projects-tab');
             renderModalProjects();
+            renderProjectFilters();
             renderTaskTypes();
             modalOriginalProjects = projects.slice();
             modalOriginalTaskTypes = taskTypes.slice();
@@ -4320,6 +4513,7 @@
                 saveProjects();
                 updateProjectSelect();
                 renderModalProjects();
+                renderProjectFilters();
 
                 saveTaskTypes();
                 updateTaskTypeSelect();
@@ -4486,19 +4680,29 @@
             dateKey: null,
             dateResult: null,
             taskTypeKey: null,
-            taskTypeResult: null
+            taskTypeResult: null,
+            projectKey: null,
+            projectResult: null
         };
 
         function filterEntriesByDate(entries, currentDate) {
+            const filterAllDates = domCache.filterAllDates.checked;
             const filterCurrentMonth = domCache.filterCurrentMonth.checked;
             const filterCurrentWeek = domCache.filterCurrentWeek.checked;
 
             // Generate cache key from inputs
-            const cacheKey = `${entries.length}-${filterCurrentMonth}-${filterCurrentWeek}-${currentDate.toDateString()}`;
+            const cacheKey = `${entries.length}-${filterAllDates}-${filterCurrentMonth}-${filterCurrentWeek}-${currentDate.toDateString()}`;
 
             // Return cached result if inputs haven't changed
             if (filterCache.dateKey === cacheKey && filterCache.dateResult) {
                 return filterCache.dateResult;
+            }
+
+            // If "Wszystko" is checked, show all entries
+            if (filterAllDates) {
+                filterCache.dateKey = cacheKey;
+                filterCache.dateResult = entries;
+                return entries;
             }
 
             // If both filters are unchecked, show no entries
@@ -4560,7 +4764,9 @@
                 dateKey: null,
                 dateResult: null,
                 taskTypeKey: null,
-                taskTypeResult: null
+                taskTypeResult: null,
+                projectKey: null,
+                projectResult: null
             };
         }
 
@@ -4634,6 +4840,7 @@
                 const currentDate = new Date();
                 let filteredEntries = filterEntriesByDate(entries, currentDate);
                 filteredEntries = filterEntriesByTaskType(filteredEntries);
+                filteredEntries = filterEntriesByProject(filteredEntries);
                 filteredEntries.sort((a, b) => b.date - a.date);
                 const totalEntries = filteredEntries.length;
                 const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
@@ -4735,12 +4942,12 @@
         async function exportData() {
             const currentDate = new Date();
             const currentMonthEntries = entries.filter(entry => isSameMonth(entry.date, currentDate));
-
+            
             if (currentMonthEntries.length === 0) {
                 showNotification(t('msg.noDataToExport'), 3000);
                 return;
             }
-
+            
             const month = currentDate.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
             const filename = `ewidencja_godzin_${month.replace(/\s+/g, '_')}.csv`;
             
@@ -4804,11 +5011,11 @@
                 }
             } else {
                 // Fallback to browser blob download for HTML version
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.setAttribute('download', filename);
-                link.click();
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', filename);
+            link.click();
             }
         }
 
@@ -5325,7 +5532,7 @@
          * Complex logic that handles:
          * - Merging time with existing entries for the same task on the same day
          * - Creating new entries if task doesn't exist
-         * - Rounding work time (drops <5min, rounds to 0.5h or 1h increments)
+         * - Rounding work time (drops <30min, rounds to 0.5h or 1h increments)
          * - Task number persistence for continuous work
          * @param {Object} options - Configuration options
          * @param {boolean} options.clearTaskNumber - Clear task number after recording (task completion)
@@ -5366,9 +5573,30 @@
         // Helper: Update existing or create new entry
         function updateOrCreateEntry(taskNumber, roundedHours, existingEntryIndex) {
             if (existingEntryIndex !== -1) {
-                entries[existingEntryIndex].hours += roundedHours;
+                const currentHours = entries[existingEntryIndex].hours;
+                const newTotalHours = currentHours + roundedHours;
+                let actualHoursAdded = roundedHours;
+                
+                // Validate maximum hours constraint (8 hours)
+                if (newTotalHours > EntryValidator.CONSTRAINTS.hours.max) {
+                    // Cap at maximum and show warning
+                    entries[existingEntryIndex].hours = EntryValidator.CONSTRAINTS.hours.max;
+                    actualHoursAdded = EntryValidator.CONSTRAINTS.hours.max - currentHours;
                 entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
-                return { isNew: false, entry: entries[existingEntryIndex] };
+                    showNotification(t('validation.hoursMaxEight'), 3000);
+                    return { isNew: false, entry: entries[existingEntryIndex], capped: true, actualHoursAdded };
+                }
+                
+                entries[existingEntryIndex].hours = newTotalHours;
+                entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
+                return { isNew: false, entry: entries[existingEntryIndex], capped: false, actualHoursAdded };
+            }
+
+            // Validate new entry doesn't exceed maximum
+            const originalRoundedHours = roundedHours;
+            if (roundedHours > EntryValidator.CONSTRAINTS.hours.max) {
+                roundedHours = EntryValidator.CONSTRAINTS.hours.max;
+                showNotification(t('validation.hoursMaxEight'), 3000);
             }
 
             const newEntry = {
@@ -5381,7 +5609,7 @@
             };
             entries.push(newEntry);
             entriesMap.set(newEntry.id, newEntry);
-            return { isNew: true, entry: newEntry };
+            return { isNew: true, entry: newEntry, capped: roundedHours !== originalRoundedHours, actualHoursAdded: roundedHours };
         }
 
         // Helper: Get notification message based on operation type
@@ -5427,7 +5655,7 @@
 
             // Find and update/create entry
             const existingEntryIndex = findTodayEntry(taskNumber, todayISO);
-            const { isNew } = updateOrCreateEntry(taskNumber, roundedHours, existingEntryIndex);
+            const { isNew, entry, capped, actualHoursAdded } = updateOrCreateEntry(taskNumber, roundedHours, existingEntryIndex);
 
             // Persist changes
             saveEntries();
@@ -5440,11 +5668,12 @@
             // Show notification
             if (!suppressNotification) {
                 const timeFormatted = formatSeconds(elapsedSeconds, true);
-                const message = getPomodoroNotification(isNew, clearTaskNumber, taskNumber, roundedHours, timeFormatted);
+                // Use actual hours added (may be capped if exceeded maximum)
+                const message = getPomodoroNotification(isNew, clearTaskNumber, taskNumber, actualHoursAdded, timeFormatted);
                 showNotification(message, 3000);
             }
 
-            return { roundedHours, elapsedSeconds, taskNumber, existingEntry: !isNew };
+            return { roundedHours: actualHoursAdded, elapsedSeconds, taskNumber, existingEntry: !isNew, capped: capped || false };
         }
 
         function startNewTask() {
@@ -6169,9 +6398,7 @@
                     }
                 },
                 function() {
-                    todoTasks = todoTasks.filter(t => t.id !== id);
-                    saveTodoTasks();
-                    renderTodoTasks();
+                    // Cancel: do nothing, task remains in To-Do list
                 }
             );
         }
@@ -6586,8 +6813,17 @@
         }
 
         function setupFilterHandlers() {
+            document.getElementById('filter-all-dates').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('filter-current-month').checked = false;
+                    document.getElementById('filter-current-week').checked = false;
+                }
+                renderEntries();
+            });
+
             document.getElementById('filter-current-month').addEventListener('change', function() {
                 if (this.checked) {
+                    document.getElementById('filter-all-dates').checked = false;
                     document.getElementById('filter-current-week').checked = false;
                 }
                 renderEntries();
@@ -6595,6 +6831,7 @@
 
             document.getElementById('filter-current-week').addEventListener('change', function() {
                 if (this.checked) {
+                    document.getElementById('filter-all-dates').checked = false;
                     document.getElementById('filter-current-month').checked = false;
                 }
                 renderEntries();
@@ -6761,6 +6998,7 @@
             loadTaskTypes();
             updateTaskTypeSelect();
             renderTaskTypeFilters();
+            renderProjectFilters();
             initSectionToggles();
             initPomodoroTimer();
 

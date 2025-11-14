@@ -16,3 +16,8 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Backup files
+src/index.html.backup_*
+src/index.html.before_*
+src/index.html.with_*

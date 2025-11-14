@@ -66,11 +66,12 @@ def main():
             print(f"Starting server {i+1}/{len(servers)}: {server['cmd']}")
 
             # Use shell=True to support commands with cd and &&
+            # Redirect stdout/stderr to parent process to avoid pipe buffer deadlocks
             process = subprocess.Popen(
                 server['cmd'],
                 shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stdout=sys.stdout,
+                stderr=sys.stderr
             )
             server_processes.append(process)
 
