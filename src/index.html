@@ -242,8 +242,8 @@
         }
 
         .filters {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
             background-color: var(--bg-light);
@@ -503,7 +503,7 @@
             gap: 8px;
             padding: 8px;
             background-color: var(--bg-highlight);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             list-style: none;
             font-weight: 600;
             cursor: pointer;
@@ -541,6 +541,10 @@
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
             }
 
             .task-table {
@@ -2013,18 +2017,32 @@
         <section class="entries" id="section-entries-list">
             <h2 data-i18n="entries.title">Lista wpisów</h2>
             <div class="filters">
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-current-month" checked>
-                        <span data-i18n="entries.filterCurrentMonth">Pokaż tylko wpisy z bieżącego miesiąca</span>
-                    </label>
-                </div>
-                <div class="filter-option">
-                    <label>
-                        <input type="checkbox" id="filter-current-week">
-                        <span data-i18n="entries.filterCurrentWeek">Pokaż tylko wpisy z bieżącego tygodnia</span>
-                    </label>
-                </div>
+                <details class="task-type-dropdown" open>
+                    <summary>
+                        <span data-i18n="entries.dateFilter">Data</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div id="date-filters-container" class="task-type-filters">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-dates" checked>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-current-month">
+                                <span data-i18n="entries.filterCurrentMonth">Obecny miesiąc</span>
+                            </label>
+                        </div>
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-current-week">
+                                <span data-i18n="entries.filterCurrentWeek">Obecny tydzień</span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
                 <details class="task-type-dropdown" open>
                     <summary>
                         <span data-i18n="entries.taskTypeFilter">Rodzaj zadania</span>
@@ -2034,7 +2052,22 @@
                         <div class="filter-option">
                             <label>
                                 <input type="checkbox" id="filter-all-tasks" checked>
-                                <strong data-i18n="entries.selectDeselectAll">Zaznacz/Odznacz wszystkie</strong>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
+                            </label>
+                        </div>
+                        
+                    </div>
+                </details>
+                <details class="task-type-dropdown" open>
+                    <summary>
+                        <span data-i18n="entries.projectFilter">Projekt</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div id="project-filters-container" class="task-type-filters">
+                        <div class="filter-option">
+                            <label>
+                                <input type="checkbox" id="filter-all-projects" checked>
+                                <strong data-i18n="entries.filterAll">Wszystko</strong>
                             </label>
                         </div>
                         
@@ -2609,95 +2642,135 @@
         }
 
         // ============================================================================
-        // Application State Variables
+        // LocalStorageManager - Phase 2.1: Generic storage abstraction
         // ============================================================================
 
-        let entries = [];
-        const entriesMap = new Map();
-        const STORAGE_KEY = 'timesheet-entries';
+        /**
+         * Generic localStorage manager with validation and error handling
+         * Replaces 16 load/save function pairs with unified interface
+         */
+        class LocalStorageManager {
+            /**
+             * @param {string} key - localStorage key
+             * @param {*} defaultValue - Default value if key doesn't exist
+             * @param {Object} validator - Optional validator class (e.g., EntryValidator)
+             */
+            constructor(key, defaultValue, validator = null) {
+                this.key = key;
+                this.defaultValue = defaultValue;
+                this.validator = validator;
+            }
 
-        function rebuildEntriesMap() {
-            entriesMap.clear();
-            entries.forEach(entry => {
-                entriesMap.set(entry.id, entry);
-            });
+            /**
+             * Load data from localStorage
+             * @returns {*} Parsed data or default value
+             */
+            load() {
+                const stored = localStorage.getItem(this.key);
+                if (!stored) return this.defaultValue;
+
+                try {
+                    const data = JSON.parse(stored);
+
+                    // Apply validator if provided
+                    if (this.validator) {
+                        // For arrays, validate each item
+                        if (Array.isArray(data)) {
+                            return data
+                                .map(item => this.validator.sanitize ? this.validator.sanitize(item) : item)
+                                .filter(item => this.validator.isValid ? this.validator.isValid(item) : true);
+                        }
+                        // For objects, sanitize directly
+                        if (this.validator.sanitize) {
+                            return this.validator.sanitize(data);
+                        }
+                    }
+
+                    return data;
+                } catch (e) {
+                    console.error(`⚠️ Error loading ${this.key}:`, e);
+                    return this.defaultValue;
+                }
+            }
+
+            /**
+             * Save data to localStorage with debouncing
+             * @param {*} data - Data to save
+             * @param {number} debounceMs - Debounce delay (default: 300ms)
+             */
+            save(data, debounceMs = 300) {
+                safeLocalStorageSave(this.key, data, debounceMs);
+            }
+
+            /**
+             * Clear data from localStorage
+             */
+            clear() {
+                try {
+                    localStorage.removeItem(this.key);
+                } catch (e) {
+                    console.error(`⚠️ Error clearing ${this.key}:`, e);
+                }
+            }
         }
-        let showAllEntries = false;
-        const ENTRIES_LIMIT = 20;
-        let projects = [];
+
+        // ============================================================================
+        // Application Constants - Phase 1.3: Named constants for magic numbers
+        // ============================================================================
+
+        // Time Constants
+        const SECONDS_PER_MINUTE = 60;
+        const MINUTES_PER_HOUR = 60;
+
+        // Pomodoro Duration Constants
+        const POMODORO_WORK_DURATION_MINUTES = 30;
+        const POMODORO_SHORT_BREAK_MINUTES = 5;
+        const POMODORO_LONG_BREAK_MINUTES = 15;
+
+        // Convert to seconds for internal state management
+        const POMODORO_WORK_DURATION_SECONDS = POMODORO_WORK_DURATION_MINUTES * SECONDS_PER_MINUTE;
+        const POMODORO_SHORT_BREAK_SECONDS = POMODORO_SHORT_BREAK_MINUTES * SECONDS_PER_MINUTE;
+        const POMODORO_LONG_BREAK_SECONDS = POMODORO_LONG_BREAK_MINUTES * SECONDS_PER_MINUTE;
+
+        // 90% of work duration must be completed to count as full pomodoro
+        const POMODORO_COMPLETION_THRESHOLD = 0.9;
+        const POMODORO_COMPLETION_PERCENTAGE = 90;
+
+        // Show warning when less than 30 minutes remain (0.5 hours)
+        const SHORT_WARNING_THRESHOLD_MINUTES = 30;
+        const SHORT_WARNING_THRESHOLD_SECONDS = SHORT_WARNING_THRESHOLD_MINUTES * SECONDS_PER_MINUTE;
+
+        // localStorage Keys
+        const STORAGE_KEY = 'timesheet-entries';
         const PROJECTS_STORAGE_KEY = 'timesheet-projects';
-        let editingProjectIndex = -1;
-        const SECTION_VISIBILITY_KEY = 'section-visibility';
-        let taskTypes = [];
         const TASK_TYPES_STORAGE_KEY = 'timesheet-task-types';
-        let editingTaskTypeIndex = -1;
-        let hasUnsavedChanges = false;
-        let modalOriginalProjects = [];
-        let modalOriginalTaskTypes = [];
+        const SECTION_VISIBILITY_KEY = 'section-visibility';
+        const POMODORO_STORAGE_KEY = 'pomodoro-data';
+        const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
+        const TODO_STORAGE_KEY = 'todo-tasks';
+        const WIDGET_LAYOUT_STATE_KEY = 'widget-layout-state';
+
+        // Debounce Delays
+        const DEBOUNCE_DELAY_MS = 300;
+        const DEBOUNCE_DELAY_LONG_MS = 500;
+
+        // Validation Limits
+        const MAX_TASK_NUMBER_LENGTH = 100;
+        const MAX_PROJECT_NAME_LENGTH = 100;
+        const MAX_TASK_TYPE_LENGTH = 50;
+        const MAX_FUTURE_DAYS = 365;
+        const MIN_HOURS = 0.5;
+        const MAX_HOURS = 8;
+
+        // UI Constants
+        const ENTRIES_LIMIT = 20;
+
+        // Data Structures (const objects/arrays)
+        const entriesMap = new Map();
         const confirmDialogState = {
             onConfirm: null,
             onCancel: null
         };
-
-        const POMODORO_STORAGE_KEY = 'pomodoro-data';
-        const POMODORO_SETTINGS_KEY = 'pomodoro-settings';
-        const POMODORO_COMPLETION_THRESHOLD = 0.9; // 90% of work duration required for full pomodoro
-        const SHORT_WARNING_THRESHOLD = 900; // 15 minutes in seconds
-        const DEBOUNCE_DELAY_MS = 300; // Default debounce delay for localStorage saves
-        const DEBOUNCE_DELAY_LONG_MS = 500; // Longer debounce for pomodoro data
-
-        const MAX_TASK_NUMBER_LENGTH = 100;
-        const MAX_PROJECT_NAME_LENGTH = 100;
-        const MAX_TASK_TYPE_LENGTH = 50;
-        const MAX_FUTURE_DAYS = 365; // Maximum days in the future for date entries
-        let pomodoroTimer = null;
-        let pomodoroState = {
-            mode: 'work', // 'work', 'shortBreak', 'longBreak'
-            timeRemaining: 30 * 60, // w sekundach
-            isRunning: false,
-            currentTaskNumber: '',
-            sessionCount: 0,
-            todayPomodoros: 0,
-            shortBreaksToday: 0,
-            longBreaksToday: 0,
-            todayHours: 0,
-            startTime: null,
-            elapsedTime: 0
-        };
-        let pomodoroSettings = {
-            workDuration: 30,
-            shortBreakDuration: 5,
-            longBreakDuration: 15,
-            soundEnabled: true,
-            autoStartBreak: true
-        };
-
-        let isDragging = false;
-        let isDraggingMinimized = false;
-        let minimizedDragMoved = false;
-        let isResizing = false;
-        let resizeDirection = null;
-        let startX = 0;
-        let startY = 0;
-        let startLeft = 0;
-        let startTop = 0;
-        let startWidth = 0;
-        let startHeight = 0;
-
-        const TODO_STORAGE_KEY = 'todo-tasks';
-        const WIDGET_LAYOUT_STATE_KEY = 'widget-layout-state';
-        let todoTasks = []; // { id, description, priority, dueDate, createdAt, order }
-        let isDraggingTodo = false;
-        let isDraggingTodoMinimized = false;
-        let todoMinimizedDragMoved = false;
-        let isResizingTodo = false;
-        let resizeDirectionTodo = null;
-        let draggedTodoElement = null;
-        let draggedTodoId = null;
-        let draggedTodoSourceListType = null;
-        let todoGlobalDragOverAttached = false;
-        let todoGlobalDragEnterAttached = false;
-        let pendingTodoForEntry = null; // Stores todo waiting for timesheet entry
 
         const getDefaultWidgetLayoutState = () => ({
             pomodoro: {
@@ -2723,35 +2796,607 @@
                 isMinimized: true
             }
         });
+
+        // ============================================================================
+        // Application State Variables - Phase 1.2: Grouped const then let
+        // ============================================================================
+
+        // Mutable state variables (let)
+        let entries = [];
+        let showAllEntries = false;
+        let projects = [];
+        let editingProjectIndex = -1;
+        let taskTypes = [];
+        let editingTaskTypeIndex = -1;
+        let hasUnsavedChanges = false;
+        let modalOriginalProjects = [];
+        let modalOriginalTaskTypes = [];
+
+        // Pomodoro state
+        let pomodoroTimer = null;
+        let pomodoroState = {
+            mode: 'work',
+            timeRemaining: POMODORO_WORK_DURATION_SECONDS,
+            isRunning: false,
+            currentTaskNumber: '',
+            sessionCount: 0,
+            todayPomodoros: 0,
+            shortBreaksToday: 0,
+            longBreaksToday: 0,
+            todayHours: 0,
+            startTime: null,
+            elapsedTime: 0
+        };
+        let pomodoroSettings = {
+            workDuration: POMODORO_WORK_DURATION_MINUTES,
+            shortBreakDuration: POMODORO_SHORT_BREAK_MINUTES,
+            longBreakDuration: POMODORO_LONG_BREAK_MINUTES,
+            soundEnabled: true,
+            autoStartBreak: true
+        };
+
+        // Widget layout state
         let widgetLayoutState = getDefaultWidgetLayoutState();
 
+        // TODO widget state (task drag-and-drop for reordering)
+        let todoTasks = [];
+        let draggedTodoElement = null;
+        let draggedTodoId = null;
+        let draggedTodoSourceListType = null;
+        let todoGlobalDragOverAttached = false;
+        let todoGlobalDragEnterAttached = false;
+        let pendingTodoForEntry = null;
+
+        function rebuildEntriesMap() {
+            entriesMap.clear();
+            entries.forEach(entry => {
+                entriesMap.set(entry.id, entry);
+            });
+        }
+
+        // ============================================================================
+        // Storage Managers - Phase 2.1: Replace load/save function pairs
+        // ============================================================================
+
+        const entriesStorage = new LocalStorageManager(STORAGE_KEY, [], EntryValidator);
+        const projectsStorage = new LocalStorageManager(PROJECTS_STORAGE_KEY, []);
+        const taskTypesStorage = new LocalStorageManager(TASK_TYPES_STORAGE_KEY, []);
+        const sectionVisibilityStorage = new LocalStorageManager(SECTION_VISIBILITY_KEY, {
+            'section-entry-form': true,
+            'section-entries-list': true,
+            'section-summary': true
+        });
+        const pomodoroDataStorage = new LocalStorageManager(POMODORO_STORAGE_KEY, {
+            mode: 'work',
+            timeRemaining: POMODORO_WORK_DURATION_SECONDS,
+            isRunning: false,
+            currentTaskNumber: '',
+            sessionCount: 0,
+            todayPomodoros: 0,
+            shortBreaksToday: 0,
+            longBreaksToday: 0,
+            todayHours: 0,
+            startTime: null,
+            elapsedTime: 0
+        });
+        const pomodoroSettingsStorage = new LocalStorageManager(POMODORO_SETTINGS_KEY, {
+            workDuration: POMODORO_WORK_DURATION_MINUTES,
+            shortBreakDuration: POMODORO_SHORT_BREAK_MINUTES,
+            longBreakDuration: POMODORO_LONG_BREAK_MINUTES,
+            soundEnabled: true,
+            autoStartBreak: true
+        });
+        const todoTasksStorage = new LocalStorageManager(TODO_STORAGE_KEY, []);
+        const widgetLayoutStorage = new LocalStorageManager(WIDGET_LAYOUT_STATE_KEY, getDefaultWidgetLayoutState());
+
+        // ============================================================================
+        // Widget Registry Pattern - Phase 2.3
+        // ============================================================================
+
+        /**
+         * Widget Registry - Centralized widget configuration
+         * Eliminates type switching and enables easy widget extension
+         */
+        const WIDGET_REGISTRY = {
+            pomodoro: {
+                widgetId: 'pomodoro-widget',
+                minimizedId: 'pomodoro-minimized',
+                storageKey: POMODORO_STORAGE_KEY,
+                settingsKey: POMODORO_SETTINGS_KEY,
+                type: 'pomodoro'
+            },
+            todo: {
+                widgetId: 'todo-widget',
+                minimizedId: 'todo-minimized',
+                storageKey: TODO_STORAGE_KEY,
+                type: 'todo'
+            }
+        };
+
+        // ============================================================================
+        // DraggableWidget Base Class - Phase 2.2
+        // ============================================================================
+
+        /**
+         * DraggableWidget - Unified class for widget drag/resize functionality
+         * Eliminates duplicated drag/resize logic between Pomodoro and TODO widgets
+         * Handles mouse and touch events for dragging, resizing, and minimizing
+         *
+         * @param {Object} config - Configuration object
+         * @param {string} config.type - Widget type ('pomodoro' or 'todo')
+         * @param {string} config.widgetId - Main widget element ID
+         * @param {string} config.headerId - Header element ID for dragging
+         * @param {string} config.minimizedId - Minimized button element ID
+         * @param {string} config.minimizeButtonClass - Class name for minimize button
+         * @param {number} config.minWidth - Minimum widget width (default: 280)
+         * @param {number} config.maxWidth - Maximum widget width (default: 640)
+         * @param {number} config.minHeight - Minimum widget height (default: 400)
+         */
+        class DraggableWidget {
+            constructor(config) {
+                this.config = Object.assign({
+                    minWidth: 280,
+                    maxWidth: 640,
+                    minHeight: 400
+                }, config);
+
+                this.widget = null;
+                this.header = null;
+                this.minimized = null;
+                this.resizeHandles = [];
+
+                // Unified drag/resize state
+                this.state = {
+                    isDragging: false,
+                    isDraggingMinimized: false,
+                    minimizedDragMoved: false,
+                    isResizing: false,
+                    resizeDirection: null,
+                    startX: 0,
+                    startY: 0,
+                    startLeft: 0,
+                    startTop: 0,
+                    startWidth: 0,
+                    startHeight: 0
+                };
+
+                // Bound event handlers for proper cleanup
+                this.boundHandlers = {
+                    mousemove: null,
+                    mouseup: null,
+                    touchmove: null,
+                    touchend: null
+                };
+            }
+
+            /**
+             * Initialize widget with drag/resize capabilities
+             * Sets up all event listeners for mouse and touch interactions
+             * @returns {boolean} Success status
+             */
+            init() {
+                this.widget = document.getElementById(this.config.widgetId);
+                this.header = document.getElementById(this.config.headerId);
+                this.minimized = document.getElementById(this.config.minimizedId);
+
+                if (!this.widget || !this.header || !this.minimized) {
+                    console.warn(`Widget elements not found for ${this.config.type}`);
+                    return false;
+                }
+
+                this.resizeHandles = Array.from(this.widget.querySelectorAll('.resize-handle'));
+
+                // Set up event listeners
+                this.setupHeaderDrag();
+                this.setupResizeHandles();
+                this.setupMinimizedDrag();
+                this.setupDocumentHandlers();
+
+                return true;
+            }
+
+            /**
+             * Set up header drag functionality (mouse and touch)
+             */
+            setupHeaderDrag() {
+                // Mouse drag
+                this.header.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains(this.config.minimizeButtonClass)) {
+                        return;
+                    }
+                    this.handleHeaderMouseDown(e);
+                });
+
+                // Touch drag
+                this.header.addEventListener('touchstart', (e) => {
+                    if (e.target.classList.contains(this.config.minimizeButtonClass)) {
+                        return;
+                    }
+                    this.handleHeaderTouchStart(e);
+                });
+            }
+
+            /**
+             * Set up resize handle functionality
+             */
+            setupResizeHandles() {
+                this.resizeHandles.forEach(handle => {
+                    handle.addEventListener('mousedown', (e) => {
+                        this.handleResizeMouseDown(e, handle);
+                    });
+                });
+            }
+
+            /**
+             * Set up minimized button drag functionality (mouse and touch)
+             */
+            setupMinimizedDrag() {
+                // Mouse drag
+                this.minimized.addEventListener('mousedown', (e) => {
+                    this.handleMinimizedMouseDown(e);
+                });
+
+                // Touch drag
+                this.minimized.addEventListener('touchstart', (e) => {
+                    this.handleMinimizedTouchStart(e);
+                });
+            }
+
+            /**
+             * Set up document-level mouse/touch move and end handlers
+             * Uses bound handlers for proper cleanup
+             */
+            setupDocumentHandlers() {
+                // Bound handlers for cleanup
+                this.boundHandlers.mousemove = (e) => this.handleDocumentMouseMove(e);
+                this.boundHandlers.mouseup = () => this.handleDocumentMouseUp();
+                this.boundHandlers.touchmove = (e) => this.handleDocumentTouchMove(e);
+                this.boundHandlers.touchend = () => this.handleDocumentTouchEnd();
+
+                document.addEventListener('mousemove', this.boundHandlers.mousemove);
+                document.addEventListener('mouseup', this.boundHandlers.mouseup);
+                document.addEventListener('touchmove', this.boundHandlers.touchmove);
+                document.addEventListener('touchend', this.boundHandlers.touchend);
+            }
+
+            // ============================================================================
+            // Mouse Event Handlers
+            // ============================================================================
+
+            handleHeaderMouseDown(e) {
+                this.state.isDragging = true;
+                this.state.startX = e.clientX;
+                this.state.startY = e.clientY;
+
+                const rect = this.widget.getBoundingClientRect();
+                this.state.startLeft = rect.left;
+                this.state.startTop = rect.top;
+
+                this.widget.classList.add('no-transition');
+                e.preventDefault();
+            }
+
+            handleResizeMouseDown(e, handle) {
+                this.state.isResizing = true;
+                this.state.resizeDirection = handle.getAttribute('data-direction');
+                this.state.startX = e.clientX;
+                this.state.startY = e.clientY;
+
+                const rect = this.widget.getBoundingClientRect();
+                this.state.startWidth = rect.width;
+                this.state.startHeight = rect.height;
+                this.state.startLeft = rect.left;
+                this.state.startTop = rect.top;
+
+                this.widget.classList.add('no-transition');
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            handleMinimizedMouseDown(e) {
+                this.state.isDraggingMinimized = true;
+                this.state.minimizedDragMoved = false;
+                this.state.startX = e.clientX;
+                this.state.startY = e.clientY;
+
+                const rect = this.minimized.getBoundingClientRect();
+                this.state.startLeft = rect.left;
+                this.state.startTop = rect.top;
+
+                this.minimized.classList.add('no-transition');
+                e.preventDefault();
+            }
+
+            handleDocumentMouseMove(e) {
+                if (this.state.isDragging) {
+                    this.performDrag(e.clientX, e.clientY, this.widget);
+                } else if (this.state.isDraggingMinimized) {
+                    this.performMinimizedDrag(e.clientX, e.clientY);
+                } else if (this.state.isResizing) {
+                    this.performResize(e.clientX, e.clientY);
+                }
+            }
+
+            handleDocumentMouseUp() {
+                this.endDragOrResize();
+            }
+
+            // ============================================================================
+            // Touch Event Handlers
+            // ============================================================================
+
+            handleHeaderTouchStart(e) {
+                this.state.isDragging = true;
+                const touch = e.touches[0];
+                this.state.startX = touch.clientX;
+                this.state.startY = touch.clientY;
+
+                const rect = this.widget.getBoundingClientRect();
+                this.state.startLeft = rect.left;
+                this.state.startTop = rect.top;
+
+                this.widget.classList.add('no-transition');
+            }
+
+            handleMinimizedTouchStart(e) {
+                this.state.isDraggingMinimized = true;
+                this.state.minimizedDragMoved = false;
+                const touch = e.touches[0];
+                this.state.startX = touch.clientX;
+                this.state.startY = touch.clientY;
+
+                const rect = this.minimized.getBoundingClientRect();
+                this.state.startLeft = rect.left;
+                this.state.startTop = rect.top;
+
+                this.minimized.classList.add('no-transition');
+            }
+
+            handleDocumentTouchMove(e) {
+                if (this.state.isDragging || this.state.isDraggingMinimized) {
+                    const touch = e.touches[0];
+                    if (this.state.isDragging) {
+                        this.performDrag(touch.clientX, touch.clientY, this.widget);
+                    } else if (this.state.isDraggingMinimized) {
+                        this.performMinimizedDrag(touch.clientX, touch.clientY);
+                    }
+                }
+            }
+
+            handleDocumentTouchEnd() {
+                this.endDragOrResize();
+            }
+
+            // ============================================================================
+            // Drag/Resize Logic
+            // ============================================================================
+
+            /**
+             * Perform widget dragging
+             * @param {number} clientX - Current X position
+             * @param {number} clientY - Current Y position
+             * @param {HTMLElement} element - Element to drag
+             */
+            performDrag(clientX, clientY, element) {
+                const deltaX = clientX - this.state.startX;
+                const deltaY = clientY - this.state.startY;
+
+                const constrained = constrainToViewport(
+                    element,
+                    this.state.startLeft + deltaX,
+                    this.state.startTop + deltaY
+                );
+
+                element.style.left = constrained.left + 'px';
+                element.style.top = constrained.top + 'px';
+                element.style.right = 'auto';
+                element.style.bottom = 'auto';
+            }
+
+            /**
+             * Perform minimized button dragging
+             * @param {number} clientX - Current X position
+             * @param {number} clientY - Current Y position
+             */
+            performMinimizedDrag(clientX, clientY) {
+                const deltaX = clientX - this.state.startX;
+                const deltaY = clientY - this.state.startY;
+
+                // Track if drag moved significantly (for click detection)
+                if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                    this.state.minimizedDragMoved = true;
+                }
+
+                const constrained = constrainToViewport(
+                    this.minimized,
+                    this.state.startLeft + deltaX,
+                    this.state.startTop + deltaY
+                );
+
+                this.minimized.style.left = constrained.left + 'px';
+                this.minimized.style.top = constrained.top + 'px';
+                this.minimized.style.right = 'auto';
+                this.minimized.style.bottom = 'auto';
+            }
+
+            /**
+             * Perform widget resizing
+             * @param {number} clientX - Current X position
+             * @param {number} clientY - Current Y position
+             */
+            performResize(clientX, clientY) {
+                const deltaX = clientX - this.state.startX;
+                const deltaY = clientY - this.state.startY;
+                let newWidth = this.state.startWidth;
+                let newHeight = this.state.startHeight;
+                let newLeft = this.state.startLeft;
+                let newTop = this.state.startTop;
+
+                // Handle horizontal resize
+                if (this.state.resizeDirection.includes('e')) {
+                    newWidth = Math.max(
+                        this.config.minWidth,
+                        Math.min(this.config.maxWidth, this.state.startWidth + deltaX)
+                    );
+                }
+                if (this.state.resizeDirection.includes('w')) {
+                    const proposedWidth = this.state.startWidth - deltaX;
+                    newWidth = Math.max(
+                        this.config.minWidth,
+                        Math.min(this.config.maxWidth, proposedWidth)
+                    );
+                    const widthDiff = this.state.startWidth - newWidth;
+                    newLeft = this.state.startLeft + widthDiff;
+                }
+
+                // Handle vertical resize
+                if (this.state.resizeDirection.includes('s')) {
+                    newHeight = Math.max(this.config.minHeight, this.state.startHeight + deltaY);
+                }
+                if (this.state.resizeDirection.includes('n')) {
+                    const proposedHeight = this.state.startHeight - deltaY;
+                    newHeight = Math.max(this.config.minHeight, proposedHeight);
+                    const heightDiff = this.state.startHeight - newHeight;
+                    newTop = this.state.startTop + heightDiff;
+                }
+
+                const constrained = constrainToViewport(
+                    this.widget,
+                    newLeft,
+                    newTop,
+                    newWidth,
+                    newHeight
+                );
+
+                this.widget.style.width = constrained.width + 'px';
+                this.widget.style.height = constrained.height + 'px';
+                this.widget.style.left = constrained.left + 'px';
+                this.widget.style.top = constrained.top + 'px';
+                this.widget.style.right = 'auto';
+                this.widget.style.bottom = 'auto';
+            }
+
+            /**
+             * End drag or resize operation
+             * Syncs layout state and saves to localStorage
+             */
+            endDragOrResize() {
+                let layoutChanged = false;
+
+                if (this.state.isDragging || this.state.isResizing) {
+                    this.widget.classList.remove('no-transition');
+                    syncWidgetRectToLayout(this.config.type);
+                    layoutChanged = true;
+                }
+
+                if (this.state.isDraggingMinimized) {
+                    this.minimized.classList.remove('no-transition');
+                    syncMinimizedRectToLayout(this.config.type, { syncWidgetPosition: true });
+                    layoutChanged = true;
+                }
+
+                if (layoutChanged) {
+                    applyWidgetLayoutState(this.config.type);
+                    saveWidgetLayoutState();
+                }
+
+                // Reset state
+                this.state.isDragging = false;
+                this.state.isDraggingMinimized = false;
+                this.state.isResizing = false;
+                this.state.resizeDirection = null;
+            }
+
+            /**
+             * Check if minimized drag moved significantly
+             * Used for click detection (restore widget on click, ignore on drag)
+             * @returns {boolean} True if drag moved
+             */
+            wasMinimizedDragMoved() {
+                return this.state.minimizedDragMoved;
+            }
+
+            /**
+             * Clean up event listeners
+             * Should be called before removing widget
+             */
+            destroy() {
+                if (this.boundHandlers.mousemove) {
+                    document.removeEventListener('mousemove', this.boundHandlers.mousemove);
+                }
+                if (this.boundHandlers.mouseup) {
+                    document.removeEventListener('mouseup', this.boundHandlers.mouseup);
+                }
+                if (this.boundHandlers.touchmove) {
+                    document.removeEventListener('touchmove', this.boundHandlers.touchmove);
+                }
+                if (this.boundHandlers.touchend) {
+                    document.removeEventListener('touchend', this.boundHandlers.touchend);
+                }
+            }
+        }
+
+        // ============================================================================
+        // Widget Controller Instances - Phase 2.2
+        // ============================================================================
+
+        let pomodoroWidgetController = null;
+        let todoWidgetController = null;
+
         const domCache = {
+            // Form input fields
             date: null,
             taskType: null,
             client: null,
             hours: null,
             taskNumber: null,
 
+            // Date filter checkboxes
+            filterAllDates: null,
             filterCurrentMonth: null,
             filterCurrentWeek: null,
 
+            // Lists and containers
             entriesBody: null,
             projectsContainer: null,
             taskTypesContainer: null,
             modalProjectsContainer: null,
 
+            // Main action buttons
             showMoreBtn: null,
             resetForm: null,
             exportButton: null,
 
+            // Pomodoro timer elements
             timerDisplay: null,
             timerTaskNumber: null,
             timerStart: null,
             timerPause: null,
             timerReset: null,
             timerCircleProgress: null,
+            pomodoroWidget: null,
             pomodoroMinimized: null,
+            pomodoroHeader: null,
+            pomodoroMinimize: null,
+            timerCompleteTask: null,
+            timerNewTask: null,
+            pomodoroNotification: null,
+            minimizedTimer: null,
+            timerMode: null,
+            pomodoroCurrentTime: null,
+            pomodoroSession: null,
+            pomodoroShortBreaks: null,
+            pomodoroLongBreaks: null,
+            pomodoroToday: null,
 
+            // Pomodoro settings
+            workDuration: null,
+            shortBreakDuration: null,
+            longBreakDuration: null,
+            soundEnabled: null,
+            autoStartBreak: null,
+
+            // Modals
             settingsModal: null,
             modalClose: null,
             infoModal: null,
@@ -2765,42 +3410,124 @@
             confirmClose: null,
             confirmTitle: null,
 
+            // Settings modal buttons
+            settingsBtn: null,
+            infoBtn: null,
+            deleteAllBtn: null,
+            modalCancelBtn: null,
+            modalOkBtn: null,
+            deleteAllProjectsBtn: null,
+            deleteAllTaskTypesBtn: null,
+
+            // Project management
             projectName: null,
             addProjectBtn: null,
             cancelProjectBtn: null,
 
+            // Task type management
             taskTypeName: null,
             addTaskTypeBtn: null,
             cancelTaskTypeBtn: null,
 
+            // TODO widget elements
+            todoWidget: null,
+            todoMinimized: null,
+            todoHeader: null,
+            todoDescription: null,
+            todoPriority: null,
+            todoDate: null,
+            todoNoDate: null,
+            todoDatedList: null,
+            todoUndatedList: null,
+            todoDatedCount: null,
+            todoUndatedCount: null,
+            minimizedTodoCount: null,
+            addTodoBtn: null,
+            deleteAllTodos: null,
+            todoMinimize: null,
+
+            // Summary elements
+            currentMonth: null,
+            totalHours: null,
+
+            // Validation feedback elements
+            dateFeedback: null,
+            taskTypeFeedback: null,
+            clientFeedback: null,
+            hoursFeedback: null,
+            taskNumberFeedback: null,
+
+            // Filter elements
+            filterAllTasks: null,
+            taskTypeFiltersContainer: null,
+            filterAllProjects: null,
+            projectFiltersContainer: null,
+            monthEndWarning: null,
+
+            // Language and UI elements
             languageBtn: null,
+            languageMenu: null,
             applyBtn: null,
             submitButton: null,
             entryFormHeading: null,
-            entryForm: null
+            entryForm: null,
+            timesheetForm: null,
+            sectionEntryForm: null
         };
 
         function initDOMCache() {
+            // Form input fields
             domCache.date = document.getElementById('date');
             domCache.taskType = document.getElementById('task-type');
             domCache.client = document.getElementById('client');
             domCache.hours = document.getElementById('hours');
             domCache.taskNumber = document.getElementById('task-number');
+
+            // Date filter checkboxes
+            domCache.filterAllDates = document.getElementById('filter-all-dates');
             domCache.filterCurrentMonth = document.getElementById('filter-current-month');
             domCache.filterCurrentWeek = document.getElementById('filter-current-week');
+
+            // Lists and containers
             domCache.entriesBody = document.getElementById('entries-body');
             domCache.taskTypesContainer = document.getElementById('task-types-container');
             domCache.modalProjectsContainer = document.getElementById('modal-projects-container');
+
+            // Main action buttons
             domCache.showMoreBtn = document.getElementById('show-more-btn');
             domCache.resetForm = document.getElementById('reset-form');
             domCache.exportButton = document.getElementById('export-button');
+
+            // Pomodoro timer elements
             domCache.timerDisplay = document.getElementById('timer-display');
             domCache.timerTaskNumber = document.getElementById('timer-task-number');
             domCache.timerStart = document.getElementById('timer-start');
             domCache.timerPause = document.getElementById('timer-pause');
             domCache.timerReset = document.getElementById('timer-reset');
             domCache.timerCircleProgress = document.getElementById('timer-circle-progress');
+            domCache.pomodoroWidget = document.getElementById('pomodoro-widget');
             domCache.pomodoroMinimized = document.getElementById('pomodoro-minimized');
+            domCache.pomodoroHeader = document.getElementById('pomodoro-header');
+            domCache.pomodoroMinimize = document.getElementById('pomodoro-minimize');
+            domCache.timerCompleteTask = document.getElementById('timer-complete-task');
+            domCache.timerNewTask = document.getElementById('timer-new-task');
+            domCache.pomodoroNotification = document.getElementById('pomodoro-notification');
+            domCache.minimizedTimer = document.getElementById('minimized-timer');
+            domCache.timerMode = document.getElementById('timer-mode');
+            domCache.pomodoroCurrentTime = document.getElementById('pomodoro-current-time');
+            domCache.pomodoroSession = document.getElementById('pomodoro-session');
+            domCache.pomodoroShortBreaks = document.getElementById('pomodoro-short-breaks');
+            domCache.pomodoroLongBreaks = document.getElementById('pomodoro-long-breaks');
+            domCache.pomodoroToday = document.getElementById('pomodoro-today');
+
+            // Pomodoro settings
+            domCache.workDuration = document.getElementById('work-duration');
+            domCache.shortBreakDuration = document.getElementById('short-break-duration');
+            domCache.longBreakDuration = document.getElementById('long-break-duration');
+            domCache.soundEnabled = document.getElementById('sound-enabled');
+            domCache.autoStartBreak = document.getElementById('auto-start-break');
+
+            // Modals
             domCache.settingsModal = document.getElementById('settings-modal');
             domCache.modalClose = document.getElementById('modal-close');
             domCache.infoModal = document.getElementById('info-modal');
@@ -2814,42 +3541,69 @@
             domCache.confirmClose = document.getElementById('confirm-close');
             domCache.confirmTitle = document.getElementById('confirm-modal-title');
 
-            domCache.minimizedTimer = document.getElementById('minimized-timer');
-            domCache.pomodoroWidget = document.getElementById('pomodoro-widget');
-            domCache.timerMode = document.getElementById('timer-mode');
-            domCache.pomodoroCurrentTime = document.getElementById('pomodoro-current-time');
-            domCache.pomodoroSession = document.getElementById('pomodoro-session');
-            domCache.pomodoroShortBreaks = document.getElementById('pomodoro-short-breaks');
-            domCache.pomodoroLongBreaks = document.getElementById('pomodoro-long-breaks');
-            domCache.pomodoroToday = document.getElementById('pomodoro-today');
+            // Settings modal buttons
+            domCache.settingsBtn = document.getElementById('settings-btn');
+            domCache.infoBtn = document.getElementById('info-btn');
+            domCache.deleteAllBtn = document.getElementById('delete-all-btn');
+            domCache.modalCancelBtn = document.getElementById('modal-cancel-btn');
+            domCache.modalOkBtn = document.getElementById('modal-ok-btn');
+            domCache.deleteAllProjectsBtn = document.getElementById('delete-all-projects-btn');
+            domCache.deleteAllTaskTypesBtn = document.getElementById('delete-all-task-types-btn');
 
-            domCache.workDuration = document.getElementById('work-duration');
-            domCache.shortBreakDuration = document.getElementById('short-break-duration');
-            domCache.longBreakDuration = document.getElementById('long-break-duration');
-            domCache.soundEnabled = document.getElementById('sound-enabled');
-            domCache.autoStartBreak = document.getElementById('auto-start-break');
+            // Project management (Note: some are duplicates for backward compatibility)
+            domCache.projectName = document.getElementById('modal-project-name'); // Same as modalProjectName
+            domCache.addProjectBtn = document.getElementById('modal-add-project-btn'); // Same as modalAddProjectBtn
+            domCache.cancelProjectBtn = document.getElementById('modal-cancel-btn'); // Same as modalCancelBtn
 
+            // Task type management
+            domCache.taskTypeName = document.getElementById('task-type-name');
+            domCache.addTaskTypeBtn = document.getElementById('add-task-type-btn');
+            domCache.cancelTaskTypeBtn = document.getElementById('modal-cancel-btn'); // Same as modalCancelBtn
+
+            // TODO widget elements
             domCache.todoWidget = document.getElementById('todo-widget');
             domCache.todoMinimized = document.getElementById('todo-minimized');
+            domCache.todoHeader = document.getElementById('todo-header');
+            domCache.todoDescription = document.getElementById('todo-description');
+            domCache.todoPriority = document.getElementById('todo-priority');
+            domCache.todoDate = document.getElementById('todo-date');
+            domCache.todoNoDate = document.getElementById('todo-no-date');
+            domCache.todoDatedList = document.getElementById('todo-dated-list');
+            domCache.todoUndatedList = document.getElementById('todo-undated-list');
+            domCache.todoDatedCount = document.getElementById('todo-dated-count');
+            domCache.todoUndatedCount = document.getElementById('todo-undated-count');
+            domCache.minimizedTodoCount = document.getElementById('minimized-todo-count');
+            domCache.addTodoBtn = document.getElementById('add-todo-btn');
+            domCache.deleteAllTodos = document.getElementById('delete-all-todos');
+            domCache.todoMinimize = document.getElementById('todo-minimize');
 
+            // Summary elements
             domCache.currentMonth = document.getElementById('current-month');
             domCache.totalHours = document.getElementById('total-hours');
 
+            // Validation feedback elements
             domCache.dateFeedback = document.getElementById('date-feedback');
             domCache.taskTypeFeedback = document.getElementById('task-type-feedback');
             domCache.clientFeedback = document.getElementById('client-feedback');
             domCache.hoursFeedback = document.getElementById('hours-feedback');
             domCache.taskNumberFeedback = document.getElementById('task-number-feedback');
 
+            // Filter elements
             domCache.filterAllTasks = document.getElementById('filter-all-tasks');
             domCache.taskTypeFiltersContainer = document.getElementById('task-type-filters-container');
+            domCache.filterAllProjects = document.getElementById('filter-all-projects');
+            domCache.projectFiltersContainer = document.getElementById('project-filters-container');
             domCache.monthEndWarning = document.getElementById('month-end-warning');
 
+            // Language and UI elements
             domCache.languageBtn = document.getElementById('language-btn');
+            domCache.languageMenu = document.getElementById('language-menu');
             domCache.applyBtn = document.getElementById('modal-apply-btn');
             domCache.submitButton = document.querySelector('#timesheet-form button[type="submit"]');
             domCache.entryFormHeading = document.querySelector('.entry-form h2');
             domCache.entryForm = document.querySelector('.entry-form');
+            domCache.timesheetForm = document.getElementById('timesheet-form');
+            domCache.sectionEntryForm = document.getElementById('section-entry-form');
         }
 
         // Supported languages configuration
@@ -2923,10 +3677,13 @@
                 'form.updateButton': 'Aktualizuj wpis',
                 'form.clearButton': 'Wyczyść',
                 'entries.title': 'Lista wpisów',
-                'entries.filterCurrentMonth': 'Pokaż tylko wpisy z bieżącego miesiąca',
-                'entries.filterCurrentWeek': 'Pokaż tylko wpisy z bieżącego tygodnia',
+                'entries.dateFilter': 'Data',
+                'entries.filterCurrentMonth': 'Obecny miesiąc',
+                'entries.filterCurrentWeek': 'Obecny tydzień',
                 'entries.taskTypeFilter': 'Rodzaj zadania',
-                'entries.selectDeselectAll': 'Zaznacz/Odznacz wszystkie',
+                'entries.projectFilter': 'Projekt',
+                'entries.filterAll': 'Wszystko',
+                'entries.selectDeselectAll': 'Wszystko',
                 'entries.showAll': 'Pokaż wszystkie wpisy',
                 'entries.noResults': 'Brak wpisów spełniających kryteria filtrowania',
                 'table.date': 'Data',
@@ -3030,6 +3787,9 @@
                 'msg.confirmDeleteAllTasks': 'Czy na pewno usunąć wszystkie zadania? Ta operacja jest nieodwracalna.',
                 'msg.confirmDeleteEntry': 'Czy na pewno chcesz usunąć ten wpis?',
                 'msg.noDataToExport': 'Brak danych do eksportu',
+                'msg.exportSuccess': 'Plik CSV został zapisany',
+                'msg.exportError': 'Błąd podczas zapisu pliku CSV',
+                'csv.headers': 'Data,Rodzaj zadania,Projekt,Liczba godzin,Numer lub nazwa zadania',
                 'msg.noEntriesToDelete': 'Brak wpisów do usunięcia',
                 'msg.confirmDeleteAllEntries': 'Czy na pewno usunąć wszystkie wpisy ({count})? Ta operacja jest nieodwracalna.',
                 'msg.allEntriesDeleted': 'Wszystkie wpisy zostały usunięte',
@@ -3113,10 +3873,13 @@
                 'form.clearButton': 'Clear',
 
                 'entries.title': 'Entries list',
-                'entries.filterCurrentMonth': 'Show only entries from current month',
-                'entries.filterCurrentWeek': 'Show only entries from current week',
+                'entries.dateFilter': 'Date',
+                'entries.filterCurrentMonth': 'Current month',
+                'entries.filterCurrentWeek': 'Current week',
                 'entries.taskTypeFilter': 'Task type',
-                'entries.selectDeselectAll': 'Select/Deselect all',
+                'entries.projectFilter': 'Project',
+                'entries.filterAll': 'All',
+                'entries.selectDeselectAll': 'All',
                 'entries.showAll': 'Show all entries',
                 'entries.noResults': 'No entries match the current filters',
 
@@ -3177,8 +3940,8 @@
                 'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
-                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 15 min). Entry not added.',
-                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 15 min). Timer still running - continue working or enter new task!',
+                'pomodoro.notif.insufficientTime': '⚠️ Insufficient work time (< 30 min). Entry not added.',
+                'pomodoro.notif.insufficientTimeContinue': '⏱️ Insufficient work time (< 30 min). Timer still running - continue working or enter new task!',
                 'pomodoro.notif.timeAdded': '✅ Time added: {task} (+{hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
                 'pomodoro.notif.timeAddedContinue': '✅ Time added: {task} (+{time}). You can continue working!',
                 'pomodoro.notif.entryAdded': '✅ Entry added: {task} ({hours}h). Pomodoro cancelled according to Pomodoro philosophy.',
@@ -3226,6 +3989,9 @@
                 'msg.confirmDeleteAllTasks': 'Are you sure you want to delete all tasks? This operation cannot be undone.',
                 'msg.confirmDeleteEntry': 'Are you sure you want to delete this entry?',
                 'msg.noDataToExport': 'No data to export',
+                'msg.exportSuccess': 'CSV file has been saved',
+                'msg.exportError': 'Error saving CSV file',
+                'csv.headers': 'Date,Task type,Project,Hours,Task number or name',
                 'msg.noEntriesToDelete': 'No entries to delete',
                 'msg.confirmDeleteAllEntries': 'Are you sure you want to delete all entries ({count})? This operation cannot be undone.',
                 'msg.allEntriesDeleted': 'All entries have been deleted',
@@ -3405,8 +4171,8 @@
 
         // Initialize language dropdown
         function initLanguageDropdown() {
-            const menu = document.getElementById('language-menu');
-            const btn = document.getElementById('language-btn');
+            const menu = domCache.languageMenu;
+            const btn = domCache.languageBtn;
 
             if (!menu || !btn) return;
 
@@ -3451,8 +4217,8 @@
         }
 
         function toggleLanguageMenu() {
-            const menu = document.getElementById('language-menu');
-            const btn = document.getElementById('language-btn');
+            const menu = domCache.languageMenu;
+            const btn = domCache.languageBtn;
             if (!menu || !btn) return;
 
             const isOpen = menu.classList.contains('show');
@@ -3465,8 +4231,8 @@
         }
 
         function closeLanguageMenu() {
-            const menu = document.getElementById('language-menu');
-            const btn = document.getElementById('language-btn');
+            const menu = domCache.languageMenu;
+            const btn = domCache.languageBtn;
             if (!menu || !btn) return;
 
             menu.classList.remove('show');
@@ -3684,14 +4450,14 @@
         function getWidgetElements(type) {
             if (type === 'pomodoro') {
                 return {
-                    widget: document.getElementById('pomodoro-widget'),
-                    minimized: document.getElementById('pomodoro-minimized')
+                    widget: domCache.pomodoroWidget,
+                    minimized: domCache.pomodoroMinimized
                 };
             }
             if (type === 'todo') {
                 return {
-                    widget: document.getElementById('todo-widget'),
-                    minimized: document.getElementById('todo-minimized')
+                    widget: domCache.todoWidget,
+                    minimized: domCache.todoMinimized
                 };
             }
             return { widget: null, minimized: null };
@@ -4158,6 +4924,7 @@
             save: saveProjects,
             update: updateProjectSelect,
             render: renderModalProjects,
+            extraRender: renderProjectFilters,
             onChange: markAsChanged
         });
 
@@ -4239,8 +5006,8 @@
             allCheckbox.checked = filterAllChecked;
 
             const allStrong = document.createElement('strong');
-            allStrong.setAttribute('data-i18n', 'entries.selectDeselectAll');
-            allStrong.textContent = 'Zaznacz/Odznacz wszystkie';
+            allStrong.setAttribute('data-i18n', 'entries.filterAll');
+            allStrong.textContent = 'Wszystko';
 
             allLabel.appendChild(allCheckbox);
             allLabel.appendChild(allStrong);
@@ -4333,6 +5100,121 @@
             domCache.taskTypeFiltersContainer.addEventListener('change', taskTypeFilterHandler);
         }
 
+        function renderProjectFilters() {
+            const filterAllChecked = domCache.filterAllProjects ? domCache.filterAllProjects.checked : true;
+
+            const filterStates = {};
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+                filterStates[project] = filterElement ? filterElement.checked : true;
+            });
+
+            domCache.projectFiltersContainer.innerHTML = '';
+
+            // Create "Select all" filter
+            const allFilterDiv = document.createElement('div');
+            allFilterDiv.className = 'filter-option';
+
+            const allLabel = document.createElement('label');
+
+            const allCheckbox = document.createElement('input');
+            allCheckbox.type = 'checkbox';
+            allCheckbox.id = 'filter-all-projects';
+            allCheckbox.checked = filterAllChecked;
+
+            const allStrong = document.createElement('strong');
+            allStrong.setAttribute('data-i18n', 'entries.filterAll');
+            allStrong.textContent = 'Wszystko';
+
+            allLabel.appendChild(allCheckbox);
+            allLabel.appendChild(allStrong);
+            allFilterDiv.appendChild(allLabel);
+            domCache.projectFiltersContainer.appendChild(allFilterDiv);
+
+            // Create filter for each project
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const isChecked = filterStates[project] ?? true;
+
+                const filterDiv = document.createElement('div');
+                filterDiv.className = 'filter-option';
+
+                const label = document.createElement('label');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = filterId;
+                checkbox.setAttribute('data-project', project);
+                checkbox.checked = isChecked;
+
+                const projectText = document.createTextNode(' ');
+                const projectSpan = document.createTextNode(project);
+
+                label.appendChild(checkbox);
+                label.appendChild(projectText);
+                label.appendChild(projectSpan);
+                filterDiv.appendChild(label);
+                domCache.projectFiltersContainer.appendChild(filterDiv);
+            });
+
+            domCache.filterAllProjects = document.getElementById('filter-all-projects');
+
+            initProjectFilterListeners();
+        }
+
+        let projectFilterHandler = null;
+
+        function initProjectFilterListeners() {
+            // Remove old event delegation handler if exists
+            if (projectFilterHandler) {
+                domCache.projectFiltersContainer.removeEventListener('change', projectFilterHandler);
+            }
+
+            projectFilterHandler = function(event) {
+                const target = event.target;
+                if (target.type !== 'checkbox') return;
+
+                if (target.id === 'filter-all-projects') {
+                    const isChecked = target.checked;
+                    projects.forEach(project => {
+                        const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                        const filterElement = document.getElementById(filterId);
+                        if (filterElement) {
+                            filterElement.checked = isChecked;
+                        }
+                    });
+                    renderEntries();
+                    return;
+                }
+
+                if (target.dataset.project) {
+                    const allChecked = projects.every(p => {
+                        const fid = `filter-project-${p.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? el.checked : true;
+                    });
+                    const noneChecked = projects.every(p => {
+                        const fid = `filter-project-${p.toLowerCase().replace(/\s+/g, '-')}`;
+                        const el = document.getElementById(fid);
+                        return el ? !el.checked : false;
+                    });
+
+                    if (domCache.filterAllProjects) {
+                        if (allChecked) {
+                            domCache.filterAllProjects.checked = true;
+                        } else if (noneChecked) {
+                            domCache.filterAllProjects.checked = false;
+                        }
+                    }
+
+                    renderEntries();
+                }
+            };
+
+            domCache.projectFiltersContainer.addEventListener('change', projectFilterHandler);
+        }
+
         const taskTypeManager = createItemManager({
             items: taskTypes,
             editingIndex: editingTaskTypeIndex,
@@ -4378,6 +5260,7 @@
                 saveProjects();
                 updateProjectSelect();
                 renderModalProjects();
+            renderProjectFilters();
                 markAsChanged();
                 showNotification(t('msg.allEntriesDeleted'), 3000);
             });
@@ -4396,6 +5279,7 @@
                 updateTaskTypeSelect();
                 renderTaskTypes();
                 renderTaskTypeFilters();
+                renderProjectFilters();
                 markAsChanged();
                 showNotification(t('msg.allEntriesDeleted'), 3000);
             });
@@ -4437,6 +5321,7 @@
             domCache.settingsModal.style.display = 'block';
             switchTab('projects-tab');
             renderModalProjects();
+            renderProjectFilters();
             renderTaskTypes();
             modalOriginalProjects = projects.slice();
             modalOriginalTaskTypes = taskTypes.slice();
@@ -4467,6 +5352,7 @@
                 saveProjects();
                 updateProjectSelect();
                 renderModalProjects();
+            renderProjectFilters();
 
                 saveTaskTypes();
                 updateTaskTypeSelect();
@@ -4629,8 +5515,14 @@
         }
 
         function filterEntriesByDate(entries, currentDate) {
+            const filterAllDates = domCache.filterAllDates.checked;
             const filterCurrentMonth = domCache.filterCurrentMonth.checked;
             const filterCurrentWeek = domCache.filterCurrentWeek.checked;
+
+            // If "Wszystko" is checked, show all entries
+            if (filterAllDates) {
+                return entries;
+            }
 
             // If both filters are unchecked, show no entries
             if (!filterCurrentMonth && !filterCurrentWeek) {
@@ -4658,6 +5550,23 @@
             return entries.filter(entry => {
                 return filterStates[entry.taskType] !== undefined
                     ? filterStates[entry.taskType]
+                    : true;
+            });
+        }
+
+        function filterEntriesByProject(entries) {
+            // Cache all filter states before filtering to avoid O(n) DOM queries
+            const filterStates = {};
+            projects.forEach(project => {
+                const filterId = `filter-project-${project.toLowerCase().replace(/\s+/g, '-')}`;
+                const filterElement = document.getElementById(filterId);
+                filterStates[project] = filterElement ? filterElement.checked : true;
+            });
+
+            return entries.filter(entry => {
+                const entryProject = entry.client || '';
+                return filterStates[entryProject] !== undefined
+                    ? filterStates[entryProject]
                     : true;
             });
         }
@@ -4733,6 +5642,7 @@
                 const currentDate = new Date();
                 let filteredEntries = filterEntriesByDate(entries, currentDate);
                 filteredEntries = filterEntriesByTaskType(filteredEntries);
+                filteredEntries = filterEntriesByProject(filteredEntries);
                 filteredEntries.sort((a, b) => b.date - a.date);
                 const totalEntries = filteredEntries.length;
                 const entriesToShow = showAllEntries ? filteredEntries : filteredEntries.slice(0, ENTRIES_LIMIT);
@@ -4797,7 +5707,7 @@
         }
 
         function resetForm() {
-            document.getElementById('timesheet-form').reset();
+            domCache.timesheetForm.reset();
             domCache.submitButton.textContent = t('form.addButton');
             domCache.submitButton.removeAttribute('data-edit-id');
             domCache.entryFormHeading.textContent = t('form.addEntry');
@@ -5377,8 +6287,8 @@
             }
 
             updatePomodoroDisplay();
-            document.getElementById('timer-start').style.display = 'inline-block';
-            document.getElementById('timer-pause').style.display = 'none';
+            domCache.timerStart.style.display = 'inline-block';
+            domCache.timerPause.style.display = 'none';
         }
 
         function switchMode(mode) {
@@ -5411,8 +6321,8 @@
 
             pomodoroTimer = setInterval(timerTick, 1000);
 
-            document.getElementById('timer-start').style.display = 'none';
-            document.getElementById('timer-pause').style.display = 'inline-block';
+            domCache.timerStart.style.display = 'none';
+            domCache.timerPause.style.display = 'inline-block';
             updatePomodoroDisplay();
         }
 
@@ -5438,8 +6348,8 @@
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
 
-            document.getElementById('timer-start').style.display = 'inline-block';
-            document.getElementById('timer-pause').style.display = 'none';
+            domCache.timerStart.style.display = 'inline-block';
+            domCache.timerPause.style.display = 'none';
             updatePomodoroDisplay();
         }
 
@@ -5448,8 +6358,8 @@
             clearInterval(pomodoroTimer);
             pomodoroTimer = null;
             pomodoroState.elapsedTime = 0;
-            const timerDisplay = document.getElementById('timer-display');
-            const progressCircle = document.getElementById('timer-circle-progress');
+            const timerDisplay = domCache.timerDisplay;
+            const progressCircle = domCache.timerCircleProgress;
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
             switchMode('work');
@@ -5458,8 +6368,8 @@
                 progressCircle.classList.remove('no-transition');
             }, 50);
 
-            document.getElementById('timer-start').style.display = 'inline-block';
-            document.getElementById('timer-pause').style.display = 'none';
+            domCache.timerStart.style.display = 'inline-block';
+            domCache.timerPause.style.display = 'none';
         }
 
         /**
@@ -5467,7 +6377,7 @@
          * Complex logic that handles:
          * - Merging time with existing entries for the same task on the same day
          * - Creating new entries if task doesn't exist
-         * - Rounding work time (drops <5min, rounds to 0.5h or 1h increments)
+         * - Rounding work time (drops <30min, rounds to 0.5h or 1h increments)
          * - Task number persistence for continuous work
          * @param {Object} options - Configuration options
          * @param {boolean} options.clearTaskNumber - Clear task number after recording (task completion)
@@ -5476,7 +6386,7 @@
          * @returns {Object|boolean} Recording details or false if failed
          */
         function recordPomodoroWork({ clearTaskNumber = false, elapsedSecondsOverride = null, suppressNotification = false } = {}) {
-            const taskInput = document.getElementById('timer-task-number');
+            const taskInput = domCache.timerTaskNumber;
             const inputValue = taskInput.value.trim();
             const taskNumber = inputValue || pomodoroState.currentTaskNumber;
 
@@ -5511,25 +6421,51 @@
             const timeFormatted = formatSeconds(elapsedSeconds, true);
             let notificationMessage;
 
+            let actualHoursAdded = roundedHours;
+            
             if (existingEntryIndex !== -1) {
-                entries[existingEntryIndex].hours += roundedHours;
-                entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
+                const currentHours = entries[existingEntryIndex].hours;
+                const newTotalHours = currentHours + roundedHours;
+                
+                // Validate maximum hours constraint (8 hours)
+                if (newTotalHours > EntryValidator.CONSTRAINTS.hours.max) {
+                    // Cap at maximum and show warning
+                    entries[existingEntryIndex].hours = EntryValidator.CONSTRAINTS.hours.max;
+                    actualHoursAdded = EntryValidator.CONSTRAINTS.hours.max - currentHours;
+                    entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
+                    showNotification(t('validation.hoursMaxEight'), 3000);
+                } else {
+                    entries[existingEntryIndex].hours = newTotalHours;
+                    entriesMap.set(entries[existingEntryIndex].id, entries[existingEntryIndex]);
+                }
+                
                 notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: roundedHours })
+                    ? t('pomodoro.notif.taskCompleted', { task: taskNumber, hours: actualHoursAdded })
                     : t('pomodoro.notif.timeAddedContinue', { task: taskNumber, time: timeFormatted });
             } else {
+                // Validate new entry doesn't exceed maximum
+                const finalHours = roundedHours > EntryValidator.CONSTRAINTS.hours.max 
+                    ? EntryValidator.CONSTRAINTS.hours.max 
+                    : roundedHours;
+                
+                if (roundedHours > EntryValidator.CONSTRAINTS.hours.max) {
+                    showNotification(t('validation.hoursMaxEight'), 3000);
+                }
+                
+                actualHoursAdded = finalHours;
+                
                 const newEntry = {
                     id: Date.now(),
                     date: new Date(),
                     taskType: '',
                     client: '',
-                    hours: roundedHours,
+                    hours: finalHours,
                     taskNumber: taskNumber
                 };
                 entries.push(newEntry);
                 entriesMap.set(newEntry.id, newEntry);
                 notificationMessage = clearTaskNumber
-                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: roundedHours })
+                    ? t('pomodoro.notif.taskCompletedNew', { task: taskNumber, hours: finalHours })
                     : t('pomodoro.notif.entryAddedContinue', { task: taskNumber, time: timeFormatted });
             }
 
@@ -5555,16 +6491,17 @@
             }
 
             return {
-                roundedHours,
+                roundedHours: actualHoursAdded,
                 elapsedSeconds,
                 taskNumber,
-                existingEntry: existingEntryIndex !== -1
+                existingEntry: existingEntryIndex !== -1,
+                capped: actualHoursAdded !== roundedHours
             };
         }
 
         function startNewTask() {
             const resetForNewTask = () => {
-                const timerTaskInput = document.getElementById('timer-task-number');
+                const timerTaskInput = domCache.timerTaskNumber;
                 timerTaskInput.value = '';
                 timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
                 pomodoroState.currentTaskNumber = '';
@@ -5575,7 +6512,7 @@
             if (pomodoroState.elapsedTime > 0) {
                 const elapsedSeconds = pomodoroState.elapsedTime;
                 const formattedTime = formatSeconds(elapsedSeconds, false);
-                const currentTaskNumber = document.getElementById('timer-task-number').value.trim() || pomodoroState.currentTaskNumber;
+                const currentTaskNumber = domCache.timerTaskNumber.value.trim() || pomodoroState.currentTaskNumber;
                 const confirmMsg = t('pomodoro.notif.newTaskConfirm', { time: formattedTime, task: currentTaskNumber });
 
                 openConfirmDialog(confirmMsg, () => {
@@ -5590,7 +6527,7 @@
         }
 
         function showNotification(message, duration = 3000) {
-            const notification = document.getElementById('pomodoro-notification');
+            const notification = domCache.pomodoroNotification;
             notification.textContent = message;
             notification.classList.add('show');
             setTimeout(() => {
@@ -5653,450 +6590,47 @@
         }
 
         /**
-         * Initialize drag and resize functionality for Pomodoro widget
-         * Sets up mouse event handlers for:
-         * - Dragging widget by header (with viewport constraints)
-         * - Resizing widget via corner/edge handles (min/max size limits)
-         * - Dragging minimized widget button
-         * - Preventing transitions during drag/resize for smooth UX
+         * Initialize drag and resize functionality for both Pomodoro and TODO widgets
+         * Creates DraggableWidget instances for unified drag/resize handling
+         * Eliminates duplicated code and state management between widgets
          */
         function initDragAndResize() {
-            const widget = document.getElementById('pomodoro-widget');
-            const header = document.getElementById('pomodoro-header');
-            const resizeHandles = widget.querySelectorAll('.resize-handle');
-            header.addEventListener('mousedown', function(e) {
-                if (e.target.classList.contains('pomodoro-minimize-btn')) {
-                    return;
-                }
-
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = widget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                widget.classList.add('no-transition');
-                e.preventDefault();
-            });
-            resizeHandles.forEach(handle => {
-                handle.addEventListener('mousedown', function(e) {
-                    isResizing = true;
-                    resizeDirection = this.getAttribute('data-direction');
-                    startX = e.clientX;
-                    startY = e.clientY;
-
-                    const rect = widget.getBoundingClientRect();
-                    startWidth = rect.width;
-                    startHeight = rect.height;
-                    startLeft = rect.left;
-                    startTop = rect.top;
-
-                    widget.classList.add('no-transition');
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-            const minimizedWidget = document.getElementById('pomodoro-minimized');
-            minimizedWidget.addEventListener('mousedown', function(e) {
-                isDraggingMinimized = true;
-                minimizedDragMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = minimizedWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                minimizedWidget.classList.add('no-transition');
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', function(e) {
-                if (isDragging) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
-
-                    widget.style.left = constrained.left + 'px';
-                    widget.style.top = constrained.top + 'px';
-                    widget.style.right = 'auto';
-                    widget.style.bottom = 'auto';
-                } else if (isDraggingMinimized) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        minimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
-
-                    minimizedWidget.style.left = constrained.left + 'px';
-                    minimizedWidget.style.top = constrained.top + 'px';
-                    minimizedWidget.style.right = 'auto';
-                    minimizedWidget.style.bottom = 'auto';
-                } else if (isResizing) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-                    let newWidth = startWidth;
-                    let newHeight = startHeight;
-                    let newLeft = startLeft;
-                    let newTop = startTop;
-                    if (resizeDirection.includes('e')) {
-                        newWidth = Math.max(280, Math.min(640, startWidth + deltaX));
-                    }
-                    if (resizeDirection.includes('w')) {
-                        const proposedWidth = startWidth - deltaX;
-                        newWidth = Math.max(280, Math.min(640, proposedWidth));
-                        const widthDiff = startWidth - newWidth;
-                        newLeft = startLeft + widthDiff;
-                    }
-                    if (resizeDirection.includes('s')) {
-                        newHeight = Math.max(400, startHeight + deltaY);
-                    }
-                    if (resizeDirection.includes('n')) {
-                        const proposedHeight = startHeight - deltaY;
-                        newHeight = Math.max(400, proposedHeight);
-                        const heightDiff = startHeight - newHeight;
-                        newTop = startTop + heightDiff;
-                    }
-
-                    const constrained = constrainToViewport(widget, newLeft, newTop, newWidth, newHeight);
-
-                    widget.style.width = constrained.width + 'px';
-                    widget.style.height = constrained.height + 'px';
-                    widget.style.left = constrained.left + 'px';
-                    widget.style.top = constrained.top + 'px';
-                    widget.style.right = 'auto';
-                    widget.style.bottom = 'auto';
-                }
-            });
-            document.addEventListener('mouseup', function() {
-                let layoutChanged = false;
-                if (isDragging || isResizing) {
-                    widget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('pomodoro');
-                    layoutChanged = true;
-                }
-                if (isDraggingMinimized) {
-                    minimizedWidget.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('pomodoro');
-                    saveWidgetLayoutState();
-                }
-                isDragging = false;
-                isDraggingMinimized = false;
-                isResizing = false;
-                resizeDirection = null;
-            });
-            header.addEventListener('touchstart', function(e) {
-                if (e.target.classList.contains('pomodoro-minimize-btn')) {
-                    return;
-                }
-
-                isDragging = true;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = widget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                widget.classList.add('no-transition');
-            });
-            minimizedWidget.addEventListener('touchstart', function(e) {
-                isDraggingMinimized = true;
-                minimizedDragMoved = false;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = minimizedWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                minimizedWidget.classList.add('no-transition');
+            // Initialize Pomodoro widget controller
+            pomodoroWidgetController = new DraggableWidget({
+                type: 'pomodoro',
+                widgetId: 'pomodoro-widget',
+                headerId: 'pomodoro-header',
+                minimizedId: 'pomodoro-minimized',
+                minimizeButtonClass: 'pomodoro-minimize-btn',
+                minWidth: 280,
+                maxWidth: 640,
+                minHeight: 400
             });
 
-            document.addEventListener('touchmove', function(e) {
-                if (isDragging) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    const constrained = constrainToViewport(widget, startLeft + deltaX, startTop + deltaY);
-
-                    widget.style.left = constrained.left + 'px';
-                    widget.style.top = constrained.top + 'px';
-                    widget.style.right = 'auto';
-                    widget.style.bottom = 'auto';
-                } else if (isDraggingMinimized) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        minimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(minimizedWidget, startLeft + deltaX, startTop + deltaY);
-
-                    minimizedWidget.style.left = constrained.left + 'px';
-                    minimizedWidget.style.top = constrained.top + 'px';
-                    minimizedWidget.style.right = 'auto';
-                    minimizedWidget.style.bottom = 'auto';
-                }
+            // Initialize TODO widget controller
+            todoWidgetController = new DraggableWidget({
+                type: 'todo',
+                widgetId: 'todo-widget',
+                headerId: 'todo-header',
+                minimizedId: 'todo-minimized',
+                minimizeButtonClass: 'todo-minimize-btn',
+                minWidth: 300,
+                maxWidth: 640,
+                minHeight: 400
             });
 
-            document.addEventListener('touchend', function() {
-                let layoutChanged = false;
-                if (isDragging || isResizing) {
-                    widget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('pomodoro');
-                    layoutChanged = true;
-                }
-                if (isDraggingMinimized) {
-                    minimizedWidget.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('pomodoro', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('pomodoro');
-                }
-                isDragging = false;
-                isDraggingMinimized = false;
-                isResizing = false;
-                resizeDirection = null;
-            });
+            // Initialize both controllers
+            const pomodoroSuccess = pomodoroWidgetController.init();
+            const todoSuccess = todoWidgetController.init();
 
-            const todoWidget = document.getElementById('todo-widget');
-            const todoHeader = document.getElementById('todo-header');
-            const todoResizeHandles = todoWidget.querySelectorAll('.resize-handle');
-            const todoMinimized = document.getElementById('todo-minimized');
+            if (!pomodoroSuccess) {
+                console.warn('⚠️ Failed to initialize Pomodoro widget drag/resize');
+            }
+            if (!todoSuccess) {
+                console.warn('⚠️ Failed to initialize TODO widget drag/resize');
+            }
 
-            todoHeader.addEventListener('mousedown', function(e) {
-                if (e.target.classList.contains('todo-minimize-btn')) {
-                    return;
-                }
-
-                isDraggingTodo = true;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = todoWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoWidget.classList.add('no-transition');
-                e.preventDefault();
-            });
-
-            todoResizeHandles.forEach(handle => {
-                handle.addEventListener('mousedown', function(e) {
-                    isResizingTodo = true;
-                    resizeDirectionTodo = this.getAttribute('data-direction');
-                    startX = e.clientX;
-                    startY = e.clientY;
-
-                    const rect = todoWidget.getBoundingClientRect();
-                    startWidth = rect.width;
-                    startHeight = rect.height;
-                    startLeft = rect.left;
-                    startTop = rect.top;
-
-                    todoWidget.classList.add('no-transition');
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-
-            todoMinimized.addEventListener('mousedown', function(e) {
-                isDraggingTodoMinimized = true;
-                todoMinimizedDragMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                const rect = todoMinimized.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoMinimized.classList.add('no-transition');
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                if (isDraggingTodo) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
-
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
-                } else if (isDraggingTodoMinimized) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        todoMinimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
-
-                    todoMinimized.style.left = constrained.left + 'px';
-                    todoMinimized.style.top = constrained.top + 'px';
-                    todoMinimized.style.right = 'auto';
-                    todoMinimized.style.bottom = 'auto';
-                } else if (isResizingTodo) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-                    let newWidth = startWidth;
-                    let newHeight = startHeight;
-                    let newLeft = startLeft;
-                    let newTop = startTop;
-
-                    if (resizeDirectionTodo.includes('e')) {
-                        newWidth = Math.max(300, Math.min(640, startWidth + deltaX));
-                    }
-                    if (resizeDirectionTodo.includes('w')) {
-                        const proposedWidth = startWidth - deltaX;
-                        newWidth = Math.max(300, Math.min(640, proposedWidth));
-                        const widthDiff = startWidth - newWidth;
-                        newLeft = startLeft + widthDiff;
-                    }
-                    if (resizeDirectionTodo.includes('s')) {
-                        newHeight = Math.max(400, startHeight + deltaY);
-                    }
-                    if (resizeDirectionTodo.includes('n')) {
-                        const proposedHeight = startHeight - deltaY;
-                        newHeight = Math.max(400, proposedHeight);
-                        const heightDiff = startHeight - newHeight;
-                        newTop = startTop + heightDiff;
-                    }
-
-                    const constrained = constrainToViewport(todoWidget, newLeft, newTop, newWidth, newHeight);
-
-                    todoWidget.style.width = constrained.width + 'px';
-                    todoWidget.style.height = constrained.height + 'px';
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
-                }
-            });
-
-            document.addEventListener('mouseup', function() {
-                let layoutChanged = false;
-                if (isDraggingTodo || isResizingTodo) {
-                    todoWidget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('todo');
-                    layoutChanged = true;
-                }
-                if (isDraggingTodoMinimized) {
-                    todoMinimized.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('todo');
-                    saveWidgetLayoutState();
-                }
-                isDraggingTodo = false;
-                isDraggingTodoMinimized = false;
-                isResizingTodo = false;
-                resizeDirectionTodo = null;
-            });
-
-            todoHeader.addEventListener('touchstart', function(e) {
-                if (e.target.classList.contains('todo-minimize-btn')) {
-                    return;
-                }
-
-                isDraggingTodo = true;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = todoWidget.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoWidget.classList.add('no-transition');
-            });
-
-            todoMinimized.addEventListener('touchstart', function(e) {
-                isDraggingTodoMinimized = true;
-                todoMinimizedDragMoved = false;
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-
-                const rect = todoMinimized.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-
-                todoMinimized.classList.add('no-transition');
-            });
-
-            document.addEventListener('touchmove', function(e) {
-                if (isDraggingTodo) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    const constrained = constrainToViewport(todoWidget, startLeft + deltaX, startTop + deltaY);
-
-                    todoWidget.style.left = constrained.left + 'px';
-                    todoWidget.style.top = constrained.top + 'px';
-                    todoWidget.style.right = 'auto';
-                    todoWidget.style.bottom = 'auto';
-                } else if (isDraggingTodoMinimized) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - startX;
-                    const deltaY = touch.clientY - startY;
-
-                    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
-                        todoMinimizedDragMoved = true;
-                    }
-
-                    const constrained = constrainToViewport(todoMinimized, startLeft + deltaX, startTop + deltaY);
-
-                    todoMinimized.style.left = constrained.left + 'px';
-                    todoMinimized.style.top = constrained.top + 'px';
-                    todoMinimized.style.right = 'auto';
-                    todoMinimized.style.bottom = 'auto';
-                }
-            });
-
-            document.addEventListener('touchend', function() {
-                let layoutChanged = false;
-                if (isDraggingTodo || isResizingTodo) {
-                    todoWidget.classList.remove('no-transition');
-                    syncWidgetRectToLayout('todo');
-                    layoutChanged = true;
-                }
-                if (isDraggingTodoMinimized) {
-                    todoMinimized.classList.remove('no-transition');
-                    syncMinimizedRectToLayout('todo', { syncWidgetPosition: true });
-                    layoutChanged = true;
-                }
-                if (layoutChanged) {
-                    applyWidgetLayoutState('todo');
-                }
-                isDraggingTodo = false;
-                isDraggingTodoMinimized = false;
-                isResizingTodo = false;
-                resizeDirectionTodo = null;
-            });
-
+            // Handle window resize to keep widgets within viewport
             window.addEventListener('resize', function() {
                 let layoutChanged = false;
                 ['pomodoro', 'todo'].forEach(type => {
@@ -6110,6 +6644,7 @@
                 }
             });
 
+            // Apply initial layout state for both widgets
             applyWidgetLayoutState('pomodoro');
             applyWidgetLayoutState('todo');
         }
@@ -6132,7 +6667,7 @@
 
             // Ensure widget stays within viewport after maximizing
             if (!layout.isMinimized) {
-                const widget = document.getElementById('pomodoro-widget');
+                const widget = domCache.pomodoroWidget;
                 if (widget && widget.style.display !== 'none') {
                     const rect = widget.getBoundingClientRect();
                     const constrained = constrainToViewport(widget, rect.left, rect.top);
@@ -6172,10 +6707,10 @@
          * @returns {void}
          */
         function addTodoTask() {
-            const description = document.getElementById('todo-description').value.trim();
-            const priority = document.getElementById('todo-priority').value;
-            const dateInput = document.getElementById('todo-date').value;
-            const noDate = document.getElementById('todo-no-date').checked;
+            const description = domCache.todoDescription.value.trim();
+            const priority = domCache.todoPriority.value;
+            const dateInput = domCache.todoDate.value;
+            const noDate = domCache.todoNoDate.checked;
 
             if (!description) {
                 showNotification(t('todo.emptyDescription') || 'Proszę wprowadzić opis zadania');
@@ -6221,13 +6756,13 @@
             saveTodoTasks();
             renderTodoTasks();
 
-            const todoDescInput = document.getElementById('todo-description');
+            const todoDescInput = domCache.todoDescription;
             todoDescInput.value = '';
             todoDescInput.dispatchEvent(new Event('input')); // Update empty-field class
-            document.getElementById('todo-date').value = '';
-            const noDateCheckbox = document.getElementById('todo-no-date');
+            domCache.todoDate.value = '';
+            const noDateCheckbox = domCache.todoNoDate;
             noDateCheckbox.checked = noDate;
-            document.getElementById('todo-priority').value = 'medium';
+            domCache.todoPriority.value = 'medium';
             handleNoDateToggle();
         }
 
@@ -6264,8 +6799,8 @@
         }
 
         function renderTodoTasks() {
-            const datedList = document.getElementById('todo-dated-list');
-            const undatedList = document.getElementById('todo-undated-list');
+            const datedList = domCache.todoDatedList;
+            const undatedList = domCache.todoUndatedList;
 
             datedList.innerHTML = '';
             undatedList.innerHTML = '';
@@ -6379,9 +6914,9 @@
             const undatedCount = todoTasks.filter(t => !t.dueDate).length;
             const totalCount = todoTasks.length;
 
-            document.getElementById('todo-dated-count').textContent = datedCount;
-            document.getElementById('todo-undated-count').textContent = undatedCount;
-            document.getElementById('minimized-todo-count').textContent = totalCount;
+            domCache.todoDatedCount.textContent = datedCount;
+            domCache.todoUndatedCount.textContent = undatedCount;
+            domCache.minimizedTodoCount.textContent = totalCount;
         }
 
         function isOverdue(dueDate) {
@@ -6408,7 +6943,7 @@
 
             // Ensure widget stays within viewport after maximizing
             if (!layout.isMinimized) {
-                const widget = document.getElementById('todo-widget');
+                const widget = domCache.todoWidget;
                 if (widget && widget.style.display !== 'none') {
                     const rect = widget.getBoundingClientRect();
                     const constrained = constrainToViewport(widget, rect.left, rect.top);
@@ -6432,7 +6967,7 @@
 
             openConfirmDialog(confirmMessage,
                 function() {
-                    const taskNumberInput = document.getElementById('task-number');
+                    const taskNumberInput = domCache.taskNumber;
                     if (taskNumberInput) {
                         taskNumberInput.value = task.description;
                         taskNumberInput.focus();
@@ -6441,15 +6976,13 @@
                     // Store the task ID to delete after entry is created
                     pendingTodoForEntry = id;
 
-                    const entryForm = document.getElementById('section-entry-form');
+                    const entryForm = domCache.sectionEntryForm;
                     if (entryForm) {
                         entryForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 },
                 function() {
-                    todoTasks = todoTasks.filter(t => t.id !== id);
-                    saveTodoTasks();
-                    renderTodoTasks();
+                    // Cancel: do nothing, task remains in To-Do list
                 }
             );
         }
@@ -6458,7 +6991,7 @@
             const task = todoTasks.find(t => t.id === id);
             if (!task) return;
 
-            const timerTaskInput = document.getElementById('timer-task-number');
+            const timerTaskInput = domCache.timerTaskNumber;
             if (timerTaskInput) {
                 timerTaskInput.value = task.description;
                 timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
@@ -6472,8 +7005,8 @@
         }
 
         function handleNoDateToggle() {
-            const dateInput = document.getElementById('todo-date');
-            const noDateCheckbox = document.getElementById('todo-no-date');
+            const dateInput = domCache.todoDate;
+            const noDateCheckbox = domCache.todoNoDate;
 
             if (noDateCheckbox.checked) {
                 dateInput.style.display = 'none';
@@ -6489,8 +7022,8 @@
          * Prevents cross-section dragging (dated tasks stay in dated section, etc.)
          */
         function initTodoDragDrop() {
-            const datedList = document.getElementById('todo-dated-list');
-            const undatedList = document.getElementById('todo-undated-list');
+            const datedList = domCache.todoDatedList;
+            const undatedList = domCache.todoUndatedList;
 
             [datedList, undatedList].forEach(list => {
                 list.addEventListener('dragstart', handleTodoDragStart);
@@ -6632,8 +7165,8 @@
         }
 
         function rebuildTodoOrderFromDOM() {
-            const datedList = document.getElementById('todo-dated-list');
-            const undatedList = document.getElementById('todo-undated-list');
+            const datedList = domCache.todoDatedList;
+            const undatedList = domCache.todoUndatedList;
 
             if (!datedList || !undatedList) {
                 return;
@@ -6688,16 +7221,16 @@
 
         function initPomodoroTimer() {
             loadPomodoroData();
-            const timerDisplay = document.getElementById('timer-display');
-            const progressCircle = document.getElementById('timer-circle-progress');
+            const timerDisplay = domCache.timerDisplay;
+            const progressCircle = domCache.timerCircleProgress;
             timerDisplay.classList.add('no-transition');
             progressCircle.classList.add('no-transition');
             switchMode('work');
 
             // Fix for Tauri: Explicitly set button visibility on initialization
             // Inline HTML style="display: none;" doesn't work reliably in WebView2
-            document.getElementById('timer-start').style.display = 'inline-block';
-            document.getElementById('timer-pause').style.display = 'none';
+            domCache.timerStart.style.display = 'inline-block';
+            domCache.timerPause.style.display = 'none';
 
             setTimeout(() => {
                 timerDisplay.classList.remove('no-transition');
@@ -6711,21 +7244,23 @@
                     });
                 }
             }
-            document.getElementById('timer-start').addEventListener('click', startTimer);
-            document.getElementById('timer-pause').addEventListener('click', pauseTimer);
-            document.getElementById('timer-reset').addEventListener('click', resetTimer);
-            document.getElementById('timer-complete-task').addEventListener('click', completeCurrentTask);
-            document.getElementById('timer-new-task').addEventListener('click', startNewTask);
-            document.getElementById('pomodoro-minimize').addEventListener('click', toggleMinimize);
-            document.getElementById('pomodoro-minimized').addEventListener('click', function(e) {
-                if (!minimizedDragMoved) {
+            // ✅ DELEGATED to pomodoroWidget in setupEventDelegation()
+            // domCache.timerStart.addEventListener('click', startTimer);
+            // domCache.timerPause.addEventListener('click', pauseTimer);
+            // domCache.timerReset.addEventListener('click', resetTimer);
+            // domCache.timerCompleteTask.addEventListener('click', completeCurrentTask);
+            // domCache.timerNewTask.addEventListener('click', startNewTask);
+            // domCache.pomodoroMinimize.addEventListener('click', toggleMinimize);
+
+            domCache.pomodoroMinimized.addEventListener('click', function(e) {
+                if (!pomodoroWidgetController.wasMinimizedDragMoved()) {
                     toggleMinimize();
                 }
             });
-            document.getElementById('pomodoro-minimized').addEventListener('keydown', function(e) {
+            domCache.pomodoroMinimized.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    if (!minimizedDragMoved) {
+                    if (!pomodoroWidgetController.wasMinimizedDragMoved()) {
                         toggleMinimize();
                     }
                 }
@@ -6733,7 +7268,7 @@
             initDragAndResize();
 
             // Update empty-field class based on input value
-            const timerTaskInput = document.getElementById('timer-task-number');
+            const timerTaskInput = domCache.timerTaskNumber;
             const updateEmptyFieldClass = () => {
                 if (timerTaskInput.value.trim() === '') {
                     timerTaskInput.classList.add('empty-field');
@@ -6776,6 +7311,7 @@
         }
 
         function setupEventDelegation() {
+            // Delegate task types container events
             if (domCache.taskTypesContainer) {
                 domCache.taskTypesContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -6788,6 +7324,8 @@
                     }
                 });
             }
+
+            // Delegate projects container events
             if (domCache.modalProjectsContainer) {
                 domCache.modalProjectsContainer.addEventListener('click', function(e) {
                     const target = e.target;
@@ -6800,6 +7338,8 @@
                     }
                 });
             }
+
+            // Delegate entries table events
             if (domCache.entriesBody) {
                 domCache.entriesBody.addEventListener('click', function(e) {
                     const target = e.target;
@@ -6815,12 +7355,139 @@
                     }
                 });
             }
+
+            // Delegate pomodoro widget events
+            if (domCache.pomodoroWidget) {
+                domCache.pomodoroWidget.addEventListener('click', function(e) {
+                    const target = e.target.closest('button');
+                    if (!target) return;
+
+                    if (target.id === 'timer-start') {
+                        startTimer();
+                    } else if (target.id === 'timer-pause') {
+                        pauseTimer();
+                    } else if (target.id === 'timer-reset') {
+                        resetTimer();
+                    } else if (target.id === 'timer-complete-task') {
+                        completeCurrentTask();
+                    } else if (target.id === 'timer-new-task') {
+                        startNewTask();
+                    } else if (target.id === 'pomodoro-minimize') {
+                        toggleMinimize();
+                    }
+                });
+            }
+
+            // Delegate settings modal events
+            if (domCache.settingsModal) {
+                domCache.settingsModal.addEventListener('click', function(e) {
+                    const target = e.target;
+
+                    // Handle close via backdrop
+                    if (target === domCache.settingsModal) {
+                        closeSettingsModal();
+                        return;
+                    }
+
+                    // Handle button clicks
+                    const button = target.closest('button');
+                    if (!button) return;
+
+                    if (button.id === 'modal-close') {
+                        closeSettingsModal();
+                    } else if (button.id === 'modal-cancel-btn') {
+                        cancelSettingsChanges();
+                    } else if (button.id === 'modal-apply-btn') {
+                        applySettings();
+                    } else if (button.id === 'modal-ok-btn') {
+                        applyAndCloseSettings();
+                    } else if (button.id === 'modal-add-project-btn') {
+                        addModalProject();
+                    } else if (button.id === 'delete-all-projects-btn') {
+                        deleteAllProjects();
+                    } else if (button.id === 'add-task-type-btn') {
+                        taskTypeManager.add();
+                    } else if (button.id === 'delete-all-task-types-btn') {
+                        deleteAllTaskTypes();
+                    } else if (button.classList.contains('modal-tab')) {
+                        const tabId = button.getAttribute('data-tab');
+                        switchTab(tabId);
+                    }
+                });
+            }
+
+            // Delegate confirm modal events
+            if (domCache.confirmModal) {
+                domCache.confirmModal.addEventListener('click', function(e) {
+                    const target = e.target;
+
+                    // Handle close via backdrop
+                    if (target === domCache.confirmModal) {
+                        triggerConfirmCancel();
+                        return;
+                    }
+
+                    // Handle button clicks
+                    const button = target.closest('button');
+                    if (!button) return;
+
+                    if (button.id === 'confirm-accept') {
+                        triggerConfirmAccept();
+                    } else if (button.id === 'confirm-cancel' || button.id === 'confirm-close') {
+                        triggerConfirmCancel();
+                    }
+                });
+            }
+
+            // Delegate info modal events
+            if (domCache.infoModal) {
+                domCache.infoModal.addEventListener('click', function(e) {
+                    const target = e.target;
+
+                    // Handle close via backdrop
+                    if (target === domCache.infoModal) {
+                        closeInfoModal();
+                        return;
+                    }
+
+                    // Handle button clicks
+                    const button = target.closest('button');
+                    if (button && button.id === 'info-modal-close') {
+                        closeInfoModal();
+                    }
+                });
+            }
+
+            // Delegate TODO widget events
+            if (domCache.todoWidget) {
+                domCache.todoWidget.addEventListener('click', function(e) {
+                    const target = e.target.closest('button');
+                    if (!target) return;
+
+                    if (target.id === 'add-todo-btn') {
+                        addTodoTask();
+                    } else if (target.id === 'delete-all-todos') {
+                        deleteAllTodoTasks();
+                    } else if (target.id === 'todo-minimize') {
+                        toggleTodoMinimize();
+                    } else if (target.classList.contains('todo-delete-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        deleteTodoTask(index);
+                    } else if (target.classList.contains('todo-complete-btn')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        completeTodoTask(index);
+                    } else if (target.classList.contains('todo-send-to-pomodoro')) {
+                        const index = parseInt(target.getAttribute('data-index'));
+                        sendTodoToPomodoro(index);
+                    }
+                });
+            }
         }
 
         function setupFormHandlers() {
             const today = new Date();
             domCache.date.value = today.toISOString().split('T')[0];
-            document.getElementById('timesheet-form').addEventListener('submit', function(e) {
+            domCache.timesheetForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 if (!validateForm()) {
@@ -6829,11 +7496,11 @@
                 }
 
                 const entry = {
-                    date: document.getElementById('date').value,
-                    taskType: document.getElementById('task-type').value,
-                    client: document.getElementById('client').value,
-                    hours: parseFloat(document.getElementById('hours').value),
-                    taskNumber: document.getElementById('task-number').value
+                    date: domCache.date.value,
+                    taskType: domCache.taskType.value,
+                    client: domCache.client.value,
+                    hours: parseFloat(domCache.hours.value),
+                    taskNumber: domCache.taskNumber.value
                 };
 
                 const editId = this.querySelector('button[type="submit"]').dataset.editId;
@@ -6845,7 +7512,7 @@
 
                 resetForm();
             });
-            document.getElementById('reset-form').addEventListener('click', resetForm);
+            domCache.resetForm.addEventListener('click', resetForm);
             
             // Add real-time validation for hours field
             if (domCache.hours) {
@@ -6871,58 +7538,58 @@
         }
 
         function setupFilterHandlers() {
-            document.getElementById('filter-current-month').addEventListener('change', function() {
+            domCache.filterAllDates.addEventListener('change', function() {
                 if (this.checked) {
-                    document.getElementById('filter-current-week').checked = false;
+                    domCache.filterCurrentMonth.checked = false;
+                    domCache.filterCurrentWeek.checked = false;
                 }
                 renderEntries();
             });
 
-            document.getElementById('filter-current-week').addEventListener('change', function() {
+            domCache.filterCurrentMonth.addEventListener('change', function() {
                 if (this.checked) {
-                    document.getElementById('filter-current-month').checked = false;
+                    domCache.filterAllDates.checked = false;
+                    domCache.filterCurrentWeek.checked = false;
                 }
                 renderEntries();
             });
-            document.getElementById('show-more-btn').addEventListener('click', function() {
+
+            domCache.filterCurrentWeek.addEventListener('change', function() {
+                if (this.checked) {
+                    domCache.filterAllDates.checked = false;
+                    domCache.filterCurrentMonth.checked = false;
+                }
+                renderEntries();
+            });
+            domCache.showMoreBtn.addEventListener('click', function() {
                 showAllEntries = !showAllEntries;
                 renderEntries();
             });
         }
 
         function setupModalHandlers() {
-            document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
-            document.getElementById('modal-close').addEventListener('click', closeSettingsModal);
-            document.getElementById('info-btn').addEventListener('click', openInfoModal);
-            document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
-            document.getElementById('delete-all-btn').addEventListener('click', deleteAllEntries);
-            document.getElementById('modal-cancel-btn').addEventListener('click', cancelSettingsChanges);
-            document.getElementById('modal-apply-btn').addEventListener('click', applySettings);
-            document.getElementById('modal-ok-btn').addEventListener('click', applyAndCloseSettings);
-            document.getElementById('confirm-accept').addEventListener('click', triggerConfirmAccept);
-            document.getElementById('confirm-cancel').addEventListener('click', triggerConfirmCancel);
-            document.getElementById('confirm-close').addEventListener('click', triggerConfirmCancel);
+            // ✅ DELEGATED to respective modals in setupEventDelegation()
+            // domCache.settingsBtn.addEventListener('click', openSettingsModal);
+            // domCache.modalClose.addEventListener('click', closeSettingsModal);
+            // domCache.infoBtn.addEventListener('click', openInfoModal);
+            // domCache.infoModalClose.addEventListener('click', closeInfoModal);
+            // domCache.deleteAllBtn.addEventListener('click', deleteAllEntries);
+            // domCache.modalCancelBtn.addEventListener('click', cancelSettingsChanges);
+            // domCache.applyBtn.addEventListener('click', applySettings);
+            // domCache.modalOkBtn.addEventListener('click', applyAndCloseSettings);
+            // domCache.confirmAccept.addEventListener('click', triggerConfirmAccept);
+            // domCache.confirmCancel.addEventListener('click', triggerConfirmCancel);
+            // domCache.confirmClose.addEventListener('click', triggerConfirmCancel);
+            // document.querySelectorAll('.modal-tab') - delegated to settingsModal
+            // window backdrop clicks - delegated to respective modals
+
+            // Note: Settings/Info/Confirm buttons still need to be attached to trigger modal opening
+            domCache.settingsBtn.addEventListener('click', openSettingsModal);
+            domCache.infoBtn.addEventListener('click', openInfoModal);
+            domCache.deleteAllBtn.addEventListener('click', deleteAllEntries);
 
             // Initialize language dropdown
             initLanguageDropdown();
-
-            document.querySelectorAll('.modal-tab').forEach(tabButton => {
-                tabButton.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    switchTab(tabId);
-                });
-            });
-            window.addEventListener('click', function(event) {
-                if (event.target === domCache.settingsModal) {
-                    closeSettingsModal();
-                }
-                if (event.target === domCache.infoModal) {
-                    closeInfoModal();
-                }
-                if (event.target === domCache.confirmModal) {
-                    triggerConfirmCancel();
-                }
-            });
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     if (domCache.confirmModal.style.display === 'block') {
@@ -6939,16 +7606,19 @@
                 }
             });
 
-            document.getElementById('modal-add-project-btn').addEventListener('click', addModalProject);
-            document.getElementById('delete-all-projects-btn').addEventListener('click', deleteAllProjects);
-            document.getElementById('modal-project-name').addEventListener('keypress', function(e) {
+            // ✅ DELEGATED to settingsModal in setupEventDelegation()
+            // domCache.modalAddProjectBtn.addEventListener('click', addModalProject);
+            // domCache.deleteAllProjectsBtn.addEventListener('click', deleteAllProjects);
+            // domCache.addTaskTypeBtn.addEventListener('click', () => taskTypeManager.add());
+            // domCache.deleteAllTaskTypesBtn.addEventListener('click', deleteAllTaskTypes);
+
+            // Keep keypress handlers for Enter key (special keyboard interaction)
+            domCache.modalProjectName.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     addModalProject();
                 }
             });
-            document.getElementById('add-task-type-btn').addEventListener('click', () => taskTypeManager.add());
-            document.getElementById('delete-all-task-types-btn').addEventListener('click', deleteAllTaskTypes);
-            document.getElementById('task-type-name').addEventListener('keypress', function(e) {
+            domCache.taskTypeName.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     taskTypeManager.add();
                 }
@@ -6956,33 +7626,31 @@
         }
 
         function setupUIHandlers() {
-            document.getElementById('export-button').addEventListener('click', exportData);
+            domCache.exportButton.addEventListener('click', exportData);
         }
 
         function setupTodoHandlers() {
-            // Add task button
-            const addTodoBtn = document.getElementById('add-todo-btn');
-            if (addTodoBtn) {
-                addTodoBtn.addEventListener('click', addTodoTask);
-            }
+            // ✅ DELEGATED to todoWidget in setupEventDelegation()
+            // const addTodoBtn = domCache.addTodoBtn;
+            // if (addTodoBtn) {
+            //     addTodoBtn.addEventListener('click', addTodoTask);
+            // }
 
-            // Delete all button
-            const deleteAllBtn = document.getElementById('delete-all-todos');
-            if (deleteAllBtn) {
-                deleteAllBtn.addEventListener('click', deleteAllTodoTasks);
-            }
+            // const deleteAllBtn = domCache.deleteAllTodos;
+            // if (deleteAllBtn) {
+            //     deleteAllBtn.addEventListener('click', deleteAllTodoTasks);
+            // }
 
-            // Minimize button
-            const todoMinimizeBtn = document.getElementById('todo-minimize');
-            if (todoMinimizeBtn) {
-                todoMinimizeBtn.addEventListener('click', toggleTodoMinimize);
-            }
+            // const todoMinimizeBtn = domCache.todoMinimize;
+            // if (todoMinimizeBtn) {
+            //     todoMinimizeBtn.addEventListener('click', toggleTodoMinimize);
+            // }
 
-            // Minimized widget click
-            const todoMinimized = document.getElementById('todo-minimized');
+            // Minimized widget click - Keep for drag detection
+            const todoMinimized = domCache.todoMinimized;
             if (todoMinimized) {
                 todoMinimized.addEventListener('click', function(e) {
-                    if (!todoMinimizedDragMoved) {
+                    if (!todoWidgetController.wasMinimizedDragMoved()) {
                         toggleTodoMinimize();
                     }
                 });
@@ -6990,7 +7658,7 @@
                 todoMinimized.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        if (!todoMinimizedDragMoved) {
+                        if (!todoWidgetController.wasMinimizedDragMoved()) {
                             toggleTodoMinimize();
                         }
                     }
@@ -6998,14 +7666,14 @@
             }
 
             // No date checkbox
-            const noDateCheckbox = document.getElementById('todo-no-date');
+            const noDateCheckbox = domCache.todoNoDate;
             if (noDateCheckbox) {
                 noDateCheckbox.addEventListener('change', handleNoDateToggle);
                 handleNoDateToggle(); // Set initial state
             }
 
             // Update empty-field class for todo description
-            const todoDescriptionInput = document.getElementById('todo-description');
+            const todoDescriptionInput = domCache.todoDescription;
             if (todoDescriptionInput) {
                 const updateTodoEmptyFieldClass = () => {
                     if (todoDescriptionInput.value.trim() === '') {
@@ -7050,6 +7718,7 @@
             loadTaskTypes();
             updateTaskTypeSelect();
             renderTaskTypeFilters();
+            renderProjectFilters();
             initSectionToggles();
             initPomodoroTimer();
 
