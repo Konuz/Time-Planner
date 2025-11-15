@@ -209,5 +209,13 @@
     "todo.emptyDescription": "Inserisci la descrizione dell'attività",
     "todo.selectDate": "Seleziona data",
     "todo.noTasks": "Nessuna attività da eliminare",
-    "info.section.dataLocation": "I dati dell'applicazione sono memorizzati nella directory \"%APPDATA%\\Time Planner\""
+    "info.section.dataLocation": "I dati dell'applicazione sono memorizzati nella directory \"%APPDATA%\\Time Planner\"",
+    "msg.errorFileInUse": "Il file è utilizzato da un altro programma",
+    "msg.errorPermissionDenied": "Permesso negato per scrivere il file",
+    "msg.errorFileNotFound": "Il file o la cartella non esiste",
+    "msg.errorDiskFull": "Spazio su disco insufficiente",
+    "msg.errorUnknown": "Errore di sistema sconosciuto",
+    "msg.systemErrorNote": "Nota: Il seguente messaggio proviene dal sistema operativo",
+    "entries.dateFilter": "Data",
+    "entries.projectFilter": "Progetto"
 }

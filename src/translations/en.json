@@ -209,5 +209,13 @@
     "todo.emptyDescription": "Please enter task description",
     "todo.selectDate": "Select date",
     "todo.noTasks": "No tasks to delete",
-    "info.section.dataLocation": "Application data is stored in the \"%APPDATA%\\Time Planner\" directory"
+    "info.section.dataLocation": "Application data is stored in the \"%APPDATA%\\Time Planner\" directory",
+    "msg.errorFileInUse": "File is being used by another program",
+    "msg.errorPermissionDenied": "Permission denied to write file",
+    "msg.errorFileNotFound": "File or folder does not exist",
+    "msg.errorDiskFull": "Insufficient disk space",
+    "msg.errorUnknown": "Unknown system error",
+    "msg.systemErrorNote": "Note: The following message comes from the operating system",
+    "entries.dateFilter": "Date",
+    "entries.projectFilter": "Project"
 }

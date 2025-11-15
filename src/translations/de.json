@@ -209,5 +209,13 @@
     "todo.emptyDescription": "Bitte geben Sie eine Aufgabenbeschreibung ein",
     "todo.selectDate": "Datum auswählen",
     "todo.noTasks": "Keine Aufgaben zum Löschen",
-    "info.section.dataLocation": "Anwendungsdaten werden im Verzeichnis \"%APPDATA%\\Time Planner\" gespeichert"
+    "info.section.dataLocation": "Anwendungsdaten werden im Verzeichnis \"%APPDATA%\\Time Planner\" gespeichert",
+    "msg.errorFileInUse": "Datei wird von einem anderen Programm verwendet",
+    "msg.errorPermissionDenied": "Keine Berechtigung zum Schreiben der Datei",
+    "msg.errorFileNotFound": "Datei oder Ordner existiert nicht",
+    "msg.errorDiskFull": "Nicht genügend Speicherplatz",
+    "msg.errorUnknown": "Unbekannter Systemfehler",
+    "msg.systemErrorNote": "Hinweis: Die folgende Nachricht stammt vom Betriebssystem",
+    "entries.dateFilter": "Datum",
+    "entries.projectFilter": "Projekt"
 }

@@ -93,17 +93,19 @@ Key architectural pattern: Dual data structures for entries:
 **Internationalization System**:
 
 **6 Supported Languages**:
-- 🇵🇱 Polski (PL) - embedded in HTML
-- 🇬🇧 English (EN) - embedded in HTML
-- 🇩🇪 Deutsch (DE) - lazy loaded
-- 🇪🇸 Español (ES) - lazy loaded
-- 🇮🇹 Italiano (IT) - lazy loaded
-- 🇫🇷 Français (FR) - lazy loaded
+- 🇬🇧 English (EN) - **embedded in HTML** (default fallback language)
+- 🇵🇱 Polski (PL) - lazy loaded from `src/translations/pl.json`
+- 🇩🇪 Deutsch (DE) - lazy loaded from `src/translations/de.json`
+- 🇪🇸 Español (ES) - lazy loaded from `src/translations/es.json`
+- 🇮🇹 Italiano (IT) - lazy loaded from `src/translations/it.json`
+- 🇫🇷 Français (FR) - lazy loaded from `src/translations/fr.json`
 
 **Translation Architecture**:
-- **Files**: `src/translations/{lang}.json` - 180+ keys per language
-- **Lazy Loading**: `loadTranslations(langCode)` - async fetch with error handling
-- **Translation Function**: `t(key, params)` - supports parameter interpolation
+- **Default Language**: English (EN) is embedded directly in HTML for instant availability
+- **Lazy Loading**: All other languages (PL/DE/ES/IT/FR) load asynchronously from JSON files
+- **Files**: `src/translations/{lang}.json` - 218+ keys per language
+- **Fetch Path**: Uses `./translations/${langCode}.json` with explicit `./` for Tauri compatibility
+- **Translation Function**: `t(key, params)` - supports parameter interpolation with English fallback
   ```javascript
   t("pomodoro.notif.timeAdded", { task: "ABC-123", hours: 2.5 })
   // → "Time added: ABC-123 (+2.5h)" (EN)
@@ -111,19 +113,30 @@ Key architectural pattern: Dual data structures for entries:
   ```
 - **Dynamic Updates**: `updateUILanguage()` - applies translations to all `data-i18n` elements
 - **Attributes**: `data-i18n="key"` (text content), `data-i18n-title="key"` (title attribute)
+- **Error Translation**: `translateSystemError()` - converts OS error messages to user's language
 
 **UI Components**:
 - **Language Dropdown**: Flag-based selector with animated menu (CSS lines 1446-1557)
 - **SUPPORTED_LANGUAGES**: Array of language objects with code, name, and flag emoji
 - **Storage**: Current language persisted to `localStorage['app-language']`
-- **Fallback**: Falls back to Polish (PL) if translation loading fails
+- **Fallback**: Falls back to English (EN) if translation loading fails
 
 **Translation Loading Flow**:
-1. Page loads → Check `localStorage['app-language']` or default to PL
-2. PL/EN available immediately (embedded in HTML)
-3. User selects DE/ES/IT/FR → `fetch('translations/{lang}.json')`
-4. On success: Cache in `translations` object, update UI
-5. On error: Log error, fallback to PL, show console warning
+1. Page loads → Check `localStorage['app-language']` or default to EN
+2. EN available immediately (embedded in HTML)
+3. User selects PL/DE/ES/IT/FR → `await loadTranslations(langCode)`
+4. Fetch: `./translations/${langCode}.json` (explicit ./ required for Tauri)
+5. On success: Cache in `translations` object, update UI, log "✅ Translations loaded: {lang}"
+6. On error: Log detailed error with path, fallback to EN, show console warning
+
+**CRITICAL Translation JSON Requirements**:
+- **Valid JSON syntax**: Use standard ASCII double quotes `"` only
+- **No typographic quotes**: Avoid Polish/German quotes („ "), use ASCII `"` instead
+- **Quote escaping**: Content quotes must use apostrophes `'` or be escaped `\"`
+  - ❌ Wrong: `"key": "Click "Add entry" to save"` (breaks JSON)
+  - ✅ Correct: `"key": "Click 'Add entry' to save"` (uses apostrophes)
+  - ✅ Correct: `"key": "Click \"Add entry\" to save"` (escaped quotes)
+- **Validation**: Test with `python3 -m json.tool file.json` before committing
 
 **Data Export** (CSV Export Function):
 - CSV export for current month's entries with UTF-8 BOM encoding
@@ -132,10 +145,14 @@ Key architectural pattern: Dual data structures for entries:
 - **Browser Mode**: Falls back to Blob download for standalone HTML
 - **Permissions Required**: `fs:allow-write-text-file`, `fs:allow-truncate` (for file overwrites)
 - **Scope**: Configured for $DOWNLOAD, $DOCUMENT, $DESKTOP directories
-- **Translation Fallbacks**: All `t()` calls have hardcoded Polish fallbacks if translations fail to load
+- **Translation Fallbacks**: All `t()` calls have hardcoded English fallbacks if translations fail to load
   ```javascript
-  showNotification(t('msg.exportSuccess') || 'Plik CSV został zapisany', 2000);
+  showNotification(t('msg.exportSuccess') || 'CSV file saved successfully', 2000);
   ```
+- **Error Translation**: `translateSystemError()` converts OS-level error messages to user's language
+  - Detects common patterns: file in use (Windows error 32), permission denied, file not found, disk full
+  - Supports multi-language error messages from Windows, Linux, macOS
+  - Provides localized error descriptions for better UX in all 6 languages
 
 ### Security Architecture
 
@@ -366,15 +383,19 @@ localStorage.removeItem('todo-tasks');
 ### Adding New Translations
 1. Add translation key to ALL 6 language files in `src/translations/`:
    - `pl.json` (Polski)
-   - `en.json` (English)
+   - `en.json` (English) - also update embedded translations in src/index.html
    - `de.json` (Deutsch)
    - `es.json` (Español)
    - `it.json` (Italiano)
    - `fr.json` (Français)
-2. Add `data-i18n="key"` or `data-i18n-title="key"` attribute to HTML element
-3. Call `updateUILanguage()` if adding dynamically
-4. Test all languages: Dropdown menu allows switching between all 6 languages
-5. Verify lazy loading: Check browser Console for "✅ Translations loaded: {lang}"
+2. **CRITICAL**: Use only ASCII quotes (`"`) and escape quotes in content with apostrophes (`'`)
+   - ❌ Wrong: `"msg.example": "Click "Add" to save"`
+   - ✅ Correct: `"msg.example": "Click 'Add' to save"`
+3. **Validate JSON syntax**: Run `python3 -m json.tool src/translations/{lang}.json` for each file
+4. Add `data-i18n="key"` or `data-i18n-title="key"` attribute to HTML element
+5. Call `updateUILanguage()` if adding dynamically
+6. Test all languages: Dropdown menu allows switching between all 6 languages
+7. Verify lazy loading: Check browser Console for "✅ Translations loaded: {lang}"
 
 **Translation File Structure**:
 ```json
@@ -461,6 +482,32 @@ When changing data structures:
 - Tooltips for long text fields: All table cells with text content have `title` attribute for hover preview
 
 ## Recent Major Changes
+
+### v1.1.5 (2025-11-14) - Translation System Fixes & Error Translation
+**Translation Architecture Changes**:
+- **Changed Default Language**: English (EN) is now the only embedded language (previously PL+EN)
+- **Lazy Loading All Non-English**: Polish, German, Spanish, Italian, French load from JSON files
+- **Fallback Language**: Changed from Polish to English throughout codebase
+- **Tauri Path Fix**: Added explicit `./` prefix to translation fetch paths for Tauri compatibility
+
+**JSON Syntax Fixes**:
+- **Fixed Polish translations**: Removed 211 instances of typographic quotes („ ")
+- **Quote Escaping**: Converted unescaped quotes inside values to apostrophes (')
+- **Validation**: All 6 translation files now pass `python3 -m json.tool` validation
+
+**System Error Translation Feature**:
+- **New Function**: `translateSystemError()` - converts OS error messages to user's language
+- **Pattern Detection**: Recognizes file-in-use, permission-denied, file-not-found, disk-full errors
+- **Multi-OS Support**: Handles error messages from Windows, Linux, macOS
+- **New Translation Keys**: Added 6 error message keys to all 6 languages
+  - `msg.errorFileInUse`, `msg.errorPermissionDenied`, `msg.errorFileNotFound`
+  - `msg.errorDiskFull`, `msg.errorUnknown`, `msg.systemErrorNote`
+- **CSV Export Errors**: Now fully localized in all 6 languages instead of mixed-language errors
+
+**Build Results**:
+- Original: 313,469 bytes
+- Minified: 155,806 bytes (50% reduction)
+- Token optimization: ~12KB saved vs PL+EN embedded approach
 
 ### v1.1.0 (2025-11-14) - LocalStorageManager Migration Complete
 **Storage Architecture Refactoring**:
@@ -646,6 +693,25 @@ When changing data structures:
 - **Cause**: Files not copied to `src-dist/translations/` during build
 - **Solution**: Verify `build-minify.js` copies translation files (lines 60-78)
 - **Testing**: Check `src-dist/translations/` contains all 6 JSON files
+
+**Problem**: Language loads as English instead of selected language (PL/DE/ES/IT/FR)
+- **Cause**: JSON syntax error in translation file (most common: typographic quotes)
+- **Error Message**: `SyntaxError: Expected double-quoted property name in JSON at position XXXX`
+- **Common Causes**:
+  1. Typographic quotes („ " or " ") instead of ASCII quotes (")
+  2. Unescaped quotes inside string values: `"Click "Add" to save"`
+  3. Missing commas between entries
+  4. Trailing commas after last entry
+- **Solution**:
+  1. Replace all typographic quotes with ASCII: `sed -i 's/„/"/g; s/"/"/g' file.json`
+  2. Use apostrophes for quotes in content: `"Click 'Add' to save"`
+  3. Validate with: `python3 -m json.tool file.json`
+- **Prevention**: Always validate JSON files before committing
+
+**Problem**: CSV export errors show mixed languages (EN + DE + PL)
+- **Cause**: OS error messages not translated
+- **Solution**: Already fixed in v1.1.5 with `translateSystemError()` function
+- **Verify**: Export CSV, trigger error (e.g., open file in Excel), check error message is fully localized
 
 ### Build System Issues
 

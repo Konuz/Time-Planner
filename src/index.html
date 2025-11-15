@@ -721,7 +721,7 @@
         .pomodoro-controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 16px;
         }
 
@@ -766,23 +766,31 @@
             color: white;
         }
 
+        #timer-reset {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            color: white;
+        }
+
+        #timer-reset:hover {
+            opacity: 0.9;
+        }
+
         .timer-new-task-btn {
             width: 100%;
             flex: none;
         }
 
         .timer-btn-success {
-            background: #28a745;
+            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
             color: white;
             margin-top: 8px;
             width: 100%;
             border-radius: 8px;
-            transition: background 0.2s ease;
+            transition: opacity 0.2s ease;
         }
 
         .timer-btn-success:hover {
-            background: #218838;
-            opacity: 1;
+            opacity: 0.9;
         }
 
         .timer-task-input {
@@ -3701,6 +3709,8 @@
                 'entries.title': 'Entries list',
                 'entries.filterCurrentMonth': 'Current month',
                 'entries.filterCurrentWeek': 'Current week',
+                'entries.dateFilter': 'Date',
+                'entries.projectFilter': 'Project',
                 'entries.taskTypeFilter': 'Task type',
                 'entries.filterAll': 'All',
                 'entries.selectDeselectAll': 'All',
@@ -3898,15 +3908,18 @@
             }
 
             try {
-                const response = await fetch(`translations/${langCode}.json`);
+                // Use relative path with explicit ./ for Tauri compatibility
+                const response = await fetch(`./translations/${langCode}.json`);
                 if (!response.ok) {
-                    throw new Error(`Failed to load translations for ${langCode}`);
+                    throw new Error(`Failed to load translations for ${langCode}: ${response.status} ${response.statusText}`);
                 }
                 translations[langCode] = await response.json();
                 console.log(`✅ Translations loaded: ${langCode}`);
                 return translations[langCode];
             } catch (error) {
-                console.error(`Failed to load translations for ${langCode}:`, error);
+                console.error(`❌ Failed to load translations for ${langCode}:`, error);
+                console.error(`   Path attempted: ./translations/${langCode}.json`);
+                console.error(`   Falling back to English`);
                 // Fallback to English (default embedded language)
                 return translations['en'] || {};
             }
@@ -5557,6 +5570,52 @@
             domCache.totalHours.textContent = totalHours.toFixed(2);
         }
 
+        // Translate common system errors to user's language
+        function translateSystemError(errorMessage) {
+            if (!errorMessage) return t('msg.errorUnknown') || 'Unknown error';
+
+            const msg = errorMessage.toString().toLowerCase();
+
+            // File in use (Windows error 32, Linux EBUSY)
+            if (msg.includes('jest on używany przez inny proces') ||
+                msg.includes('is being used by another') ||
+                msg.includes('używany przez inny') ||
+                msg.includes('os error 32') ||
+                msg.includes('ebusy') ||
+                msg.includes('sharing violation') ||
+                msg.includes('process cannot access')) {
+                return t('msg.errorFileInUse') || 'File is being used by another program';
+            }
+
+            // Permission denied
+            if (msg.includes('permission denied') ||
+                msg.includes('brak uprawnień') ||
+                msg.includes('access denied') ||
+                msg.includes('eacces')) {
+                return t('msg.errorPermissionDenied') || 'Permission denied';
+            }
+
+            // File not found
+            if (msg.includes('no such file or directory') ||
+                msg.includes('nie znaleziono') ||
+                msg.includes('file not found') ||
+                msg.includes('enoent')) {
+                return t('msg.errorFileNotFound') || 'File or folder not found';
+            }
+
+            // Disk full
+            if (msg.includes('no space left') ||
+                msg.includes('brak miejsca') ||
+                msg.includes('disk full') ||
+                msg.includes('enospc')) {
+                return t('msg.errorDiskFull') || 'Insufficient disk space';
+            }
+
+            // Unknown error - return with note
+            const note = t('msg.systemErrorNote') || 'System error';
+            return `${note}: ${errorMessage}`;
+        }
+
         // Escape CSV value according to RFC 4180
         function escapeCsvValue(value) {
             if (value === null || value === undefined) {
@@ -5633,7 +5692,7 @@
                             let errorMsg = (t('msg.csvWriteErrorTitle') || '🚨 BŁĄD ZAPISU CSV:') + '\n\n';
                             errorMsg += (t('msg.csvPath') || '📍 Ścieżka:') + ` ${filePath}\n`;
                             errorMsg += (t('msg.csvErrorType') || '📛 Typ błędu:') + ` ${writeError.name || 'Unknown'}\n`;
-                            errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${writeError.message || writeError.toString()}\n\n`;
+                            errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${translateSystemError(writeError.message || writeError.toString())}\n\n`;
 
                             if (writeError.code) {
                                 errorMsg += (t('msg.csvErrorCode') || '🔢 Kod:') + ` ${writeError.code}\n\n`;
@@ -5662,7 +5721,7 @@
                         console.error('❌ Błąd dialogu:', dialogError);
 
                         let errorMsg = (t('msg.csvDialogErrorTitle') || '🚨 BŁĄD DIALOGU ZAPISU:') + '\n\n';
-                        errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${dialogError.message || dialogError.toString()}`;
+                        errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${translateSystemError(dialogError.message || dialogError.toString())}`;
                         alert(errorMsg);
 
                         // Fallback to standard method

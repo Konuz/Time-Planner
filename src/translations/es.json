@@ -209,5 +209,13 @@
     "todo.emptyDescription": "Por favor ingrese la descripción de la tarea",
     "todo.selectDate": "Seleccionar fecha",
     "todo.noTasks": "No hay tareas para eliminar",
-    "info.section.dataLocation": "Los datos de la aplicación se almacenan en el directorio \"%APPDATA%\\Time Planner\""
+    "info.section.dataLocation": "Los datos de la aplicación se almacenan en el directorio \"%APPDATA%\\Time Planner\"",
+    "msg.errorFileInUse": "El archivo está siendo usado por otro programa",
+    "msg.errorPermissionDenied": "Permiso denegado para escribir el archivo",
+    "msg.errorFileNotFound": "El archivo o carpeta no existe",
+    "msg.errorDiskFull": "Espacio en disco insuficiente",
+    "msg.errorUnknown": "Error del sistema desconocido",
+    "msg.systemErrorNote": "Nota: El siguiente mensaje proviene del sistema operativo",
+    "entries.dateFilter": "Fecha",
+    "entries.projectFilter": "Proyecto"
 }

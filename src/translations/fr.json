@@ -209,5 +209,13 @@
     "todo.emptyDescription": "Veuillez entrer la description de la tâche",
     "todo.selectDate": "Sélectionner la date",
     "todo.noTasks": "Aucune tâche à supprimer",
-    "info.section.dataLocation": "Les données de l'application sont stockées dans le répertoire \"%APPDATA%\\Time Planner\""
+    "info.section.dataLocation": "Les données de l'application sont stockées dans le répertoire \"%APPDATA%\\Time Planner\"",
+    "msg.errorFileInUse": "Le fichier est utilisé par un autre programme",
+    "msg.errorPermissionDenied": "Permission refusée pour écrire le fichier",
+    "msg.errorFileNotFound": "Le fichier ou le dossier n'existe pas",
+    "msg.errorDiskFull": "Espace disque insuffisant",
+    "msg.errorUnknown": "Erreur système inconnue",
+    "msg.systemErrorNote": "Remarque : Le message suivant provient du système d'exploitation",
+    "entries.dateFilter": "Date",
+    "entries.projectFilter": "Projet"
 }
