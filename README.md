@@ -146,8 +146,8 @@ Fully localized in **6 languages**:
 
 Your feedback is valuable! If you have suggestions or encounter issues:
 
-- **Bug Reports**: [Create an Issue](https://github.com/yourusername/time-planner/issues)
-- **Feature Requests**: [Start a Discussion](https://github.com/yourusername/time-planner/discussions)
+- **Bug Reports**
+- **Feature Requests**
 - **Translation Corrections**: Since I don't speak German, Spanish, Italian, or French, I'd greatly appreciate feedback from native speakers on any translation errors or improvements in these versions
 - **Questions**: Check existing discussions or create a new one
 
@@ -249,7 +249,5 @@ Your support helps maintain the app, add new features, and keep it free for ever
 Every contribution, no matter how small, is greatly appreciated and motivates continued development! 🙏
 
 ---
-
-**Made with ❤️ using Tauri and Vanilla JavaScript**
 
 ⭐ Star this repo if you find it useful!
