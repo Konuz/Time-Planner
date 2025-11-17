@@ -21,3 +21,34 @@ Thumbs.db
 src/index.html.backup_*
 src/index.html.before_*
 src/index.html.with_*
+
+# Claude Code agents and skills (not needed for source release)
+.claude/agents/
+.claude/skills/
+
+# Playwright screenshots and test artifacts
+.playwright-mcp/
+
+# Cursor IDE
+.cursor/
+
+# Documentation (keep only README.md and CLAUDE.md)
+AGENTS.md
+BUILD_QUICK_START.txt
+BUILD_WINDOWS.md
+CODE_ANALYSIS_REPORT.md
+DESIGN_SYSTEM.md
+OPTIMIZATION_REPORT.md
+SECURITY_TEST_REPORT.md
+test_security.py
+screenshot_*.png
+final-*.png
+
+# Logs
+logs/
+
+# Tauri generated files
+src-tauri/gen/
+
+# Migration docs
+TAURI_MIGRATION_SUMMARY.md
