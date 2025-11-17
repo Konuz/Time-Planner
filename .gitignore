@@ -32,7 +32,7 @@ src/index.html.with_*
 # Cursor IDE
 .cursor/
 
-# Documentation (keep only README.md and CLAUDE.md)
+# Documentation (keep only CLAUDE.md)
 AGENTS.md
 BUILD_QUICK_START.txt
 BUILD_WINDOWS.md
@@ -43,6 +43,7 @@ SECURITY_TEST_REPORT.md
 test_security.py
 screenshot_*.png
 final-*.png
+README.md
 
 # Logs
 logs/

@@ -209,7 +209,7 @@
     "todo.confirmDeleteAll": "Êtes-vous sûr de vouloir supprimer toutes les tâches?",
     "todo.createEntry": "Créer une nouvelle entrée de temps?",
     "todo.movedToPomodoro": "Tâche déplacée vers Pomodoro",
-    "todo.overdue": "En retard",
+    "todo.overdue": "Échéance!",
     "todo.emptyDescription": "Veuillez entrer la description de la tâche",
     "todo.selectDate": "Sélectionner la date",
     "todo.noTasks": "Aucune tâche à supprimer",

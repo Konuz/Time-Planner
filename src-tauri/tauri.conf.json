@@ -1,6 +1,6 @@
 {
   "productName": "Time Planner",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "identifier": "com.timeplanner.app",
   "build": {
     "beforeDevCommand": "node build-minify.js",

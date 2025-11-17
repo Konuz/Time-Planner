@@ -209,7 +209,7 @@
     "todo.confirmDeleteAll": "¿Está seguro de que desea eliminar todas las tareas?",
     "todo.createEntry": "¿Crear nueva entrada de tiempo?",
     "todo.movedToPomodoro": "Tarea movida a Pomodoro",
-    "todo.overdue": "Vencida",
+    "todo.overdue": "¡Plazo!",
     "todo.emptyDescription": "Por favor ingrese la descripción de la tarea",
     "todo.selectDate": "Seleccionar fecha",
     "todo.noTasks": "No hay tareas para eliminar",

@@ -3831,11 +3831,11 @@
                 'info.section.pomodoroNote': 'When a session ends, you don\'t have to manually add the task - the app does it for you and remembers the hours you accumulate in subsequent pomodoros.',
                 'info.section.monthEndTitle': 'End of month warning',
                 'info.section.monthEndNote': 'The end of month warning is to remind you to enter all hours in the appropriate company time tracking tools.',
-                'info.section.todoTitle': 'Task list',
-                'info.section.todoIntro': 'The Tasks widget helps collect quick tasks next to the timer.',
+                'info.section.todoTitle': 'To-Do list',
+                'info.section.todoIntro': 'The To-Do widget helps collect quick tasks next to the timer.',
                 'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority, and due date (or check \'No date\') to add a task.',
                 'info.section.todoStep2': 'Drag items to change their order within sections.',
-                'info.section.todoStep3': 'The \'✓\', \'✕\', and \'→\' buttons next to a task add the number/name to the corresponding field in the \'Add new entry\' section, delete it, or send the number to Pomodoro to start the timer. The task will automatically disappear from the task list when all remaining fields in \'Add new entry\' are filled and after confirmation with the \'Add entry\' button.',
+                'info.section.todoStep3': 'The \'✓\', \'✕\', and \'→\' buttons next to a task add the number/name to the corresponding field in the \'Add new entry\' section, delete it, or send the number to Pomodoro to start the timer. The task will automatically disappear from the To-Do list when all remaining fields in \'Add new entry\' are filled and after confirmation with the \'Add entry\' button.',
                 'info.close': 'Close guide',
                 'msg.enterProjectName': 'Enter project name',
                 'msg.projectExists': 'This project already exists',
@@ -3897,7 +3897,7 @@
                 'action.edit': 'Edit',
                 'action.clone': 'Clone',
                 'action.delete': 'Delete',
-                'todo.title': 'TASKS',
+                'todo.title': 'TO-DO',
                 'todo.descriptionPlaceholder': 'Task description...',
                 'todo.priorityHigh': 'High',
                 'todo.priorityMedium': 'Medium',
@@ -3916,7 +3916,7 @@
                 'todo.confirmDeleteAll': 'Are you sure you want to delete all tasks?',
                 'todo.createEntry': 'Create new time entry?',
                 'todo.movedToPomodoro': 'Task moved to Pomodoro',
-                'todo.overdue': 'Overdue',
+                'todo.overdue': 'Deadline!',
                 'todo.emptyDescription': 'Please enter task description',
                 'todo.selectDate': 'Select date',
                 'todo.noTasks': 'No tasks to delete',
@@ -4073,7 +4073,7 @@
                 btn.setAttribute('aria-label', t('todo.moveToPomodoro') || 'Przenieś do Pomodoro');
             });
             document.querySelectorAll('.overdue-icon').forEach(icon => {
-                icon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+                icon.setAttribute('title', t('todo.overdue') || 'Termin!');
             });
         }
 
@@ -5369,7 +5369,7 @@
             if (!entry) return;
 
             const clonedEntry = {
-                date: new Date().toISOString().split('T')[0],  // Today's date
+                date: getTodayLocalDate(),  // Today's date (local timezone)
                 taskType: entry.taskType,
                 client: entry.client || '',
                 hours: entry.hours,
@@ -5651,8 +5651,7 @@
             setFieldError(domCache.client, domCache.clientFeedback);
             setFieldError(domCache.hours, domCache.hoursFeedback);
             setFieldError(domCache.taskNumber, domCache.taskNumberFeedback);
-            const today = new Date();
-            domCache.date.value = today.toISOString().split('T')[0];
+            domCache.date.value = getTodayLocalDate();
         }
 
         function updateSummary() {
@@ -6463,8 +6462,7 @@
             const workedHours = calculateWorkedHours(elapsedSeconds);
             // Removed minimum time validation - accept any duration
 
-            const today = new Date();
-            const todayISO = today.toISOString().split('T')[0];
+            const todayISO = getTodayLocalDate();
 
             const existingEntryIndex = entries.findIndex(entry => {
                 const entryDate = entry.date.toISOString().split('T')[0];
@@ -6509,7 +6507,7 @@
                 
                 const newEntry = {
                     id: Date.now(),
-                    date: new Date(),
+                    date: getTodayLocalDateObject(),
                     taskType: domCache.timerTaskType ? domCache.timerTaskType.value : '',
                     client: domCache.timerProject ? domCache.timerProject.value : '',
                     hours: finalHours,
@@ -6925,7 +6923,7 @@
                     const overdueIcon = document.createElement('span');
                     overdueIcon.className = 'overdue-icon';
                     overdueIcon.textContent = '⚠️';
-                    overdueIcon.setAttribute('title', t('todo.overdue') || 'Przeterminowane');
+                    overdueIcon.setAttribute('title', t('todo.overdue') || 'Termin!');
                     overdueIcon.setAttribute('draggable', 'false');
                     dateDiv.appendChild(overdueIcon);
                 }
@@ -6985,10 +6983,28 @@
             domCache.minimizedTodoCount.textContent = totalCount;
         }
 
+        /**
+         * Get today's date in YYYY-MM-DD format using local timezone
+         * @returns {string} Today's date in YYYY-MM-DD format
+         */
+        function getTodayLocalDate() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        /**
+         * Get today's date as Date object at midnight in local timezone
+         * @returns {Date} Date object set to today at 00:00:00 local time
+         */
+        function getTodayLocalDateObject() {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        }
+
         function isOverdue(dueDate) {
             if (!dueDate) return false;
-            const today = new Date().toISOString().split('T')[0];
-            return dueDate < today;
+            const today = getTodayLocalDate();
+            return dueDate <= today;
         }
 
         function toggleTodoMinimize() {
@@ -7624,8 +7640,7 @@
         }
 
         function setupFormHandlers() {
-            const today = new Date();
-            domCache.date.value = today.toISOString().split('T')[0];
+            domCache.date.value = getTodayLocalDate();
             domCache.timesheetForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 

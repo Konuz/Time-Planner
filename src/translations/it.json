@@ -209,7 +209,7 @@
     "todo.confirmDeleteAll": "Sei sicuro di voler eliminare tutte le attività?",
     "todo.createEntry": "Creare una nuova voce di tempo?",
     "todo.movedToPomodoro": "Attività spostata in Pomodoro",
-    "todo.overdue": "Scaduta",
+    "todo.overdue": "Scadenza!",
     "todo.emptyDescription": "Inserisci la descrizione dell'attività",
     "todo.selectDate": "Seleziona data",
     "todo.noTasks": "Nessuna attività da eliminare",

@@ -127,7 +127,7 @@ Fully localized in **6 languages**:
 ### 💡 Quick Tips
 
 - **Keyboard shortcut**: Press Enter after filling the form to quickly add entries
-- **Clone entries**: Use the 📋 clone button to duplicate similar entries
+- **Clone entries**: Use the Clone button in the Actions column to duplicate similar entries
 - **Auto-accumulation**: Pomodoro sessions with the same task number automatically combine hours
 - **Widget positioning**: Drag Pomodoro and To-Do widgets to your preferred screen position
 - **Filter quickly**: Use month/week filters to focus on specific time periods
@@ -248,7 +248,5 @@ Your support helps maintain the app, add new features, and keep it free for ever
 Every contribution, no matter how small, is greatly appreciated and motivates continued development! 🙏
 
 ---
-
-**Made with ❤️ using Tauri and Vanilla JavaScript**
 
 ⭐ Star this repo if you find it useful!

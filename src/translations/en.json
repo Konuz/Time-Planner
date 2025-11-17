@@ -209,7 +209,7 @@
     "todo.confirmDeleteAll": "Are you sure you want to delete all tasks?",
     "todo.createEntry": "Create new time entry?",
     "todo.movedToPomodoro": "Task moved to Pomodoro",
-    "todo.overdue": "Overdue",
+    "todo.overdue": "Deadline!",
     "todo.emptyDescription": "Please enter task description",
     "todo.selectDate": "Select date",
     "todo.noTasks": "No tasks to delete",

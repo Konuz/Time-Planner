@@ -1,6 +1,6 @@
 [package]
 name = "time-planner"
-version = "1.2.0"
+version = "1.2.2"
 description = "Time Planner with Pomodoro Timer"
 authors = ["Michał Kania"]
 license = ""

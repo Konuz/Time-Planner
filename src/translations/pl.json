@@ -209,7 +209,7 @@
     "todo.confirmDeleteAll": "Czy na pewno usunąć wszystkie zadania?",
     "todo.createEntry": "Czy wprowadzić nowy wpis czasu pracy?",
     "todo.movedToPomodoro": "Zadanie przeniesione do Pomodoro",
-    "todo.overdue": "Przeterminowane",
+    "todo.overdue": "Termin!",
     "todo.emptyDescription": "Proszę wprowadzić opis zadania",
     "todo.selectDate": "Wybierz datę",
     "todo.noTasks": "Brak zadań do usunięcia",
