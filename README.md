@@ -45,7 +45,7 @@ Fully localized in **6 languages**:
 
 ### ✅ To-Do Widget
 - **Priority Levels**: High, medium, low priority tasks
-- **Date Management**: Due dates with overdue indicators
+- **Date Management**: Due dates with deadline indicators (same-day alerts)
 - **Drag & Drop**: Reorder tasks within dated/undated sections
 - **Integration**: Send tasks to Pomodoro timer or create timesheet entries
 - **Draggable Widget**: Position and resize anywhere on screen
