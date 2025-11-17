@@ -5,12 +5,12 @@
 **Time Planner** is a free, lightweight Windows desktop application that helps you track work hours, boost productivity with the Pomodoro technique, and manage your tasks efficiently. Perfect for freelancers, remote workers, and teams who need accurate time tracking without the complexity.
 
 🎯 **All-in-One Solution**: Timesheet + Pomodoro Timer + TODO List in one ful app
-1.png
 ---
 
 ## 📸 Screenshots
-
-> **Coming soon**: Screenshots will be added in the next release
+<img width="1904" height="1016" alt="1" src="https://github.com/user-attachments/assets/b9f8a62b-52a1-41cb-ac78-b90f228f503a" />
+<img width="1905" height="1015" alt="2" src="https://github.com/user-attachments/assets/5fe9e2a3-2925-4217-b5e5-24893bc591af" />
+<img width="1906" height="1003" alt="3" src="https://github.com/user-attachments/assets/64394617-1381-4608-aec3-5439dc3aa4ef" />
 
 ---
 
