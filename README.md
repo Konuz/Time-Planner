@@ -4,7 +4,7 @@
 
 **Time Planner** is a free, lightweight Windows desktop application that helps you track work hours, boost productivity with the Pomodoro technique, and manage your tasks efficiently. Perfect for freelancers, remote workers, and teams who need accurate time tracking without the complexity.
 
-🎯 **All-in-One Solution**: Timesheet + Pomodoro Timer + TODO List in one beautiful app
+🎯 **All-in-One Solution**: Timesheet + Pomodoro Timer + TODO List in one useful app
 
 ---
 
@@ -36,7 +36,7 @@ Fully localized in **6 languages**:
 - **CSV Export**: Export entries with native file dialog support
 
 ### 🍅 Pomodoro Timer
-- **Customizable Sessions**: Work (30min), short break (5min), long break (15min)
+- **Customizable Sessions**: Work (25min), short break (5min), long break (15min)
 - **Auto-Tracking**: Automatically creates timesheet entries on work completion
 - **Session Statistics**: Track daily completed pomodoros
 - **Smart Accumulation**: Multiple sessions for the same task combine into single entry
@@ -60,7 +60,7 @@ Fully localized in **6 languages**:
 
 ### Quick Start (3 Easy Steps)
 
-1. **Download** the latest version: [📥 time-planner.exe](https://github.com/yourusername/time-planner/releases) (~3B)
+1. **Download** the latest version: [📥 time-planner.exe](https://github.com/yourusername/time-planner/releases) (~3MB)
 2. **Run** the downloaded file - Windows may show a security warning (click "More info" → "Run anyway")
 3. **Start tracking** - The app opens ready to use, no setup required!
 
@@ -80,6 +80,8 @@ Fully localized in **6 languages**:
 1. **Launch the app** - The application opens with the timesheet entry form
 2. **Select language** - Click the language dropdown (top-right) to choose your preferred language
 3. **Add projects and task types** - Click ⚙️ Settings to customize your workspace
+   - Projects: Add project numbers or descriptions from your company's timesheet tool
+   - Tasks: Add task types used in your company (e.g., CTASK from ServiceNow)
 
 ### Adding Time Entries
 
@@ -96,8 +98,8 @@ Fully localized in **6 languages**:
 
 1. Click 🍅 icon to expand the Pomodoro widget
 2. Enter task number/name in the input field
-3. Configure your project and task type in Settings (⚙️)
-4. Click **Start** to begin a 30-minute work session
+3. Configure your projects (number/description from company tool) and task types (e.g., CTASK from ServiceNow) in Settings (⚙️)
+4. Click **Start** to begin a 25-minute work session
 5. Click ✓ **Complete Task** button to finish and auto-create timesheet entry
 6. Timer automatically tracks your daily sessions
 
@@ -133,7 +135,7 @@ Fully localized in **6 languages**:
 ## 🔒 Privacy & Security
 
 - **100% Offline**: No internet connection required, works completely offline
-- **Local Storage**: All data stored on your computer at `%APPDATA%\Time Planner\`
+- **Local Storage**: All data stored on your computer in `%LOCALAPPDATA%\com.timeplanner.app\` (user data) and `%APPDATA%\Time Planner\` (app files)
 - **No Tracking**: Zero telemetry, analytics, or data collection
 - **No Cloud**: Your data never leaves your computer
 - **Secure**: Input validation and sanitization on all user data
@@ -203,7 +205,28 @@ Time Planner supports 6 languages: Polish, English, German, Spanish, Italian, an
 Mac and Linux support is planned for future releases. Currently only Windows is supported.
 
 ### How do I backup my data?
-Your data is stored at `%APPDATA%\Time Planner\`. You can manually backup this folder.
+Your data is stored in two locations:
+- **Application data** (CSV exports, logs): `%APPDATA%\Time Planner\`
+- **User data** (entries, projects, tasks): `%LOCALAPPDATA%\com.timeplanner.app\EBWebView\`
+
+For complete backup, save both folders.
+
+### How do I reset the app to factory settings?
+
+**Option 1 - Complete Reset (recommended):**
+1. Close Time Planner
+2. Delete folder: `%LOCALAPPDATA%\com.timeplanner.app`
+3. Restart the app (fresh install state)
+
+**Option 2 - Quick Reset via DevTools:**
+1. Open Time Planner
+2. Press F12 to open DevTools
+3. In Console tab, type:
+   ```javascript
+   localStorage.clear();
+   location.reload();
+   ```
+4. All data will be cleared and app will reload
 
 ## 🗺️ Roadmap
 

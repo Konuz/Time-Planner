@@ -6,6 +6,8 @@
     <!-- CSP is now managed by Tauri configuration (tauri.conf.json) -->
     <title>Time Planner</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231976d2' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
+    <!-- Preload script: Must run before page render to prevent FOUC -->
+    <script src="./js/preload.js"></script>
     <style>
         /* Local Roboto fonts for offline functionality */
         @font-face {
@@ -56,6 +58,14 @@
             --border-radius: 4px;
             --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
+
+            /* Gradient variables for DRY principle */
+            --gradient-primary: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            --gradient-success: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
+            --gradient-error: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            --gradient-warning: linear-gradient(135deg, var(--warning-light) 0%, var(--warning-color) 100%);
+            --gradient-secondary: linear-gradient(135deg, #868e96 0%, #495057 100%);
+            --gradient-background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
         }
         
         * {
@@ -586,7 +596,7 @@
             min-width: 280px;
             max-width: 640px;
             min-height: 400px;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            background: var(--gradient-background);
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             z-index: 9999;
@@ -603,7 +613,7 @@
         }
 
         .pomodoro-header {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            background: var(--gradient-primary);
             padding: 8px 16px;
             border-radius: 12px 12px 0 0;
             display: flex;
@@ -752,22 +762,22 @@
         }
 
         .timer-btn-primary {
-            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
+            background: var(--gradient-success);
             color: white;
         }
 
         .timer-btn-warning {
-            background: linear-gradient(135deg, var(--warning-light) 0%, var(--warning-color) 100%);
+            background: var(--gradient-warning);
             color: var(--bg-dark);
         }
 
         .timer-btn-secondary {
-            background: linear-gradient(135deg, #868e96 0%, #495057 100%);
+            background: var(--gradient-secondary);
             color: white;
         }
 
         #timer-reset {
-            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            background: var(--gradient-error);
             color: white;
         }
 
@@ -781,7 +791,7 @@
         }
 
         .timer-btn-success {
-            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
+            background: var(--gradient-success);
             color: white;
             margin-top: 8px;
             width: 100%;
@@ -852,7 +862,8 @@
             border: 1px solid var(--border-color);
         }
 
-        .timer-task-input input {
+        .timer-task-input input,
+        .timer-task-input select {
             width: 100%;
             padding: 10px;
             background-color: #ffffff;
@@ -862,13 +873,15 @@
             font-size: 14px;
         }
 
-        .timer-task-input input:focus {
+        .timer-task-input input:focus,
+        .timer-task-input select:focus {
             outline: none;
             border-color: #37b24d;
             box-shadow: none;
         }
 
-        .timer-task-input input.empty-field:focus {
+        .timer-task-input input.empty-field:focus,
+        .timer-task-input select.empty-field:focus {
             border-color: #ff6b6b;
             box-shadow: none;
         }
@@ -951,7 +964,7 @@
             right: 0;
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            background: var(--gradient-primary);
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             z-index: 9999;
@@ -1100,7 +1113,7 @@
         }
 
         .todo-header {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            background: var(--gradient-primary);
             padding: 8px 16px;
             border-radius: 12px 12px 0 0;
             display: flex;
@@ -1207,7 +1220,7 @@
         #add-todo-btn {
             flex: 1;
             padding: 10px 20px;
-            background: linear-gradient(135deg, var(--success-light) 0%, var(--success-lighter) 100%);
+            background: var(--gradient-success);
             color: white;
             border: none;
             border-radius: 8px;
@@ -1224,7 +1237,7 @@
         .delete-all-btn {
             flex: 1;
             padding: 12px 20px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            background: var(--gradient-error);
             color: white;
             border: none;
             border-radius: 8px;
@@ -1393,7 +1406,7 @@
             left: 0;
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            background: var(--gradient-primary);
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             z-index: 9999;
@@ -1454,6 +1467,56 @@
 
         .settings-button:hover {
             background-color: var(--primary-dark);
+        }
+
+        .first-run-tooltip {
+            position: absolute;
+            top: 65px;
+            right: 15px;
+            background-color: white;
+            color: black;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            max-width: 250px;
+            text-align: center;
+        }
+
+        .first-run-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+
+        .first-run-tooltip::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 9px;
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-bottom: 9px solid #dee2e6;
+        }
+
+        .first-run-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .info-button {
@@ -1883,56 +1946,6 @@
     </style>
 </head>
 <body class="preload">
-    <script>
-        // Set initial values immediately to prevent flashing
-        // This script runs synchronously before any DOM rendering
-        (function() {
-            try {
-                const storedLang = localStorage.getItem('app-language');
-                // Use same language list as SUPPORTED_LANGUAGE_CODES to prevent mismatch
-                const supportedLangs = ['pl', 'en', 'de', 'es', 'it', 'fr'];
-                window.__INITIAL_LANG__ = supportedLangs.includes(storedLang) ? storedLang : 'en';
-                document.documentElement.lang = window.__INITIAL_LANG__;
-            } catch (e) {
-                window.__INITIAL_LANG__ = 'en';
-            }
-
-            try {
-                const stored = localStorage.getItem('section-visibility');
-                window.__SECTION_VISIBILITY__ = stored ? JSON.parse(stored) : {
-                    'entry-form': true,
-                    'entries-list': true,
-                    'project-management': true,
-                    'summary': true
-                };
-            } catch (e) {
-                window.__SECTION_VISIBILITY__ = {
-                    'entry-form': true,
-                    'entries-list': true,
-                    'project-management': true,
-                    'summary': true
-                };
-            }
-
-            // Restore scroll position IMMEDIATELY (synchronously)
-            try {
-                const scrollData = sessionStorage.getItem('scrollPosition');
-                if (scrollData) {
-                    window.__SCROLL_POS__ = JSON.parse(scrollData);
-                }
-            } catch (e) {}
-
-            // Save scroll position before page unload
-            window.addEventListener('beforeunload', function() {
-                try {
-                    sessionStorage.setItem('scrollPosition', JSON.stringify({
-                        x: window.scrollX || window.pageXOffset || 0,
-                        y: window.scrollY || window.pageYOffset || 0
-                    }));
-                } catch (e) {}
-            });
-        })();
-    </script>
     <div id="pomodoro-notification" class="pomodoro-notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <div class="container">
@@ -1942,11 +1955,14 @@
             <h1 data-i18n="app.title">TIME PLANNER</h1>
             <div class="language-dropdown">
                 <button class="language-button" id="language-btn" aria-label="Zmień język / Change language" aria-haspopup="true" aria-expanded="false" data-i18n-title="app.language" title="Zmień język / Change language">
-                    <script>document.write((window.__INITIAL_LANG__ || 'en').toUpperCase())</script>
+                    <span id="current-lang-display">EN</span>
                 </button>
                 <div class="language-menu" id="language-menu" role="menu"></div>
             </div>
             <button class="settings-button" id="settings-btn" aria-label="Ustawienia" data-i18n-title="app.settings" title="Ustawienia">⚙️</button>
+            <div class="first-run-tooltip" id="first-run-tooltip" role="tooltip" aria-live="polite">
+                <span data-i18n="tooltip.firstRun">Wprowadź pierwsze projekty i rodzaje zadań</span>
+            </div>
         </header>
 
         <div id="month-end-warning" class="month-end-warning hidden" role="alert" aria-live="polite">
@@ -1973,17 +1989,6 @@
                         <span data-i18n="section.summary">Podsumowanie</span>
                     </label>
                 </div>
-                <script>
-                    (function() {
-                        if (window.__SECTION_VISIBILITY__) {
-                            var vis = window.__SECTION_VISIBILITY__;
-                            ['entry-form', 'entries-list', 'summary'].forEach(function(name) {
-                                var cb = document.getElementById('toggle-' + name);
-                                if (cb) cb.checked = vis[name] !== false;
-                            });
-                        }
-                    })();
-                </script>
             </div>
         </section>
 
@@ -1997,10 +2002,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="task-number" data-i18n="form.taskNumber">Numer lub nazwa zadania:</label>
+                    <input type="text" id="task-number" name="task-number" maxlength="100" required aria-describedby="task-number-feedback" aria-required="true">
+                    <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
+                </div>
+
+                <div class="form-group">
                     <label for="task-type" data-i18n="form.taskType">Rodzaj zadania:</label>
                     <select id="task-type" name="task-type" required aria-describedby="task-type-feedback" aria-required="true">
                         <option value="" data-i18n="form.selectTaskType">-- Wybierz rodzaj zadania --</option>
-                        
+
                     </select>
                     <div class="invalid-feedback" id="task-type-feedback" role="alert" aria-live="polite"></div>
                 </div>
@@ -2017,12 +2028,6 @@
                     <label for="hours" data-i18n="form.hours">Liczba przepracowanych godzin (max 8):</label>
                     <input type="number" id="hours" name="hours" min="0.5" max="8" step="0.5" required aria-describedby="hours-feedback" aria-required="true">
                     <div class="invalid-feedback" id="hours-feedback" role="alert" aria-live="polite"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="task-number" data-i18n="form.taskNumber">Numer lub nazwa zadania:</label>
-                    <input type="text" id="task-number" name="task-number" maxlength="100" required aria-describedby="task-number-feedback" aria-required="true">
-                    <div class="invalid-feedback" id="task-number-feedback" role="alert" aria-live="polite"></div>
                 </div>
 
                 <div class="form-group btn-group">
@@ -2156,9 +2161,9 @@
                     <h3 data-i18n="info.section.pomodoroTitle">Tryb Pomodoro</h3>
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
-                        <li data-i18n="info.section.pomodoroStep1">Kliknij ikonę 🍅, aby rozwinąć widżet i wpisz numer lub nazwę zadania w sekcji Pomodoro i naciśnij Start, aby rozpocząć odliczanie.</li>
-                        <li data-i18n="info.section.pomodoroStep2">Po zakończeniu pracy kliknij „Zakończ zadanie" (zielony checkmark), wyświetli się informacja o dodaniu wpisu, jeśli długość zadania wynosi przynajmniej 0.5h</li>
-                        <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy z wyliczonym czasem i odpowiednim projektem.</li>
+                        <li data-i18n="info.section.pomodoroStep1">Kliknij ikonę 🍅, aby rozwinąć widżet, uzupełnij wszystkie pola i naciśnij Start, aby rozpocząć odliczanie.</li>
+                        <li data-i18n="info.section.pomodoroStep2">Przy ręcznym zakończeniu pracy kliknij 'Zakończ zadanie' (zielony checkmark), wyświetli się informacja o dodaniu wpisu, jeśli długość zadania wynosi przynajmniej 25min.</li>
+                        <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy.</li>
                         <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
                     </ol>
                     <div class="info-note" data-i18n="info.section.pomodoroNote">Gdy skończy się sesja, nie musisz ręcznie dodawać zadania – aplikacja zrobi to sama i będzie pamiętać liczbę godzin, które zbierzesz w następnych pomidorach.</div>
@@ -2169,7 +2174,7 @@
                     <div class="info-note" data-i18n="info.section.monthEndNote">Ostrzeżenie o zbliżającym się końcu miesiąca ma przypomnieć o wpisaniu wszystkich godzin do odpowiednich, firmowych narzędzi do rozliczania czasu.</div>
                 </div>
                 <div class="info-section">
-                    <p class="info-data-location" data-i18n="info.section.dataLocation">Dane aplikacji są przechowywane w katalogu "%APPDATA%\Time Planner"</p>
+                    <p class="info-data-location" data-i18n="info.section.dataLocation">Dane użytkownika: "%LOCALAPPDATA%\com.timeplanner.app\EBWebView". Pliki aplikacji: "%APPDATA%\Time Planner"</p>
                 </div>
             </div>
         </div>
@@ -2296,6 +2301,20 @@
             <div class="timer-task-input">
                 <label for="timer-task-number" data-i18n="pomodoro.taskNumber">Numer lub nazwa zadania:</label>
                 <input type="text" id="timer-task-number" aria-label="Numer lub nazwa zadania">
+            </div>
+
+            <div class="timer-task-input">
+                <label for="timer-task-type" data-i18n="pomodoro.taskType">Rodzaj zadania:</label>
+                <select id="timer-task-type" aria-label="Rodzaj zadania">
+                    <option value="" data-i18n="form.selectTaskType">-- Wybierz rodzaj zadania --</option>
+                </select>
+            </div>
+
+            <div class="timer-task-input">
+                <label for="timer-project" data-i18n="pomodoro.project">Projekt:</label>
+                <select id="timer-project" aria-label="Projekt">
+                    <option value="" data-i18n="form.selectProject">-- Wybierz projekt --</option>
+                </select>
                 <button id="timer-complete-task"
                         class="timer-btn timer-btn-success"
                         data-i18n-title="pomodoro.completeTask"
@@ -3531,6 +3550,8 @@
 
             // Pomodoro timer elements
             domCache.timerDisplay = document.getElementById('timer-display');
+            domCache.timerTaskType = document.getElementById('timer-task-type');
+            domCache.timerProject = document.getElementById('timer-project');
             domCache.timerTaskNumber = document.getElementById('timer-task-number');
             domCache.timerStart = document.getElementById('timer-start');
             domCache.timerPause = document.getElementById('timer-pause');
@@ -3689,6 +3710,7 @@
                 'app.info': 'Guide',
                 'app.deleteAll': 'Delete all entries',
                 'app.language': 'Change language / Zmień język',
+                'tooltip.firstRun': 'Enter your first projects and task types',
                 'warning.endOfMonth': 'End of month approaching!',
                 'section.visibility': 'Section visibility:',
                 'section.addEntry': 'Add new entry',
@@ -3752,6 +3774,8 @@
                 'pomodoro.start': 'Start',
                 'pomodoro.pause': 'Pause',
                 'pomodoro.reset': 'Reset',
+                'pomodoro.taskType': 'Task type:',
+                'pomodoro.project': 'Project:',
                 'pomodoro.taskNumber': 'Task number or name:',
                 'pomodoro.completeTask': 'Complete task, start new (session continuity)',
                 'pomodoro.newTask': 'New task',
@@ -3774,6 +3798,7 @@
                 'pomodoro.validation.longBreakDurationMin': 'Value must be greater than or equal to 1.',
                 'pomodoro.validation.longBreakDurationMax': 'Value must be less than or equal to 60',
                 'pomodoro.notif.durationTooShort': '⚠️ {mode} time must be at least {minutes} min. Check settings.',
+                'pomodoro.notif.fillAllFields': '⚠️ Complete all fields',
                 'pomodoro.notif.enterTaskNumber': '⚠️ Enter task number or name',
                 'pomodoro.notif.enterTaskNumberToSave': '⚠️ Enter task number or name to save work time',
                 'pomodoro.notif.timerNotStarted': '⚠️ Timer has not been started yet',
@@ -3785,33 +3810,33 @@
                 'pomodoro.notif.entryAddedContinue': '✅ Entry added: {task} ({time}). You can continue working!',
                 'pomodoro.notif.taskCompleted': '✅ Task completed: {task} (+{hours}h). Timer is still running!',
                 'pomodoro.notif.taskCompletedNew': '✅ Task completed: {task} ({hours}h). Timer is still running!',
-                'pomodoro.notif.newTaskConfirm': 'You have accumulated {time} for task "{task}". Do you want to add it before starting a new task?',
+                'pomodoro.notif.newTaskConfirm': 'You have accumulated {time} for task \'{task}\'. Do you want to add it before starting a new task?',
                 'pomodoro.notif.workComplete': 'Work time complete! Time for a break.',
                 'pomodoro.notif.breakComplete': 'Break complete! Back to work.',
                 'info.title': 'How to use Time Planner',
                 'info.intro': 'This page helps you plan work, track time, and remember breaks.',
                 'info.section.overviewTitle': 'Task tracking',
-                'info.section.overviewStep1': 'In Settings, enter your projects and tasks according to the names used in your company.',
+                'info.section.overviewStep1': 'In Settings, enter your projects (number or description from company timesheet tool) and tasks (e.g., CTASK from ServiceNow) according to the names used in your company.',
                 'info.section.overviewStep2': 'Enter the number of hours worked or use Pomodoro mode to calculate them automatically.',
-                'info.section.overviewStep3': 'Click "Add entry" to save your time in the table below.',
+                'info.section.overviewStep3': 'Click \'Add entry\' to save your time in the table below.',
                 'info.section.overviewStep4': 'Use the switches above the form to show or hide the sections you need.',
                 'info.section.overviewStep5': 'The entries list displays all tasks – you can filter them by date, task type, and project.',
-                'info.section.overviewStep6': 'The "Export data" button downloads a CSV file with the current month\'s hours.',
+                'info.section.overviewStep6': 'The \'Export data\' button downloads a CSV file with the current month\'s hours.',
                 'info.section.overviewStep7': 'The red button with the trash icon in the upper left corner allows you to delete all entries at once. This operation requires confirmation and is irreversible.',
                 'info.section.pomodoroTitle': 'Pomodoro mode',
                 'info.section.pomodoroIntro': 'The Pomodoro timer helps you work in short, focused cycles.',
-                'info.section.pomodoroStep1': 'Click the 🍅 icon to expand the widget and enter the task number or name in the Pomodoro section and press Start to begin the countdown.',
-                'info.section.pomodoroStep2': 'When the work is done, click "Complete task" (green checkmark), a notification will appear about adding the entry if the task duration is at least 0.5 hours.',
-                'info.section.pomodoroStep3': 'The entry is automatically added to the list with calculated time and appropriate project.',
+                'info.section.pomodoroStep1': 'Click the 🍅 icon to expand the widget, complete all fields and press Start to begin the countdown.',
+                'info.section.pomodoroStep2': 'When manually finishing work, click \'Complete task\' (green checkmark), a notification will appear about adding the entry if the task duration is at least 25 minutes.',
+                'info.section.pomodoroStep3': 'The entry is automatically added to the list.',
                 'info.section.pomodoroStep4': 'Subsequent sessions with the same task number or name will add time to the existing entry, so you will keep the full history.',
                 'info.section.pomodoroNote': 'When a session ends, you don\'t have to manually add the task - the app does it for you and remembers the hours you accumulate in subsequent pomodoros.',
                 'info.section.monthEndTitle': 'End of month warning',
                 'info.section.monthEndNote': 'The end of month warning is to remind you to enter all hours in the appropriate company time tracking tools.',
                 'info.section.todoTitle': 'Task list',
                 'info.section.todoIntro': 'The Tasks widget helps collect quick tasks next to the timer.',
-                'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority, and due date (or check "No date") to add a task.',
+                'info.section.todoStep1': 'Click the 📋 icon to expand the widget and fill in the description, priority, and due date (or check \'No date\') to add a task.',
                 'info.section.todoStep2': 'Drag items to change their order within sections.',
-                'info.section.todoStep3': 'The "✓", "✕", and "→" buttons next to a task add the number/name to the corresponding field in the "Add new entry" section, delete it, or send the number to Pomodoro to start the timer. The task will automatically disappear from the task list when all remaining fields in "Add new entry" are filled and after confirmation with the "Add entry" button.',
+                'info.section.todoStep3': 'The \'✓\', \'✕\', and \'→\' buttons next to a task add the number/name to the corresponding field in the \'Add new entry\' section, delete it, or send the number to Pomodoro to start the timer. The task will automatically disappear from the task list when all remaining fields in \'Add new entry\' are filled and after confirmation with the \'Add entry\' button.',
                 'info.close': 'Close guide',
                 'msg.enterProjectName': 'Enter project name',
                 'msg.projectExists': 'This project already exists',
@@ -3829,19 +3854,19 @@
                 'msg.exportSuccess': 'CSV file has been saved',
                 'msg.exportError': 'Error saving CSV file',
                 'msg.exportCanceled': 'File selection cancelled',
-                'msg.csvWriteErrorTitle': '🚨 CSV WRITE ERROR:',
-                'msg.csvPath': '📍 Path:',
-                'msg.csvErrorType': '📛 Error type:',
-                'msg.csvErrorMessage': '💬 Message:',
-                'msg.csvErrorCode': '🔢 Code:',
-                'msg.csvCheckList': '🔍 Check:',
+                'msg.csvWriteErrorTitle': 'CSV WRITE ERROR:',
+                'msg.csvPath': 'Path:',
+                'msg.csvErrorType': 'Error type:',
+                'msg.csvErrorMessage': 'Message:',
+                'msg.csvErrorCode': 'Code:',
+                'msg.csvCheckList': 'Check:',
                 'msg.csvCheckFolder': 'Does the target folder exist',
                 'msg.csvCheckPermissions': 'Do you have write permissions',
                 'msg.csvCheckFileOpen': 'Is the file not open in another program',
                 'msg.csvCheckDiskSpace': 'Is the disk not full',
-                'msg.csvPermissionsInfo': '⚙️ Required permissions:',
-                'msg.csvScopeInfo': '⚙️ Allowed locations:',
-                'msg.csvDialogErrorTitle': '🚨 SAVE DIALOG ERROR:',
+                'msg.csvPermissionsInfo': 'Required permissions:',
+                'msg.csvScopeInfo': 'Allowed locations:',
+                'msg.csvDialogErrorTitle': 'SAVE DIALOG ERROR:',
                 'msg.exportErrorTitle': 'CSV save error:',
                 'msg.exportErrorDetails': 'Please check:\n- If the target folder exists\n- If you have write permissions\n- If the file is not open in another program',
                 'csv.headers': 'Date,Task type,Project,Hours,Task number or name',
@@ -3896,7 +3921,7 @@
                 'todo.emptyDescription': 'Please enter task description',
                 'todo.selectDate': 'Select date',
                 'todo.noTasks': 'No tasks to delete',
-                'info.section.dataLocation': 'Application data is stored in the "%APPDATA%\\Time Planner" directory'
+                'info.section.dataLocation': 'User data: \'%LOCALAPPDATA%\\com.timeplanner.app\\EBWebView\'. App files: \'%APPDATA%\\Time Planner\''
             }
         };
 
@@ -3991,8 +4016,14 @@
                 if (typeof updateProjectSelect === 'function') {
                     updateProjectSelect();
                 }
+                if (typeof updatePomodoroProjectSelect === 'function') {
+                    updatePomodoroProjectSelect();
+                }
                 if (typeof updateTaskTypeSelect === 'function') {
                     updateTaskTypeSelect();
+                }
+                if (typeof updatePomodoroTaskTypeSelect === 'function') {
+                    updatePomodoroTaskTypeSelect();
                 }
 
                 refreshValidationMessages();
@@ -4648,6 +4679,36 @@
             }
         }
 
+        function updateAllProjectSelects() {
+            updateProjectSelect();
+            updatePomodoroProjectSelect();
+        }
+
+        function updatePomodoroProjectSelect() {
+            if (!domCache.timerProject) return;
+
+            const currentValue = domCache.timerProject.value;
+
+            domCache.timerProject.innerHTML = `<option value="">${t('form.selectProject')}</option>`;
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                domCache.timerProject.appendChild(option);
+            });
+
+            if (projects.includes(currentValue)) {
+                domCache.timerProject.value = currentValue;
+            }
+
+            // Update empty-field class based on selection
+            if (domCache.timerProject.value === '') {
+                domCache.timerProject.classList.add('empty-field');
+            } else {
+                domCache.timerProject.classList.remove('empty-field');
+            }
+        }
+
         function renderItemsList(items, config) {
             config.container.innerHTML = '';
 
@@ -4766,7 +4827,7 @@
             existsMsg: 'msg.projectExists',
             deleteMsg: 'msg.confirmDeleteProject',
             save: saveProjects,
-            update: updateProjectSelect,
+            update: updateAllProjectSelects,
             render: renderModalProjects,
             extraRender: renderProjectFilters,
             onChange: markAsChanged
@@ -4810,6 +4871,36 @@
 
             if (taskTypes.includes(currentValue)) {
                 domCache.taskType.value = currentValue;
+            }
+        }
+
+        function updateAllTaskTypeSelects() {
+            updateTaskTypeSelect();
+            updatePomodoroTaskTypeSelect();
+        }
+
+        function updatePomodoroTaskTypeSelect() {
+            if (!domCache.timerTaskType) return;
+
+            const currentValue = domCache.timerTaskType.value;
+
+            domCache.timerTaskType.innerHTML = `<option value="">${t('form.selectTaskType')}</option>`;
+            taskTypes.forEach(taskType => {
+                const option = document.createElement('option');
+                option.value = taskType;
+                option.textContent = taskType;
+                domCache.timerTaskType.appendChild(option);
+            });
+
+            if (taskTypes.includes(currentValue)) {
+                domCache.timerTaskType.value = currentValue;
+            }
+
+            // Update empty-field class based on selection
+            if (domCache.timerTaskType.value === '') {
+                domCache.timerTaskType.classList.add('empty-field');
+            } else {
+                domCache.timerTaskType.classList.remove('empty-field');
             }
         }
 
@@ -5067,7 +5158,7 @@
             existsMsg: 'msg.taskTypeExists',
             deleteMsg: 'msg.confirmDeleteTaskType',
             save: saveTaskTypes,
-            update: updateTaskTypeSelect,
+            update: updateAllTaskTypeSelects,
             render: renderTaskTypes,
             extraRender: renderTaskTypeFilters,
             onChange: markAsChanged
@@ -5100,6 +5191,7 @@
                 projects.length = 0;
                 saveProjects();
                 updateProjectSelect();
+                updatePomodoroProjectSelect();
                 renderModalProjects();
             renderProjectFilters();
                 markAsChanged();
@@ -5118,6 +5210,7 @@
                 taskTypes.length = 0;
                 saveTaskTypes();
                 updateTaskTypeSelect();
+                updatePomodoroTaskTypeSelect();
                 renderTaskTypes();
                 renderTaskTypeFilters();
                 renderProjectFilters();
@@ -5192,11 +5285,13 @@
 
                 saveProjects();
                 updateProjectSelect();
+                updatePomodoroProjectSelect();
                 renderModalProjects();
             renderProjectFilters();
 
                 saveTaskTypes();
                 updateTaskTypeSelect();
+                updatePomodoroTaskTypeSelect();
                 renderTaskTypes();
                 renderTaskTypeFilters();
 
@@ -5689,22 +5784,22 @@
                             console.error('❌ Błąd zapisu:', writeError);
 
                             // Detailed error for user (since F12 unavailable)
-                            let errorMsg = (t('msg.csvWriteErrorTitle') || '🚨 BŁĄD ZAPISU CSV:') + '\n\n';
-                            errorMsg += (t('msg.csvPath') || '📍 Ścieżka:') + ` ${filePath}\n`;
-                            errorMsg += (t('msg.csvErrorType') || '📛 Typ błędu:') + ` ${writeError.name || 'Unknown'}\n`;
-                            errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${translateSystemError(writeError.message || writeError.toString())}\n\n`;
+                            let errorMsg = (t('msg.csvWriteErrorTitle') || 'BŁĄD ZAPISU CSV:') + '\n\n';
+                            errorMsg += (t('msg.csvPath') || 'Ścieżka:') + ` ${filePath}\n`;
+                            errorMsg += (t('msg.csvErrorType') || 'Typ błędu:') + ` ${writeError.name || 'Unknown'}\n`;
+                            errorMsg += (t('msg.csvErrorMessage') || 'Wiadomość:') + ` ${translateSystemError(writeError.message || writeError.toString())}\n\n`;
 
                             if (writeError.code) {
-                                errorMsg += (t('msg.csvErrorCode') || '🔢 Kod:') + ` ${writeError.code}\n\n`;
+                                errorMsg += (t('msg.csvErrorCode') || 'Kod:') + ` ${writeError.code}\n\n`;
                             }
 
-                            errorMsg += (t('msg.csvCheckList') || '🔍 Sprawdź:') + '\n';
+                            errorMsg += (t('msg.csvCheckList') || 'Sprawdź:') + '\n';
                             errorMsg += '• ' + (t('msg.csvCheckFolder') || 'Czy folder docelowy istnieje') + '\n';
                             errorMsg += '• ' + (t('msg.csvCheckPermissions') || 'Czy masz uprawnienia zapisu') + '\n';
                             errorMsg += '• ' + (t('msg.csvCheckFileOpen') || 'Czy plik nie jest otwarty w innym programie') + '\n';
                             errorMsg += '• ' + (t('msg.csvCheckDiskSpace') || 'Czy dysk nie jest pełny') + '\n\n';
-                            errorMsg += (t('msg.csvPermissionsInfo') || '⚙️ Wymagane uprawnienia:') + ' fs:allow-write-text-file, fs:allow-truncate\n';
-                            errorMsg += (t('msg.csvScopeInfo') || '⚙️ Dozwolone lokalizacje:') + ' Desktop, Documents, Downloads';
+                            errorMsg += (t('msg.csvPermissionsInfo') || 'Wymagane uprawnienia:') + ' fs:allow-write-text-file, fs:allow-truncate\n';
+                            errorMsg += (t('msg.csvScopeInfo') || 'Dozwolone lokalizacje:') + ' Desktop, Documents, Downloads';
 
                             alert(errorMsg);
                             showNotification(t('msg.exportError') || 'Błąd podczas zapisu pliku CSV', 3000);
@@ -5720,8 +5815,8 @@
                     if (dialogError && dialogError !== 'User cancelled' && dialogError.message !== 'User cancelled') {
                         console.error('❌ Błąd dialogu:', dialogError);
 
-                        let errorMsg = (t('msg.csvDialogErrorTitle') || '🚨 BŁĄD DIALOGU ZAPISU:') + '\n\n';
-                        errorMsg += (t('msg.csvErrorMessage') || '💬 Wiadomość:') + ` ${translateSystemError(dialogError.message || dialogError.toString())}`;
+                        let errorMsg = (t('msg.csvDialogErrorTitle') || 'BŁĄD DIALOGU ZAPISU:') + '\n\n';
+                        errorMsg += (t('msg.csvErrorMessage') || 'Wiadomość:') + ` ${translateSystemError(dialogError.message || dialogError.toString())}`;
                         alert(errorMsg);
 
                         // Fallback to standard method
@@ -5909,6 +6004,14 @@
             domCache.autoStartBreak.checked = pomodoroSettings.autoStartBreak;
             domCache.autoStartWork.checked = pomodoroSettings.autoStartWork || false;
 
+            // Restore task type and project selections
+            if (domCache.timerTaskType && pomodoroSettings.taskType) {
+                domCache.timerTaskType.value = pomodoroSettings.taskType;
+            }
+            if (domCache.timerProject && pomodoroSettings.project) {
+                domCache.timerProject.value = pomodoroSettings.project;
+            }
+
             updatePomodoroDisplay();
             updatePomodoroStats();
         }
@@ -5952,6 +6055,8 @@
             pomodoroSettings.soundEnabled = domCache.soundEnabled.checked;
             pomodoroSettings.autoStartBreak = domCache.autoStartBreak.checked;
             pomodoroSettings.autoStartWork = domCache.autoStartWork.checked;
+            pomodoroSettings.taskType = domCache.timerTaskType ? domCache.timerTaskType.value : '';
+            pomodoroSettings.project = domCache.timerProject ? domCache.timerProject.value : '';
             pomodoroSettingsStorage.save(pomodoroSettings);
 
             if (!pomodoroState.isRunning) {
@@ -6083,7 +6188,7 @@
                 } else {
                     domCache.timerDisplay.style.color = '#2196F3';
                     domCache.timerDisplay.style.textShadow = '0 2px 10px rgba(33, 150, 243, 0.3)';
-                    domCache.pomodoroMinimized.style.background = 'linear-gradient(135deg, #2196F3 0%, #1976d2 100%)';
+                    domCache.pomodoroMinimized.style.background = 'var(--gradient-primary)';
                     domCache.timerCircleProgress.style.stroke = '#2196F3';
                 }
                 let modeText = '';
@@ -6251,9 +6356,18 @@
 
             if (pomodoroState.mode === 'work') {
                 const taskValue = domCache.timerTaskNumber.value.trim();
-                if (!taskValue) {
-                    showNotification(t('pomodoro.notif.enterTaskNumber') || '⚠️ Podaj numer lub nazwę zadania', 4000);
-                    domCache.timerTaskNumber.focus();
+                const taskType = domCache.timerTaskType ? domCache.timerTaskType.value : '';
+                const project = domCache.timerProject ? domCache.timerProject.value : '';
+
+                if (!taskValue || !taskType || !project) {
+                    showNotification(t('pomodoro.notif.fillAllFields') || '⚠️ Uzupełnij wszystkie pola', 4000);
+                    if (!taskValue) {
+                        domCache.timerTaskNumber.focus();
+                    } else if (!taskType && domCache.timerTaskType) {
+                        domCache.timerTaskType.focus();
+                    } else if (!project && domCache.timerProject) {
+                        domCache.timerProject.focus();
+                    }
                     return;
                 }
                 pomodoroState.currentTaskNumber = taskValue;
@@ -6361,9 +6475,11 @@
             const taskInput = domCache.timerTaskNumber;
             const inputValue = taskInput.value.trim();
             const taskNumber = inputValue || pomodoroState.currentTaskNumber;
+            const taskType = domCache.timerTaskType ? domCache.timerTaskType.value : '';
+            const project = domCache.timerProject ? domCache.timerProject.value : '';
 
-            if (!taskNumber) {
-                showNotification(t('pomodoro.notif.enterTaskNumber'));
+            if (!taskNumber || !taskType || !project) {
+                showNotification(t('pomodoro.notif.fillAllFields') || '⚠️ Uzupełnij wszystkie pola');
                 return false;
             }
 
@@ -6435,8 +6551,8 @@
                 const newEntry = {
                     id: Date.now(),
                     date: new Date(),
-                    taskType: '',
-                    client: '',
+                    taskType: domCache.timerTaskType ? domCache.timerTaskType.value : '',
+                    client: domCache.timerProject ? domCache.timerProject.value : '',
                     hours: finalHours,
                     taskNumber: taskNumber
                 };
@@ -6479,9 +6595,23 @@
 
         function startNewTask() {
             const resetForNewTask = () => {
+                // Reset timer
+                resetTimer();
+
+                // Reset task type select
+                domCache.timerTaskType.value = '';
+                domCache.timerTaskType.dispatchEvent(new Event('change')); // Update empty-field class
+
+                // Reset project select
+                domCache.timerProject.value = '';
+                domCache.timerProject.dispatchEvent(new Event('change')); // Update empty-field class
+
+                // Reset task number input
                 const timerTaskInput = domCache.timerTaskNumber;
                 timerTaskInput.value = '';
                 timerTaskInput.dispatchEvent(new Event('input')); // Update empty-field class
+
+                // Reset state
                 pomodoroState.currentTaskNumber = '';
                 pomodoroState.elapsedTime = 0;
                 updatePomodoroDisplay();
@@ -7256,6 +7386,32 @@
             updateEmptyFieldClass();
             timerTaskInput.addEventListener('input', updateEmptyFieldClass);
 
+            // Update empty-field class for task type select
+            const timerTaskTypeSelect = domCache.timerTaskType;
+            const updateTaskTypeEmptyClass = () => {
+                if (timerTaskTypeSelect.value === '') {
+                    timerTaskTypeSelect.classList.add('empty-field');
+                } else {
+                    timerTaskTypeSelect.classList.remove('empty-field');
+                }
+            };
+
+            updateTaskTypeEmptyClass();
+            timerTaskTypeSelect.addEventListener('change', updateTaskTypeEmptyClass);
+
+            // Update empty-field class for project select
+            const timerProjectSelect = domCache.timerProject;
+            const updateProjectEmptyClass = () => {
+                if (timerProjectSelect.value === '') {
+                    timerProjectSelect.classList.add('empty-field');
+                } else {
+                    timerProjectSelect.classList.remove('empty-field');
+                }
+            };
+
+            updateProjectEmptyClass();
+            timerProjectSelect.addEventListener('change', updateProjectEmptyClass);
+
             timerTaskInput.addEventListener('change', function() {
                 const newTaskNumber = this.value.trim();
                 if (pomodoroState.currentTaskNumber && newTaskNumber !== pomodoroState.currentTaskNumber) {
@@ -7282,6 +7438,14 @@
             ['long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
                 document.getElementById(id).addEventListener('change', savePomodoroSettings);
             });
+
+            // Add event listeners for Pomodoro task type and project dropdowns
+            if (domCache.timerTaskType) {
+                domCache.timerTaskType.addEventListener('change', savePomodoroSettings);
+            }
+            if (domCache.timerProject) {
+                domCache.timerProject.addEventListener('change', savePomodoroSettings);
+            }
 
             // Setup custom validation messages for Pomodoro duration inputs
             function setPomodoroValidationMessages() {
@@ -7733,8 +7897,10 @@
             loadEntries();
             loadProjects();
             updateProjectSelect();
+            updatePomodoroProjectSelect();
             loadTaskTypes();
             updateTaskTypeSelect();
+            updatePomodoroTaskTypeSelect();
             renderTaskTypeFilters();
             renderProjectFilters();
             initSectionToggles();
@@ -7753,11 +7919,47 @@
             updateSummary();
             updateMonthEndWarning();
 
+            // Show first-run tooltip if no projects and task types exist
+            const isFirstRun = !localStorage.getItem('app-first-run-complete');
+            if (isFirstRun && projects.length === 0 && taskTypes.length === 0) {
+                const tooltip = document.getElementById('first-run-tooltip');
+                if (tooltip) {
+                    // Show tooltip after a short delay
+                    setTimeout(() => {
+                        tooltip.classList.add('show');
+                        // Hide after 4 seconds
+                        setTimeout(() => {
+                            tooltip.classList.remove('show');
+                        }, 4000);
+                    }, 500);
+
+                    // Mark first run as complete
+                    localStorage.setItem('app-first-run-complete', 'true');
+                }
+            }
+
             appInitialized = true;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
+
+            // Initialize language button display from preload script
+            if (window.__INITIAL_LANG__) {
+                const langDisplay = document.getElementById('current-lang-display');
+                if (langDisplay) {
+                    langDisplay.textContent = window.__INITIAL_LANG__.toUpperCase();
+                }
+            }
+
+            // Initialize section visibility checkboxes from preload script
+            if (window.__SECTION_VISIBILITY__) {
+                const vis = window.__SECTION_VISIBILITY__;
+                ['entry-form', 'entries-list', 'summary'].forEach(function(name) {
+                    const cb = document.getElementById('toggle-' + name);
+                    if (cb) cb.checked = vis[name] !== false;
+                });
+            }
 
             // Restore scroll position immediately after DOM is ready
             if (window.__SCROLL_POS__) {

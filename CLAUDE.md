@@ -350,7 +350,10 @@ Output: time-planner.exe (or .app, .deb, .rpm, .AppImage)
 - **File Export Permissions**: CSV export requires `fs:allow-write-text-file` + `fs:allow-truncate`
   - Scope configured for: $DOWNLOAD, $DOCUMENT, $DESKTOP, $HOME/Documents, $HOME/Downloads, $HOME/Desktop
   - Without `fs:allow-truncate`, file overwrites will fail (can create new files but not replace existing)
-- **Data Storage Location**: Windows: `%APPDATA%\Time Planner\`, macOS: `~/Library/Application Support/com.timeplanner.app/`, Linux: `~/.local/share/com.timeplanner.app/`
+- **Data Storage Locations**:
+  - **localStorage (WebView2)**: Windows: `%LOCALAPPDATA%\com.timeplanner.app\EBWebView\Default\Local Storage\leveldb\`, macOS: `~/Library/Application Support/com.timeplanner.app/WebView/`, Linux: `~/.local/share/com.timeplanner.app/webview/`
+  - **App Data Files** (CSV export, logs): Windows: `%APPDATA%\Time Planner\`, macOS: `~/Library/Application Support/com.timeplanner.app/`, Linux: `~/.local/share/com.timeplanner.app/`
+  - **Note**: localStorage is managed by WebView2/WebKit, NOT stored in app data folder
 
 ### Testing Changes
 
@@ -368,16 +371,31 @@ Output: time-planner.exe (or .app, .deb, .rpm, .AppImage)
 5. Test all 6 languages with lazy loading (check Console for "✅ Translations loaded")
 
 ### Debugging Storage Issues
+
+**Complete Reset (all data including first-run flag):**
 ```javascript
-// Clear all app data
+// In DevTools (F12) console:
+localStorage.clear();
+location.reload();
+```
+
+**Partial Clear (keep language, remove all entries):**
+```javascript
+// Clear specific app data, preserve language and first-run state
 localStorage.removeItem('timesheet-entries');
 localStorage.removeItem('timesheet-projects');
 localStorage.removeItem('timesheet-task-types');
 localStorage.removeItem('pomodoro-data');
 localStorage.removeItem('pomodoro-settings');
 localStorage.removeItem('section-visibility');
-localStorage.removeItem('app-language');
 localStorage.removeItem('todo-tasks');
+```
+
+**File System Reset (nuclear option):**
+```
+1. Close Time Planner application
+2. Delete folder: %LOCALAPPDATA%\com.timeplanner.app
+3. Restart application (fresh install state)
 ```
 
 ### Adding New Translations
@@ -774,15 +792,16 @@ When changing data structures:
 - **Production Debugging**: Use `console.log()` + alert() for user-visible errors
 
 **Problem**: localStorage data lost between dev and production builds
-- **Cause**: Different storage locations
+- **Cause**: Different storage locations and contexts
 - **Locations**:
-  - Dev: Browser localStorage (per-domain)
-  - Prod: `%APPDATA%\Time Planner\` (Windows)
+  - Dev (browser): Browser localStorage (domain-specific, e.g., `localhost:1420`)
+  - Prod (Tauri): WebView2 localStorage in `%LOCALAPPDATA%\com.timeplanner.app\EBWebView\Default\Local Storage\leveldb\`
 - **Migration**: No automatic migration - export CSV before switching
+- **Reset localStorage**: Delete entire folder `%LOCALAPPDATA%\com.timeplanner.app` or use `localStorage.clear()` in DevTools (F12)
 
 **Problem**: Single instance mode not working
 - **Cause**: Previous instance crashed and lock file remains
 - **Solution**:
   1. Kill all `time-planner.exe` processes: Task Manager → End Task
-  2. Delete lock file in `%APPDATA%\Time Planner\`
+  2. Delete lock file in `%LOCALAPPDATA%\com.timeplanner.app\` or `%APPDATA%\Time Planner\`
   3. Restart application

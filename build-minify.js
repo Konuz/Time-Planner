@@ -77,6 +77,26 @@ const { minify } = require('html-minifier-terser');
         console.log(`   ✅ ${translationFiles.length} translation files copied`);
     }
 
+    // Kopiuj pliki JavaScript
+    const jsSource = path.join(__dirname, 'src', 'js');
+    const jsDest = path.join(distDir, 'js');
+
+    if (fs.existsSync(jsSource)) {
+        console.log('📜 Copying JavaScript files...');
+        if (!fs.existsSync(jsDest)) {
+            fs.mkdirSync(jsDest, { recursive: true });
+        }
+
+        const jsFiles = fs.readdirSync(jsSource).filter(f => f.endsWith('.js'));
+        jsFiles.forEach(file => {
+            fs.copyFileSync(
+                path.join(jsSource, file),
+                path.join(jsDest, file)
+            );
+        });
+        console.log(`   ✅ ${jsFiles.length} JavaScript file(s) copied`);
+    }
+
     // Podsumowanie
     const reduction = Math.round((1 - minified.length / html.length) * 100);
     const saved = html.length - minified.length;
