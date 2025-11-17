@@ -1,11 +1,10 @@
 # ⏰ Time Planner
 
-> Multilingual time tracking application with integrated Pomodoro timer and TODO list
+> Multilingual time tracking application with integrated Pomodoro timer and To-Do list
 
 **Time Planner** is a free, lightweight Windows desktop application that helps you track work hours, boost productivity with the Pomodoro technique, and manage your tasks efficiently. Perfect for freelancers, remote workers, and teams who need accurate time tracking without the complexity.
 
-🎯 **All-in-One Solution**: Timesheet + Pomodoro Timer + TODO List in one useful app
-
+🎯 **All-in-One Solution**: Timesheet + Pomodoro Timer + To-Do List in one full app
 ---
 
 ## 📸 Screenshots
@@ -23,6 +22,8 @@ Fully localized in **6 languages**:
 - 🇪🇸 Español (Spanish)
 - 🇮🇹 Italiano (Italian)
 - 🇫🇷 Français (French)
+
+> **Note**: The "To-Do" widget name remains untranslated across all languages for consistency.
 
 > **Translation Help**: Native speakers are welcome to suggest improvements! If you spot any translation errors, please [create an issue](https://github.com/yourusername/time-planner/issues) or discussion.
 
@@ -42,7 +43,7 @@ Fully localized in **6 languages**:
 - **Smart Accumulation**: Multiple sessions for the same task combine into single entry
 - **Draggable Widget**: Position and resize anywhere on screen
 
-### ✅ TODO Widget
+### ✅ To-Do Widget
 - **Priority Levels**: High, medium, low priority tasks
 - **Date Management**: Due dates with overdue indicators
 - **Drag & Drop**: Reorder tasks within dated/undated sections
@@ -105,9 +106,9 @@ Fully localized in **6 languages**:
 
 **Tip**: Multiple pomodoros for the same task number accumulate hours in a single entry!
 
-### Managing TODO Tasks
+### Managing To-Do Tasks
 
-1. Click ✅ icon to expand the TODO widget
+1. Click ✅ icon to expand the To-Do widget
 2. Fill in task details:
    - **Task name**: What needs to be done
    - **Priority**: High (red), Medium (yellow), Low (green)
@@ -128,7 +129,7 @@ Fully localized in **6 languages**:
 - **Keyboard shortcut**: Press Enter after filling the form to quickly add entries
 - **Clone entries**: Use the 📋 clone button to duplicate similar entries
 - **Auto-accumulation**: Pomodoro sessions with the same task number automatically combine hours
-- **Widget positioning**: Drag Pomodoro and TODO widgets to your preferred screen position
+- **Widget positioning**: Drag Pomodoro and To-Do widgets to your preferred screen position
 - **Filter quickly**: Use month/week filters to focus on specific time periods
 - **Multi-language**: Switch languages anytime from the top-right dropdown
 
