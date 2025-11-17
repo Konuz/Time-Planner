@@ -2162,7 +2162,7 @@
                     <p data-i18n="info.section.pomodoroIntro">Timer Pomodoro pomaga pracować w krótkich, skupionych cyklach.</p>
                     <ol>
                         <li data-i18n="info.section.pomodoroStep1">Kliknij ikonę 🍅, aby rozwinąć widżet, uzupełnij wszystkie pola i naciśnij Start, aby rozpocząć odliczanie.</li>
-                        <li data-i18n="info.section.pomodoroStep2">Przy ręcznym zakończeniu pracy kliknij 'Zakończ zadanie' (zielony checkmark), wyświetli się informacja o dodaniu wpisu, jeśli długość zadania wynosi przynajmniej 25min.</li>
+                        <li data-i18n="info.section.pomodoroStep2">Przy ręcznym zakończeniu pracy kliknij 'Zakończ zadanie' (zielony checkmark), wyświetli się informacja o dodaniu wpisu, jeśli długość zadania wynosi przynajmniej 25 min.</li>
                         <li data-i18n="info.section.pomodoroStep3">Wpis doda się automatycznie do listy.</li>
                         <li data-i18n="info.section.pomodoroStep4">Kolejne sesje z tym samym numerem lub nazwą zadania dopiszą czas do istniejącego wpisu, dzięki czemu zachowasz pełną historię.</li>
                     </ol>
@@ -2777,8 +2777,7 @@
         const POMODORO_LONG_BREAK_MINUTES = 15;
 
         // Minimum Pomodoro session requirements
-        const MIN_POMODORO_SESSION_MINUTES = 25;
-        const MIN_POMODORO_SESSION_SECONDS = MIN_POMODORO_SESSION_MINUTES * SECONDS_PER_MINUTE;
+        // Removed MIN_POMODORO_SESSION constants - using fixed POMODORO_WORK_DURATION_MINUTES instead
 
         // Convert to seconds for internal state management
         const POMODORO_WORK_DURATION_SECONDS = POMODORO_WORK_DURATION_MINUTES * SECONDS_PER_MINUTE;
@@ -5992,7 +5991,7 @@
             // Load pomodoro settings using LocalStorageManager
             pomodoroSettings = pomodoroSettingsStorage.load();
 
-            pomodoroSettings.workDuration = MIN_POMODORO_SESSION_MINUTES;
+            pomodoroSettings.workDuration = POMODORO_WORK_DURATION_MINUTES;
             pomodoroSettings.shortBreakDuration = POMODORO_SHORT_BREAK_MINUTES;
 
             if (typeof pomodoroSettings.longBreakDuration !== 'number' || pomodoroSettings.longBreakDuration < 1) {
@@ -6049,7 +6048,7 @@
                 showNotification(validationMessages.join(' '), 4000);
             }
 
-            pomodoroSettings.workDuration = MIN_POMODORO_SESSION_MINUTES;
+            pomodoroSettings.workDuration = POMODORO_WORK_DURATION_MINUTES;
             pomodoroSettings.shortBreakDuration = POMODORO_SHORT_BREAK_MINUTES;
             pomodoroSettings.longBreakDuration = longBreakDuration;
             pomodoroSettings.soundEnabled = domCache.soundEnabled.checked;
@@ -6372,34 +6371,7 @@
                 }
                 pomodoroState.currentTaskNumber = taskValue;
             }
-
-            // Only validate minimum duration for NEW timers (not when resuming from pause)
-            // Resuming is detected by checking if elapsedTime > 0
-            const isResumingFromPause = pomodoroState.elapsedTime > 0;
-
-            if (!isResumingFromPause) {
-                const requiresExtendedDuration = pomodoroState.mode === 'work';
-                const minDurationSeconds = requiresExtendedDuration ? MIN_POMODORO_SESSION_SECONDS : SECONDS_PER_MINUTE;
-                const requiredMinutes = requiresExtendedDuration ? MIN_POMODORO_SESSION_MINUTES : 1;
-
-                if (pomodoroState.timeRemaining < minDurationSeconds) {
-                    const modeText = pomodoroState.mode === 'work'
-                        ? t('pomodoro.workTime')
-                        : pomodoroState.mode === 'shortBreak'
-                            ? t('pomodoro.shortBreak')
-                            : t('pomodoro.longBreak');
-
-                    const message = t('pomodoro.notif.durationTooShort', { mode: modeText, minutes: requiredMinutes })
-                        || `Czas ${modeText} musi wynosić co najmniej ${requiredMinutes} min. Sprawdź ustawienia.`;
-
-                    showNotification(message, 4000);
-
-                    // Reset to default to prevent infinite loop
-                    resetTimer();
-                    return;
-                }
-            }
-
+            // Removed minimum duration validation - using fixed session times
             pomodoroState.isRunning = true;
             pomodoroState.startTime = Date.now();
 
@@ -6412,14 +6384,12 @@
         function calculateWorkedHours(seconds) {
             const minutes = seconds / SECONDS_PER_MINUTE;
 
-            if (minutes < MIN_POMODORO_SESSION_MINUTES) {
-                return 0;
-            }
-
+            // No minimum validation - accept any duration
+            // Round up session + break duration to full 30-minute block
             let effectiveMinutes = minutes;
 
-            const singleSessionTarget = MIN_POMODORO_SESSION_MINUTES + 5; // 25 min work counts as 30 min session
-            if (minutes >= MIN_POMODORO_SESSION_MINUTES && minutes < singleSessionTarget) {
+            const singleSessionTarget = POMODORO_WORK_DURATION_MINUTES + 5; // work + break = 30 min session
+            if (minutes >= POMODORO_WORK_DURATION_MINUTES && minutes < singleSessionTarget) {
                 effectiveMinutes = singleSessionTarget;
             } else if (minutes >= 55 && minutes < 60) {
                 effectiveMinutes = 60;
@@ -6491,18 +6461,7 @@
             }
 
             const workedHours = calculateWorkedHours(elapsedSeconds);
-
-            if (workedHours === 0) {
-                const messageKey = clearTaskNumber ? 'pomodoro.notif.insufficientTimeContinue' : 'pomodoro.notif.insufficientTime';
-                const fallback = clearTaskNumber
-                    ? `⏱️ Niewystarczający czas pracy (< ${MIN_POMODORO_SESSION_MINUTES} min). Timer nadal liczy - kontynuuj pracę lub wpisz nowe zadanie!`
-                    : `⚠️ Niewystarczający czas pracy (< ${MIN_POMODORO_SESSION_MINUTES} min). Wpis nie został dodany.`;
-                showNotification(
-                    t(messageKey, { minutes: MIN_POMODORO_SESSION_MINUTES }) || fallback,
-                    clearTaskNumber ? 4000 : 3000
-                );
-                return false;
-            }
+            // Removed minimum time validation - accept any duration
 
             const today = new Date();
             const todayISO = today.toISOString().split('T')[0];
@@ -7435,7 +7394,7 @@
                 }
             });
 
-            ['long-break-duration', 'sound-enabled', 'auto-start-break'].forEach(id => {
+            ['long-break-duration', 'sound-enabled', 'auto-start-break', 'auto-start-work'].forEach(id => {
                 document.getElementById(id).addEventListener('change', savePomodoroSettings);
             });
 
