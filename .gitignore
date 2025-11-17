@@ -1,0 +1,23 @@
+# Build output
+src-dist/
+
+# Dependencies
+node_modules/
+
+# Tauri build artifacts
+src-tauri/target/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+src/index.html.backup_*
+src/index.html.before_*
+src/index.html.with_*
