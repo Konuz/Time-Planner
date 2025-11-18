@@ -244,8 +244,6 @@ Future updates planned:
 
 If Time Planner helps you save time and stay productive, consider supporting its development!
 
-Your support helps maintain the app, add new features, and keep it free for everyone.
-
 **[☕ Support on Gumroad](https://konuz.gumroad.com/l/amseic)**
 
 Every contribution, no matter how small, is greatly appreciated and motivates continued development! 🙏
