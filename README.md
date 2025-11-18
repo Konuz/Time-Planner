@@ -10,6 +10,7 @@
 ## 📸 Screenshots
 <img width="1918" height="1035" alt="1" src="https://github.com/user-attachments/assets/4e476eb7-d7b7-41c0-9088-752f6f8b4994" />
 <img width="1919" height="1032" alt="2" src="https://github.com/user-attachments/assets/e2eb2855-a180-478a-a11e-4ac9f78f8a7c" />
+<img width="1906" height="1003" alt="3" src="https://github.com/user-attachments/assets/6352501c-1f7a-44be-8ea6-df119542bff5" />
 <img width="1917" height="1032" alt="4" src="https://github.com/user-attachments/assets/46c9308e-34ad-47b4-94d8-01cb82e4aa1f" />
 
 
@@ -245,7 +246,7 @@ If Time Planner helps you save time and stay productive, consider supporting its
 
 Your support helps maintain the app, add new features, and keep it free for everyone.
 
-**[☕ Support on [PLATFORM_NAME]]([PLATFORM_URL])**
+**[☕ Support on Gumroad](https://michalverse23.gumroad.com/l/amseic)**
 
 Every contribution, no matter how small, is greatly appreciated and motivates continued development! 🙏
 
